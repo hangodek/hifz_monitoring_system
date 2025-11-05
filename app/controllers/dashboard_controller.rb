@@ -49,26 +49,8 @@ class DashboardController < ApplicationController
                                 }
                               end
 
-    # All activities for modal
-    all_activities = Activity.includes(:student, audio_attachment: :blob)
-                           .order(created_at: :desc)
-                           .map do |activity|
-                             {
-                               id: activity.id,
-                               student: activity.student.name,
-                               activity: format_activity_description(activity),
-                               time: time_ago_in_words(activity.created_at) + " ago",
-                               type: activity.activity_type,
-                               grade: activity.activity_grade.humanize,
-                               surah_from: activity.surah_from,
-                               surah_to: activity.surah_to,
-                               page_from: activity.page_from,
-                               page_to: activity.page_to,
-                               juz: activity.juz,
-                               notes: activity.notes,
-                               audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
-                             }
-                           end
+    # Get total count of all activities for the "View All" button
+    total_activities_count = Activity.count
 
     # Daily submissions for chart (configurable date range)
     from_date = params[:from]&.to_date || 6.days.ago.to_date
@@ -114,10 +96,50 @@ class DashboardController < ApplicationController
       },
       top_students: top_students,
       recent_activities: recent_activities,
-      all_activities: all_activities,
+      total_activities_count: total_activities_count,
       daily_submissions: daily_submissions,
       juz_distribution: juz_distribution,
       monthly_progress: monthly_progress
+    }
+  end
+
+  def activities
+    # Pagination parameters
+    page = params[:page]&.to_i || 1
+    per_page = params[:per_page]&.to_i || 50
+    offset = (page - 1) * per_page
+
+    # Fetch activities with pagination
+    activities_query = Activity.includes(:student, audio_attachment: :blob)
+                              .order(created_at: :desc)
+    
+    total_count = activities_query.count
+    activities = activities_query.limit(per_page)
+                                .offset(offset)
+                                .map do |activity|
+                                  {
+                                    id: activity.id,
+                                    student: activity.student.name,
+                                    activity: format_activity_description(activity),
+                                    time: time_ago_in_words(activity.created_at) + " ago",
+                                    type: activity.activity_type,
+                                    grade: activity.activity_grade.humanize,
+                                    surah_from: activity.surah_from,
+                                    surah_to: activity.surah_to,
+                                    page_from: activity.page_from,
+                                    page_to: activity.page_to,
+                                    juz: activity.juz,
+                                    notes: activity.notes,
+                                    audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
+                                  }
+                                end
+
+    render json: {
+      activities: activities,
+      total_count: total_count,
+      current_page: page,
+      per_page: per_page,
+      total_pages: (total_count.to_f / per_page).ceil
     }
   end
 

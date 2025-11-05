@@ -27,7 +27,7 @@ export function TopStudentsRanking({ students }: TopStudentsRankingProps) {
           <Award className="h-5 w-5" />
           Top Students Ranking
         </CardTitle>
-        <CardDescription>Top 5 students with most memorization this month</CardDescription>
+        <CardDescription>Top 10 students with most memorization this month</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
         {students.map((student, index) => (

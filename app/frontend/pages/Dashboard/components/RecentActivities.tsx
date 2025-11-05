@@ -14,8 +14,11 @@ import {
   Clock,
   Target,
   Star,
+  Loader2,
 } from "lucide-react"
 import { AudioPlayer } from "@/components/AudioPlayer"
+import { useState } from "react"
+import axios from "axios"
 
 interface RecentActivity {
   id: number
@@ -44,10 +47,50 @@ interface DetailedActivity {
 
 interface RecentActivitiesProps {
   activities: RecentActivity[]
-  allActivities: DetailedActivity[]
+  totalActivitiesCount: number
 }
 
-export function RecentActivities({ activities, allActivities }: RecentActivitiesProps) {
+export function RecentActivities({ activities, totalActivitiesCount }: RecentActivitiesProps) {
+  const [allActivities, setAllActivities] = useState<DetailedActivity[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const loadActivities = async (page: number = 1) => {
+    setIsLoading(true)
+    try {
+      const response = await axios.get('/dashboard/activities', {
+        params: { page, per_page: 50 }
+      })
+      
+      if (page === 1) {
+        setAllActivities(response.data.activities)
+      } else {
+        setAllActivities(prev => [...prev, ...response.data.activities])
+      }
+      
+      setCurrentPage(response.data.current_page)
+      setTotalPages(response.data.total_pages)
+    } catch (error) {
+      console.error('Failed to load activities:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open)
+    if (open && allActivities.length === 0) {
+      loadActivities(1)
+    }
+  }
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages) {
+      loadActivities(currentPage + 1)
+    }
+  }
   return (
     <Card className="border-gray-200/60 shadow-lg">
       <CardHeader>
@@ -59,11 +102,11 @@ export function RecentActivities({ activities, allActivities }: RecentActivities
             </CardTitle>
             <CardDescription>Student memorization activities in the last few hours</CardDescription>
           </div>
-          {allActivities.length > 5 && (
-            <Dialog>
+          {totalActivitiesCount > 5 && (
+            <Dialog open={isOpen} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="cursor-pointer border-gray-200/60">
-                  View All ({allActivities.length})
+                  View All ({totalActivitiesCount})
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -73,8 +116,14 @@ export function RecentActivities({ activities, allActivities }: RecentActivities
                     Complete history of student memorization and revision activities
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 mt-4">
-                  {allActivities.map((activity) => (
+                
+                {isLoading && allActivities.length === 0 ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="space-y-4 mt-4">
+                    {allActivities.map((activity) => (
                     <div key={activity.id} className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg">
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
@@ -137,7 +186,28 @@ export function RecentActivities({ activities, allActivities }: RecentActivities
                       </div>
                     </div>
                   ))}
+                  
+                  {currentPage < totalPages && (
+                    <div className="flex justify-center pt-4">
+                      <Button 
+                        onClick={handleLoadMore} 
+                        disabled={isLoading}
+                        variant="outline"
+                        className="cursor-pointer"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          `Load More (${totalActivitiesCount - allActivities.length} remaining)`
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
+                )}
               </DialogContent>
             </Dialog>
           )}
@@ -186,11 +256,11 @@ export function RecentActivities({ activities, allActivities }: RecentActivities
             <p className="text-sm text-muted-foreground">Activities will appear here when students start memorizing</p>
           </div>
         )}
-        {allActivities.length > 5 && (
+        {totalActivitiesCount > 5 && (
           <div className="text-center pt-4 border-t border-gray-200">
             <p className="text-xs text-muted-foreground">
               Showing 5 most recent activities. 
-              <span className="font-medium"> {allActivities.length - 5} more activities available.</span>
+              <span className="font-medium"> {totalActivitiesCount - 5} more activities available.</span>
             </p>
           </div>
         )}
