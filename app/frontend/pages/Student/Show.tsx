@@ -44,9 +44,11 @@ import {
   ChevronDown,
   BarChart3,
   Edit,
+  Loader2,
 } from "lucide-react"
 import { router } from "@inertiajs/react"
 import { AudioPlayer } from "@/components/AudioPlayer"
+import axios from "axios"
 
 // Student type definition matching database schema
 interface Student {
@@ -81,6 +83,7 @@ interface Activity {
   type: string
   date: string
   created_at: string
+  audio_url?: string | null
 }
 
 // Detailed activity type for modal
@@ -98,6 +101,7 @@ interface DetailedActivity {
   page_to: number
   juz: number
   notes?: string
+  audio_url?: string | null
 }
 
 // Monthly progress data
@@ -163,7 +167,7 @@ const getStudentData = (student: Student, all_activities: Activity[], startDate:
 interface StudentShowProps {
   student: Student // The actual student data object from Rails controller
   recent_activities: Activity[] // Recent activities from backend (limited to 5)
-  all_activities: DetailedActivity[] // All activities for modal
+  total_activities_count: number // Total count for "View All" button
   total_activities: number // Total count of activities
   monthly_progress: MonthlyProgress[] // Monthly progress data
   grade_distribution: GradeDistribution[] // Grade distribution data
@@ -171,14 +175,55 @@ interface StudentShowProps {
   monthly_activities: MonthlyActivities[] // Monthly activities data
 }
 
-export default function StudentShow({ student, recent_activities, all_activities, total_activities, monthly_progress, grade_distribution, type_distribution, monthly_activities }: StudentShowProps) {
+export default function StudentShow({ student, recent_activities, total_activities_count, total_activities, monthly_progress, grade_distribution, type_distribution, monthly_activities }: StudentShowProps) {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 7 days ago
     to: new Date(),
   })
+  
+  const [allActivities, setAllActivities] = useState<DetailedActivity[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isOpen, setIsOpen] = useState(false)
 
-  // Convert all_activities to the format expected by generateDailySubmissions
-  const formattedAllActivities = all_activities.map(activity => ({
+  const loadActivities = async (page: number = 1) => {
+    setIsLoading(true)
+    try {
+      const response = await axios.get(`/students/${student.id}/activities_list`, {
+        params: { page, per_page: 50 }
+      })
+      
+      if (page === 1) {
+        setAllActivities(response.data.activities)
+      } else {
+        setAllActivities(prev => [...prev, ...response.data.activities])
+      }
+      
+      setCurrentPage(response.data.current_page)
+      setTotalPages(response.data.total_pages)
+    } catch (error) {
+      console.error('Failed to load activities:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open)
+    if (open && allActivities.length === 0) {
+      loadActivities(1)
+    }
+  }
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages) {
+      loadActivities(currentPage + 1)
+    }
+  }
+
+  // Convert recent_activities to the format expected by generateDailySubmissions
+  const formattedAllActivities = recent_activities.map(activity => ({
     id: activity.id,
     activity: activity.activity,
     time: activity.time,
@@ -736,11 +781,11 @@ export default function StudentShow({ student, recent_activities, all_activities
                   </CardTitle>
                   <CardDescription>Latest activities of {student?.name}</CardDescription>
                 </div>
-                {all_activities.length > 5 && (
-                  <Dialog>
+                {total_activities_count > 5 && (
+                  <Dialog open={isOpen} onOpenChange={handleOpenChange}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="cursor-pointer border-gray-200/60">
-                        View All ({all_activities.length})
+                        View All ({total_activities_count})
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -750,8 +795,14 @@ export default function StudentShow({ student, recent_activities, all_activities
                           Complete history of memorization and revision activities
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-4 mt-4">
-                        {all_activities.map((activity, index) => (
+                      
+                      {isLoading && allActivities.length === 0 ? (
+                        <div className="flex items-center justify-center py-12">
+                          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        </div>
+                      ) : (
+                        <div className="space-y-4 mt-4">
+                          {allActivities.map((activity, index) => (
                           <div key={activity.id} className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg">
                             <div
                               className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
@@ -799,10 +850,40 @@ export default function StudentShow({ student, recent_activities, all_activities
                                   <span className="font-medium">Notes:</span> {activity.notes}
                                 </div>
                               )}
+                              {activity.audio_url && (
+                                <div className="mt-2">
+                                  <AudioPlayer 
+                                    audioUrl={activity.audio_url} 
+                                    size="sm"
+                                    className="max-w-full"
+                                  />
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))}
+                        
+                        {currentPage < totalPages && (
+                          <div className="flex justify-center pt-4">
+                            <Button 
+                              onClick={handleLoadMore} 
+                              disabled={isLoading}
+                              variant="outline"
+                              className="cursor-pointer"
+                            >
+                              {isLoading ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Loading...
+                                </>
+                              ) : (
+                                `Load More (${total_activities_count - allActivities.length} remaining)`
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </div>
+                      )}
                     </DialogContent>
                   </Dialog>
                 )}
@@ -831,6 +912,15 @@ export default function StudentShow({ student, recent_activities, all_activities
                   <div className="flex-1 space-y-1">
                     <p className="text-sm">{activity.activity}</p>
                     <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    {activity.audio_url && (
+                      <div className="mt-1">
+                        <AudioPlayer 
+                          audioUrl={activity.audio_url} 
+                          size="sm"
+                          className="max-w-full"
+                        />
+                      </div>
+                    )}
                   </div>
 
                 </div>
@@ -842,11 +932,11 @@ export default function StudentShow({ student, recent_activities, all_activities
                   <p className="text-sm text-muted-foreground">Activities will appear here when the student starts memorizing</p>
                 </div>
               )}
-              {all_activities.length > 5 && (
+              {total_activities_count > 5 && (
                 <div className="text-center pt-4 border-t border-gray-200">
                   <p className="text-xs text-muted-foreground">
                     Showing 5 most recent activities. 
-                    <span className="font-medium"> {all_activities.length - 5} more activities available.</span>
+                    <span className="font-medium"> {total_activities_count - 5} more activities available.</span>
                   </p>
                 </div>
               )}

@@ -29,25 +29,8 @@ class StudentsController < ApplicationController
       }
     end
 
-    # Get all activities for modal
-    all_activities = activities.map do |activity|
-      {
-        id: activity.id,
-        activity: format_activity_description(activity),
-        time: time_ago_in_words(activity.created_at) + " ago",
-        type: activity.activity_type,
-        date: activity.created_at.strftime("%Y-%m-%d"),
-        created_at: activity.created_at,
-        grade: activity.activity_grade.humanize,
-        surah_from: activity.surah_from,
-        surah_to: activity.surah_to,
-        page_from: activity.page_from,
-        page_to: activity.page_to,
-        juz: activity.juz,
-        notes: activity.notes,
-        audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
-      }
-    end
+    # Get total count of all activities for the "View All" button
+    total_activities_count = activities.count
 
     # Calculate monthly progress (cumulative juz progress)
     monthly_progress = calculate_monthly_progress(student, activities)
@@ -89,12 +72,53 @@ class StudentsController < ApplicationController
         avatar: student.avatar.attached? ? url_for(student.avatar) : nil
       ),
       recent_activities: recent_activities,
-      all_activities: all_activities,
+      total_activities_count: total_activities_count,
       total_activities: activities.count,
       monthly_progress: monthly_progress,
       grade_distribution: grade_distribution,
       type_distribution: type_distribution,
       monthly_activities: monthly_activities
+    }
+  end
+
+  def activities_list
+    student = Student.find(params[:id])
+    
+    # Pagination parameters
+    page = params[:page]&.to_i || 1
+    per_page = params[:per_page]&.to_i || 50
+    offset = (page - 1) * per_page
+
+    # Fetch activities with pagination
+    activities_query = student.activities.includes(audio_attachment: :blob)
+                              .order(created_at: :desc)
+    
+    total_count = activities_query.count
+    activities = activities_query.limit(per_page)
+                                .offset(offset)
+                                .map do |activity|
+                                  {
+                                    id: activity.id,
+                                    activity: format_activity_description(activity),
+                                    time: time_ago_in_words(activity.created_at) + " ago",
+                                    type: activity.activity_type,
+                                    grade: activity.activity_grade.humanize,
+                                    surah_from: activity.surah_from,
+                                    surah_to: activity.surah_to,
+                                    page_from: activity.page_from,
+                                    page_to: activity.page_to,
+                                    juz: activity.juz,
+                                    notes: activity.notes,
+                                    audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
+                                  }
+                                end
+
+    render json: {
+      activities: activities,
+      total_count: total_count,
+      current_page: page,
+      per_page: per_page,
+      total_pages: (total_count.to_f / per_page).ceil
     }
   end
 

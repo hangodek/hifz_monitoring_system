@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   end
   resources :students, only: [ :index, :new, :create, :show, :edit, :update ] do
     resources :activities, only: [ :create, :destroy ]
+    member do
+      get :activities_list
+    end
   end
   resources :teachers, only: [ :index ]
   resources :passwords, param: :token
