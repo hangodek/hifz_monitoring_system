@@ -256,7 +256,7 @@ export function ActivityForm({
                     <Label className="text-xs sm:text-sm">Page To <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
-                      placeholder="10"
+                      placeholder="20"
                       value={activityDetails.pageTo}
                       onChange={(e) => setActivityDetails((prev) => ({ ...prev, pageTo: e.target.value }))}
                       className="border-gray-200/60 text-sm"

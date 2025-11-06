@@ -1,5 +1,6 @@
 class DashboardController < ApplicationController
   include ActionView::Helpers::DateHelper
+  include AvatarHelper
 
   def index
     user = Current.user
@@ -30,7 +31,7 @@ class DashboardController < ApplicationController
                              current_juz: student.current_hifz_in_juz,
                              activity_count: student.activities.count,
                              progress: calculate_progress(student.current_hifz_in_juz.to_i),
-                             avatar: student.avatar.attached? ? url_for(student.avatar) : nil
+                             avatar: avatar_url(student, size: :thumb)
                            }
                          end
 

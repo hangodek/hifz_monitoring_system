@@ -1,9 +1,11 @@
 class StudentsController < ApplicationController
   include ActionView::Helpers::DateHelper
+  include AvatarHelper
+  
   def index
     students = Student.all.order(name: :asc).map do |student|
       student.as_json.merge(
-        avatar: student.avatar.attached? ? url_for(student.avatar) : nil
+        avatar: avatar_url(student, size: :thumb)
       )
     end
 
@@ -69,7 +71,7 @@ class StudentsController < ApplicationController
 
     render inertia: "Student/Show", props: {
       student: student.as_json.merge(
-        avatar: student.avatar.attached? ? url_for(student.avatar) : nil
+        avatar: avatar_url(student, size: :medium)
       ),
       recent_activities: recent_activities,
       total_activities_count: total_activities_count,
@@ -143,7 +145,7 @@ class StudentsController < ApplicationController
 
     render inertia: "Student/Edit", props: {
       student: @student.as_json.merge(
-        avatar: @student.avatar.attached? ? url_for(@student.avatar) : nil
+        avatar: avatar_url(@student, size: :medium)
       )
     }
   end
