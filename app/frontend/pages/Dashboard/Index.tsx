@@ -29,6 +29,7 @@ interface TopStudent {
 
 interface RecentActivity {
   id: number
+  student_id: string
   student: string
   activity: string
   time: string
