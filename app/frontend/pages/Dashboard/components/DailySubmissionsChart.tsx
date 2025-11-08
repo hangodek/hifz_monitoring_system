@@ -54,9 +54,9 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
           <div>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
-              Daily Submissions
+              Penyerahan Harian
             </CardTitle>
-            <CardDescription>Number of student activities submitted per day</CardDescription>
+            <CardDescription>Bilangan aktiviti pelajar yang diserahkan setiap hari</CardDescription>
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -72,7 +72,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
             <PopoverContent className="w-auto p-0 border-gray-200/60" align="end">
               <div className="p-4 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Start Date</label>
+                  <label className="text-sm font-medium">Tarikh Mula</label>
                   <Calendar
                     mode="single"
                     selected={dateRange.from}
@@ -82,7 +82,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">End Date</label>
+                  <label className="text-sm font-medium">Tarikh Akhir</label>
                   <Calendar
                     mode="single"
                     selected={dateRange.to}
@@ -103,7 +103,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                       })
                     }
                   >
-                    7 Days
+                    7 Hari
                   </Button>
                   <Button
                     size="sm"
@@ -116,7 +116,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                       })
                     }
                   >
-                    30 Days
+                    30 Hari
                   </Button>
                 </div>
               </div>

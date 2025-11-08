@@ -85,21 +85,21 @@ export default function CreateStudent() {
     const newErrors: Partial<StudentFormData> = {}
 
     // Required fields (null: false in schema)
-    if (!formData.name.trim()) newErrors.name = "Student name is required"
-    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Current Juz is required"
-    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Current pages is required"
-    if (!formData.class_level.trim()) newErrors.class_level = "Class is required"
-    if (!formData.status.trim()) newErrors.status = "Status is required"
-    if (!formData.gender.trim()) newErrors.gender = "Gender is required"
-    if (!formData.birth_place.trim()) newErrors.birth_place = "Place of birth is required"
-    if (!formData.birth_date) newErrors.birth_date = "Date of birth is required"
-    if (!formData.father_name.trim()) newErrors.father_name = "Father's name is required"
-    if (!formData.mother_name.trim()) newErrors.mother_name = "Mother's name is required"
-    if (!formData.date_joined) newErrors.date_joined = "Date joined is required"
+    if (!formData.name.trim()) newErrors.name = "Nama pelajar diperlukan"
+    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz semasa diperlukan"
+    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman semasa diperlukan"
+    if (!formData.class_level.trim()) newErrors.class_level = "Kelas diperlukan"
+    if (!formData.status.trim()) newErrors.status = "Status diperlukan"
+    if (!formData.gender.trim()) newErrors.gender = "Jantina diperlukan"
+    if (!formData.birth_place.trim()) newErrors.birth_place = "Tempat lahir diperlukan"
+    if (!formData.birth_date) newErrors.birth_date = "Tarikh lahir diperlukan"
+    if (!formData.father_name.trim()) newErrors.father_name = "Nama bapa diperlukan"
+    if (!formData.mother_name.trim()) newErrors.mother_name = "Nama ibu diperlukan"
+    if (!formData.date_joined) newErrors.date_joined = "Tarikh menyertai diperlukan"
 
     // Optional fields validation (only validate format if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Invalid email format"
+      newErrors.email = "Format emel tidak sah"
     }
 
     setErrors(newErrors)
@@ -161,8 +161,8 @@ export default function CreateStudent() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Add New Student</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Create a new student profile and add to the system</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Tambah Pelajar Baharu</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Cipta profil pelajar baharu dan tambah ke sistem</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
             <Button
@@ -171,8 +171,8 @@ export default function CreateStudent() {
               onClick={handleBackClick}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Back to Students</span>
-              <span className="sm:hidden">Back</span>
+              <span className="hidden sm:inline">Kembali ke Senarai Pelajar</span>
+              <span className="sm:hidden">Kembali</span>
             </Button>
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function CreateStudent() {
                   onClick={handleBackClick}
                   disabled={isSubmitting}
                 >
-                  Cancel
+                  Batal
                 </Button>
                 <Button
                   type="submit"
@@ -205,7 +205,7 @@ export default function CreateStudent() {
                   className="flex items-center gap-2 cursor-pointer"
                 >
                   <Save className="h-4 w-4" />
-                  {isSubmitting ? "Creating..." : "Create Student"}
+                  {isSubmitting ? "Mencipta..." : "Cipta Pelajar"}
                 </Button>
               </div>
             </CardContent>

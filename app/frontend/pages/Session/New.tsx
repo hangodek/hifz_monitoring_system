@@ -44,7 +44,7 @@ export default function Session() {
           />
           <Card className="w-full border-gray-200/60 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-center">Login to dashboard</CardTitle>
+              <CardTitle className="text-center">Log Masuk ke Papan Pemuka</CardTitle>
             </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
@@ -58,7 +58,7 @@ export default function Session() {
                   </Alert>
                 )}
                 <div className="grid gap-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username">Nama Pengguna</Label>
                   <Input
                     id="username"
                     type="text"
@@ -70,7 +70,7 @@ export default function Session() {
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Kata Laluan</Label>
                   </div>
                   <Input
                     id="password"
@@ -81,7 +81,7 @@ export default function Session() {
                   />
                 </div>
                 <Button type="submit" className="w-full cursor-pointer" disabled={processing}>
-                  {processing ? 'Logging in...' : 'Login'}
+                  {processing ? 'Sedang Log Masuk...' : 'Log Masuk'}
                 </Button>
               </div>
             </form>

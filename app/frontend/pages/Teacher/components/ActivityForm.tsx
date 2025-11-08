@@ -97,12 +97,12 @@ export function ActivityForm({
   
   const handleSubmit = () => {
     if (!selectedStudent || !activityType || !activityDetails.surahFrom || !activityDetails.surahTo || !activityDetails.pageFrom || !activityDetails.pageTo) {
-      alert('Please fill in all required fields');
+      alert('Sila lengkapkan semua ruangan yang diperlukan');
       return;
     }
 
     if (!validateMemorizationProgress()) {
-      alert('New memorization progress must be greater than current progress');
+      alert('Kemajuan hafalan baharu mestilah lebih tinggi daripada kemajuan semasa');
       return;
     }
 
@@ -160,7 +160,7 @@ export function ActivityForm({
       },
       onError: (errors) => {
         console.error('Failed to save activity:', errors);
-        alert('Failed to save activity. Please try again.');
+        alert('Gagal menyimpan aktiviti. Sila cuba lagi.');
       }
     });
   };
@@ -170,16 +170,16 @@ export function ActivityForm({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Plus className="h-5 w-5" />
-          Add Activity
+          Tambah Aktiviti
         </CardTitle>
-        <CardDescription>Record student activity</CardDescription>
+        <CardDescription>Rekod aktiviti pelajar</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Activity Type</Label>
+          <Label>Jenis Aktiviti</Label>
           <Select value={activityType} onValueChange={setActivityType}>
             <SelectTrigger className="border-gray-200/60 cursor-pointer">
-              <SelectValue placeholder="Select activity type..." />
+              <SelectValue placeholder="Pilih jenis aktiviti..." />
             </SelectTrigger>
             <SelectContent className="border-gray-200/60">
               {activityTypes.map((type) => (
@@ -202,13 +202,13 @@ export function ActivityForm({
               <>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Surah From <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Surah Dari <span className="text-red-500">*</span></Label>
                     <Select
                       value={activityDetails.surahFrom}
                       onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surahFrom: value }))}
                     >
                       <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                        <SelectValue placeholder="Select surah..." />
+                        <SelectValue placeholder="Pilih surah..." />
                       </SelectTrigger>
                       <SelectContent className="border-gray-200/60">
                         {surahList.map((surah, index) => (
@@ -220,13 +220,13 @@ export function ActivityForm({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Surah To <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Surah Hingga <span className="text-red-500">*</span></Label>
                     <Select
                       value={activityDetails.surahTo}
                       onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surahTo: value }))}
                     >
                       <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                        <SelectValue placeholder="Select surah..." />
+                        <SelectValue placeholder="Pilih surah..." />
                       </SelectTrigger>
                       <SelectContent className="border-gray-200/60">
                         {surahList.map((surah, index) => (
@@ -241,7 +241,7 @@ export function ActivityForm({
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Page From <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Muka Surat Dari <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
                       placeholder="1"
@@ -253,7 +253,7 @@ export function ActivityForm({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Page To <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Muka Surat Hingga <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
                       placeholder="20"
@@ -273,7 +273,7 @@ export function ActivityForm({
                     onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, juz: value }))}
                   >
                     <SelectTrigger className="border-gray-200/60">
-                      <SelectValue placeholder="Select juz..." />
+                      <SelectValue placeholder="Pilih juz..." />
                     </SelectTrigger>
                     <SelectContent>
                       {Array.from({ length: 30 }, (_, i) => (
@@ -288,13 +288,13 @@ export function ActivityForm({
                 {activityType === "memorization" && currentStudent && (
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">
-                      Current Progress: {currentStudent.current_hifz_in_surah}, Juz {currentStudent.current_hifz_in_juz}, {currentStudent.current_hifz_in_pages} pages
+                      Kemajuan Semasa: {currentStudent.current_hifz_in_surah}, Juz {currentStudent.current_hifz_in_juz}, {currentStudent.current_hifz_in_pages} muka surat
                     </Label>
                     {activityDetails.juz && activityDetails.pageTo && (() => {
                       const newProgress = calculateNewProgress();
                       return newProgress ? (
                         <div className="text-sm text-muted-foreground">
-                          New Progress will be: {activityDetails.surahTo}, Juz {newProgress.newJuz}, {newProgress.newPages} pages
+                          Kemajuan baharu: {activityDetails.surahTo}, Juz {newProgress.newJuz}, {newProgress.newPages} muka surat
                         </div>
                       ) : null;
                     })()}
@@ -304,9 +304,9 @@ export function ActivityForm({
             )}
 
             <div className="space-y-2">
-              <Label>Notes</Label>
+              <Label>Catatan</Label>
               <Textarea
-                placeholder="Add notes about this activity..."
+                placeholder="Tambah catatan mengenai aktiviti ini..."
                 value={activityDetails.notes}
                 onChange={(e) => setActivityDetails((prev) => ({ ...prev, notes: e.target.value }))}
                 className="border-gray-200/60"
@@ -320,19 +320,19 @@ export function ActivityForm({
             />
 
             <div className="space-y-2">
-              <Label>Evaluation <span className="text-red-500">*</span></Label>
+              <Label>Penilaian <span className="text-red-500">*</span></Label>
               <Select
                 value={activityDetails.evaluation}
                 onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, evaluation: value }))}
               >
                 <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                  <SelectValue placeholder="Select evaluation..." />
+                  <SelectValue placeholder="Pilih penilaian..." />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
-                  <SelectItem value="excellent" className="cursor-pointer">Excellent</SelectItem>
-                  <SelectItem value="good" className="cursor-pointer">Good</SelectItem>
-                  <SelectItem value="fair" className="cursor-pointer">Fair</SelectItem>
-                  <SelectItem value="needs_improvement" className="cursor-pointer">Needs Improvement</SelectItem>
+                  <SelectItem value="excellent" className="cursor-pointer">Cemerlang</SelectItem>
+                  <SelectItem value="good" className="cursor-pointer">Baik</SelectItem>
+                  <SelectItem value="fair" className="cursor-pointer">Sederhana</SelectItem>
+                  <SelectItem value="needs_improvement" className="cursor-pointer">Perlu Diperbaiki</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -353,8 +353,8 @@ export function ActivityForm({
               }
             >
               <Save className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Save Activity</span>
-              <span className="sm:hidden">Save</span>
+              <span className="hidden sm:inline">Simpan Aktiviti</span>
+              <span className="sm:hidden">Simpan</span>
             </Button>
           </>
         )}

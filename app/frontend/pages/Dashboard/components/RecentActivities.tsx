@@ -101,22 +101,22 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
           <div>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
-              Recent Activities
+              Aktiviti Terkini
             </CardTitle>
-            <CardDescription>Student memorization activities in the last few hours</CardDescription>
+            <CardDescription>Aktiviti hafalan pelajar dalam beberapa jam terakhir</CardDescription>
           </div>
           {totalActivitiesCount > 5 && (
             <Dialog open={isOpen} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="cursor-pointer border-gray-200/60">
-                  View All ({totalActivitiesCount})
+                  Lihat Semua ({totalActivitiesCount})
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>All Recent Activities</DialogTitle>
+                  <DialogTitle>Semua Aktiviti Terkini</DialogTitle>
                   <DialogDescription>
-                    Complete history of student memorization and revision activities
+                    Sejarah lengkap aktiviti hafalan dan murajaah pelajar
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -168,18 +168,18 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                           </div>
                           <div>
-                            <span className="font-medium">Pages:</span> {activity.page_from}-{activity.page_to}
+                            <span className="font-medium">Muka Surat:</span> {activity.page_from}-{activity.page_to}
                           </div>
                           <div>
-                            <span className="font-medium">Juz:</span> {activity.juz || 'N/A'}
+                            <span className="font-medium">Juz:</span> {activity.juz || 'T/A'}
                           </div>
                           <div>
-                            <span className="font-medium">Time:</span> {activity.time}
+                            <span className="font-medium">Masa:</span> {activity.time}
                           </div>
                         </div>
                         {activity.notes && (
                           <div className="text-xs text-muted-foreground">
-                            <span className="font-medium">Notes:</span> {activity.notes}
+                            <span className="font-medium">Catatan:</span> {activity.notes}
                           </div>
                         )}
                         {activity.audio_url && (
@@ -206,10 +206,10 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                         {isLoading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Loading...
+                            Memuatkan...
                           </>
                         ) : (
-                          `Load More (${totalActivitiesCount - allActivities.length} remaining)`
+                          `Muatkan Lagi (${totalActivitiesCount - allActivities.length} lagi)`
                         )}
                       </Button>
                     </div>
@@ -265,15 +265,15 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
         {activities.length === 0 && (
           <div className="text-center py-8">
             <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No recent activities found</p>
-            <p className="text-sm text-muted-foreground">Activities will appear here when students start memorizing</p>
+            <p className="text-muted-foreground">Tiada aktiviti terkini dijumpai</p>
+            <p className="text-sm text-muted-foreground">Aktiviti akan muncul di sini apabila pelajar mula menghafal</p>
           </div>
         )}
         {totalActivitiesCount > 5 && (
           <div className="text-center pt-4 border-t border-gray-200">
             <p className="text-xs text-muted-foreground">
-              Showing 5 most recent activities. 
-              <span className="font-medium"> {totalActivitiesCount - 5} more activities available.</span>
+              Menunjukkan 5 aktiviti terkini. 
+              <span className="font-medium"> {totalActivitiesCount - 5} aktiviti lagi tersedia.</span>
             </p>
           </div>
         )}

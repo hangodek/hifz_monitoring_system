@@ -42,8 +42,8 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
   return (
     <Card className="border-gray-200/60 shadow-lg">
       <CardHeader>
-        <CardTitle>Select Student</CardTitle>
-        <CardDescription>Choose student for hifz session</CardDescription>
+        <CardTitle>Pilih Pelajar</CardTitle>
+        <CardDescription>Pilih pelajar untuk sesi hafalan</CardDescription>
       </CardHeader>
       <CardContent>
         <Popover open={open} onOpenChange={setOpen}>
@@ -56,7 +56,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             >
               {selectedStudent
                 ? students.find((student) => student.id === selectedStudent)?.name
-                : "Select student..."}
+                : "Pilih pelajar..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -64,7 +64,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             <div className="flex items-center border-b px-3">
               <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
               <Input
-                placeholder="Search students..."
+                placeholder="Cari pelajar..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-10 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -73,7 +73,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             <div className="max-h-[300px] overflow-y-auto p-1">
               {filteredStudents.length === 0 && (
                 <div className="py-6 text-center text-sm text-muted-foreground">
-                  No student found.
+                  Tiada pelajar dijumpai.
                 </div>
               )}
               {filteredStudents.map((student) => (

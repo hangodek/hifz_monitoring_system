@@ -25,9 +25,9 @@ export function TopStudentsRanking({ students }: TopStudentsRankingProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Award className="h-5 w-5" />
-          Top Students Ranking
+          Kedudukan Pelajar Terbaik
         </CardTitle>
-        <CardDescription>Top 10 students with most memorization this month</CardDescription>
+        <CardDescription>10 pelajar terbaik dengan hafalan terbanyak bulan ini</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
         {students.map((student, index) => (

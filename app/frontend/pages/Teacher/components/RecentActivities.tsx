@@ -41,15 +41,15 @@ interface RecentActivitiesProps {
 }
 
 const gradeLabels = {
-  excellent: "Excellent",
-  good: "Good", 
-  fair: "Fair",
-  needs_improvement: "Needs Improvement"
+  excellent: "Cemerlang",
+  good: "Baik", 
+  fair: "Sederhana",
+  needs_improvement: "Perlu Diperbaiki"
 }
 
 const activityLabels = {
-  memorization: "Memorization",
-  revision: "Revision"
+  memorization: "Hafalan",
+  revision: "Murajaah"
 }
 
 export function RecentActivities({ currentStudent, activityTypes, recentActivities }: RecentActivitiesProps) {
@@ -67,11 +67,11 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
     const now = new Date()
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
     
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
+    if (diffInHours < 1) return "Baru sahaja"
+    if (diffInHours < 24) return `${diffInHours} jam yang lalu`
     
     const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
+    if (diffInDays < 7) return `${diffInDays} hari yang lalu`
     
     return date.toLocaleDateString()
   }
@@ -79,12 +79,12 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
   return (
     <Card className="border-gray-200/60 shadow-lg">
       <CardHeader>
-        <CardTitle>Recent Activities</CardTitle>
+        <CardTitle>Aktiviti Terkini</CardTitle>
         <CardDescription>{currentStudent.name}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {studentActivities.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No recent activities found.</p>
+          <p className="text-sm text-muted-foreground">Tiada aktiviti terkini dijumpai.</p>
         ) : (
           studentActivities.map((activity) => {
             const activityType = activityTypes.find((t) => t.value === activity.activity_type)

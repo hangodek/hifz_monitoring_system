@@ -263,12 +263,12 @@ export default function StudentShow({ student, recent_activities, total_activiti
         <Card>
           <CardContent className="text-center py-12">
             <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Siswa tidak ditemukan</h3>
-            <p className="text-muted-foreground">Kembali ke daftar siswa atau dashboard.</p>
+            <h3 className="text-lg font-medium mb-2">Pelajar tidak dijumpai</h3>
+            <p className="text-muted-foreground">Kembali ke senarai pelajar atau papan pemuka.</p>
             <div className="mt-4 flex gap-2 justify-center">
-              <Button onClick={() => router.visit("/students")} className="cursor-pointer">Daftar Siswa</Button>
+              <Button onClick={() => router.visit("/students")} className="cursor-pointer">Senarai Pelajar</Button>
               <Button variant="outline" onClick={() => router.visit("/dashboard")} className="cursor-pointer">
-                Dashboard
+                Papan Pemuka
               </Button>
             </div>
           </CardContent>
@@ -283,8 +283,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Progress {student?.name}</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Student's memorization progress and activity details</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Kemajuan {student?.name}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Kemajuan hafalan dan butiran aktiviti pelajar</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
             <Button
@@ -293,7 +293,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
               onClick={() => router.visit(`/students/${student.id}/edit`)}
             >
               <Edit className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Edit Student</span>
+              <span className="hidden sm:inline">Edit Pelajar</span>
               <span className="sm:hidden">Edit</span>
             </Button>
             <Button
@@ -302,8 +302,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
               onClick={() => router.visit('/students')}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Back to Students</span>
-              <span className="sm:hidden">Back</span>
+              <span className="hidden sm:inline">Kembali ke Senarai Pelajar</span>
+              <span className="sm:hidden">Kembali</span>
             </Button>
           </div>
         </div>
@@ -322,10 +322,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
               </Avatar>
               <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold">{student.name}</h2>
-                <p className="text-muted-foreground">Currently memorizing: {student.current_hifz_in_surah}</p>
-                <p className="text-muted-foreground">Juz {student.current_hifz_in_juz} of 30 Juz</p>
+                <p className="text-muted-foreground">Sedang menghafal: {student.current_hifz_in_surah}</p>
+                <p className="text-muted-foreground">Juz {student.current_hifz_in_juz} daripada 30 Juz</p>
                 <div className="mt-2">
-                  <div className="text-sm text-muted-foreground">{student.current_hifz_in_pages} pages memorized</div>
+                  <div className="text-sm text-muted-foreground">{student.current_hifz_in_pages} muka surat dihafal</div>
                 </div>
               </div>
             </div>
@@ -337,55 +337,55 @@ export default function StudentShow({ student, recent_activities, total_activiti
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <User className="h-5 w-5" />
-              Student Details
+              Butiran Pelajar
             </CardTitle>
-            <CardDescription className="text-sm">Complete data and contact information</CardDescription>
+            <CardDescription className="text-sm">Data lengkap dan maklumat hubungan</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Full Name</label>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Penuh</label>
                   <p className="text-sm sm:text-base mt-1">{student.name}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Gender</label>
-                  <p className="text-sm sm:text-base mt-1">{student.gender === 'male' ? 'Male' : 'Female'}</p>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Jantina</label>
+                  <p className="text-sm sm:text-base mt-1">{student.gender === 'male' ? 'Lelaki' : 'Perempuan'}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Place, Date of Birth</label>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Tempat, Tarikh Lahir</label>
                   <p className="text-sm sm:text-base mt-1">
                     {student.birth_place}, {student.birth_date}
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Address</label>
-                  <p className="text-sm sm:text-base mt-1">{student.address || 'Not provided'}</p>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Alamat</label>
+                  <p className="text-sm sm:text-base mt-1">{student.address || 'Tidak diberikan'}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Class</label>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Kelas</label>
                   <p className="text-sm sm:text-base mt-1">{student.class_level}</p>
                 </div>
               </div>
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Father's Name</label>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Bapa</label>
                   <p className="text-sm sm:text-base mt-1">{student.father_name}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Mother's Name</label>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Ibu</label>
                   <p className="text-sm sm:text-base mt-1">{student.mother_name}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Father's Phone</label>
-                  <p className="text-sm sm:text-base mt-1">{student.father_phone || 'Not provided'}</p>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Telefon Bapa</label>
+                  <p className="text-sm sm:text-base mt-1">{student.father_phone || 'Tidak diberikan'}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Mother's Phone</label>
-                  <p className="text-sm sm:text-base mt-1">{student.mother_phone || 'Not provided'}</p>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Telefon Ibu</label>
+                  <p className="text-sm sm:text-base mt-1">{student.mother_phone || 'Tidak diberikan'}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Date Joined</label>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Tarikh Menyertai</label>
                   <p className="text-sm sm:text-base mt-1">{student.date_joined}</p>
                 </div>
               </div>
@@ -397,25 +397,25 @@ export default function StudentShow({ student, recent_activities, total_activiti
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="border-gray-200/60 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today's Submission</CardTitle>
+              <CardTitle className="text-sm font-medium">Penyerahan Hari Ini</CardTitle>
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {todaySubmissions} <span className="text-lg font-normal text-muted-foreground">Activities</span>
+                {todaySubmissions} <span className="text-lg font-normal text-muted-foreground">Aktiviti</span>
               </div>
-              <p className="text-xs text-muted-foreground">Submissions today</p>
+              <p className="text-xs text-muted-foreground">Penyerahan hari ini</p>
             </CardContent>
           </Card>
 
           <Card className="border-gray-200/60 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Current Progress</CardTitle>
+              <CardTitle className="text-sm font-medium">Kemajuan Semasa</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-muted-foreground">Juz {student?.current_hifz_in_juz || 0} • {student?.current_hifz_in_pages || 0} pages memorized</p>
+              <p className="text-xs text-muted-foreground">Juz {student?.current_hifz_in_juz || 0} • {student?.current_hifz_in_pages || 0} muka surat dihafal</p>
             </CardContent>
           </Card>
         </div>
@@ -427,9 +427,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <CalendarIcon className="h-5 w-5" />
-                  Daily Submissions
+                  Penyerahan Harian
                 </CardTitle>
-                <CardDescription>{student?.name}'s daily memorization submissions</CardDescription>
+                <CardDescription>Penyerahan hafalan harian {student?.name}</CardDescription>
               </div>
               <Popover>
                 <PopoverTrigger asChild>
@@ -443,7 +443,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <PopoverContent className="w-auto p-0 border-gray-200/60" align="end">
                   <div className="p-4 space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Start Date</label>
+                      <label className="text-sm font-medium">Tarikh Mula</label>
                       <Calendar
                         mode="single"
                         selected={dateRange.from}
@@ -453,7 +453,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">End Date</label>
+                      <label className="text-sm font-medium">Tarikh Akhir</label>
                       <Calendar
                         mode="single"
                         selected={dateRange.to}
@@ -572,11 +572,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-green-500"></div>
-                <span>Actual Progress</span>
+                <span>Kemajuan Sebenar</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
-                <span>Projected Progress</span>
+                <span>Unjuran Kemajuan</span>
               </div>
             </div>
           </CardContent>
@@ -634,9 +634,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5" />
-                Performance Distribution
+                Taburan Prestasi
               </CardTitle>
-              <CardDescription>Quality of memorization activities</CardDescription>
+              <CardDescription>Kualiti aktiviti hafalan</CardDescription>
             </CardHeader>
             <CardContent>
               {grade_distribution && grade_distribution.length > 0 ? (
@@ -666,8 +666,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <div className="flex items-center justify-center h-[300px] text-center">
                   <div>
                     <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No performance data available</p>
-                    <p className="text-sm text-muted-foreground">Data will appear when activities are graded</p>
+                    <p className="text-muted-foreground">Tiada data prestasi tersedia</p>
+                    <p className="text-sm text-muted-foreground">Data akan muncul apabila aktiviti diberi gred</p>
                   </div>
                 </div>
               )}
@@ -679,9 +679,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Activity Types
+                Jenis Aktiviti
               </CardTitle>
-              <CardDescription>Memorization vs Revision balance</CardDescription>
+              <CardDescription>Imbangan hafalan vs murajaah</CardDescription>
             </CardHeader>
             <CardContent>
               {type_distribution && type_distribution.length > 0 ? (
@@ -701,7 +701,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                       ))}
                     </Pie>
                     <Tooltip 
-                      formatter={(value, name) => [`${value} activities`, name]}
+                      formatter={(value, name) => [`${value} aktiviti`, name]}
                     />
                     <Legend />
                   </PieChart>
@@ -710,8 +710,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <div className="flex items-center justify-center h-[300px] text-center">
                   <div>
                     <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No activity data available</p>
-                    <p className="text-sm text-muted-foreground">Data will appear when activities are recorded</p>
+                    <p className="text-muted-foreground">Tiada data aktiviti tersedia</p>
+                    <p className="text-sm text-muted-foreground">Data akan muncul apabila aktiviti direkodkan</p>
                   </div>
                 </div>
               )}
@@ -731,8 +731,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
                     <BarChart3 className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-blue-800">Charts Available on Larger Screens</p>
-                    <p className="text-xs text-blue-600">View detailed analytics and progress charts on tablet or desktop</p>
+                    <p className="text-sm font-medium text-blue-800">Carta Tersedia pada Skrin Lebih Besar</p>
+                    <p className="text-xs text-blue-600">Lihat analitik terperinci dan carta kemajuan pada tablet atau desktop</p>
                   </div>
                 </div>
               </CardContent>
@@ -744,27 +744,27 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
-                Student Statistics
+                Statistik Pelajar
               </CardTitle>
-              <CardDescription>Summary of {student?.name}'s achievements</CardDescription>
+              <CardDescription>Ringkasan pencapaian {student?.name}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
                   <div className="text-lg font-bold text-purple-600 truncate">{student?.current_hifz_in_surah}</div>
-                  <div className="text-sm text-muted-foreground">Current Surah</div>
+                  <div className="text-sm text-muted-foreground">Surah Semasa</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{student?.current_hifz_in_juz}</div>
-                  <div className="text-sm text-muted-foreground">Current Juz</div>
+                  <div className="text-sm text-muted-foreground">Juz Semasa</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">{student?.current_hifz_in_pages}</div>
-                  <div className="text-sm text-muted-foreground">Current Pages</div>
+                  <div className="text-sm text-muted-foreground">Halaman Semasa</div>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">{total_activities}</div>
-                  <div className="text-sm text-muted-foreground">Total Submissions</div>
+                  <div className="text-sm text-muted-foreground">Jumlah Penyerahan</div>
                 </div>
               </div>
             </CardContent>
@@ -777,22 +777,22 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    Recent Activities
+                    Aktiviti Terkini
                   </CardTitle>
-                  <CardDescription>Latest activities of {student?.name}</CardDescription>
+                  <CardDescription>Aktiviti terkini {student?.name}</CardDescription>
                 </div>
                 {total_activities_count > 5 && (
                   <Dialog open={isOpen} onOpenChange={handleOpenChange}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="cursor-pointer border-gray-200/60">
-                        View All ({total_activities_count})
+                        Lihat Semua ({total_activities_count})
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                       <DialogHeader>
-                        <DialogTitle>All Activities - {student?.name}</DialogTitle>
+                        <DialogTitle>Semua Aktiviti - {student?.name}</DialogTitle>
                         <DialogDescription>
-                          Complete history of memorization and revision activities
+                          Sejarah lengkap aktiviti hafalan dan murajaah
                         </DialogDescription>
                       </DialogHeader>
                       
@@ -928,15 +928,15 @@ export default function StudentShow({ student, recent_activities, total_activiti
               {recent_activities.length === 0 && (
                 <div className="text-center py-8">
                   <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No recent activities found</p>
-                  <p className="text-sm text-muted-foreground">Activities will appear here when the student starts memorizing</p>
+                  <p className="text-muted-foreground">Tiada aktiviti terkini dijumpai</p>
+                  <p className="text-sm text-muted-foreground">Aktiviti akan muncul di sini apabila pelajar mula menghafal</p>
                 </div>
               )}
               {total_activities_count > 5 && (
                 <div className="text-center pt-4 border-t border-gray-200">
                   <p className="text-xs text-muted-foreground">
-                    Showing 5 most recent activities. 
-                    <span className="font-medium"> {total_activities_count - 5} more activities available.</span>
+                    Menunjukkan 5 aktiviti terkini. 
+                    <span className="font-medium"> {total_activities_count - 5} aktiviti lagi tersedia.</span>
                   </p>
                 </div>
               )}

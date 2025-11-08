@@ -27,9 +27,9 @@ export function ProgressChart({ data }: ProgressChartProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
-          Monthly Revision & Memorization Progress
+          Kemajuan Murajaah & Hafalan Bulanan
         </CardTitle>
-        <CardDescription>Monthly activities by all students</CardDescription>
+        <CardDescription>Aktiviti bulanan semua pelajar</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>
@@ -56,14 +56,14 @@ export function ProgressChart({ data }: ProgressChartProps) {
               dataKey="revision" 
               stroke="#10b981" 
               strokeWidth={3} 
-              name="Revision Activities" 
+              name="Aktiviti Murajaah" 
             />
             <Line 
               type="monotone" 
               dataKey="memorization" 
               stroke="#3b82f6" 
               strokeWidth={3} 
-              name="Memorization Activities" 
+              name="Aktiviti Hafalan" 
             />
           </LineChart>
         </ResponsiveContainer>

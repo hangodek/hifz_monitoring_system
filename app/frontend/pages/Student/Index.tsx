@@ -69,15 +69,15 @@ export default function StudentsIndex({ students }: StudentsIndexProps) {
   const getStatusBadge = (status: string) => {
     return status === "active" ? (
       <Badge variant="default" className="bg-green-100 text-green-800">
-        Active
+        Aktif
       </Badge>
     ) : status === "graduated" ? (
       <Badge variant="default" className="bg-orange-100 text-orange-800">
-        Graduated
+        Lulus
       </Badge>
     ) : (
       <Badge variant="secondary" className="bg-red-100 text-red-800">
-        Inactive
+        Tidak Aktif
       </Badge>
     )
   }

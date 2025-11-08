@@ -17,40 +17,40 @@ export function StatsCards({ stats }: StatsCardsProps) {
     <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       <Card className="border-gray-200/60 shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Today's Submissions</CardTitle>
+          <CardTitle className="text-sm font-medium">Penyerahan Hari Ini</CardTitle>
           <CalendarIcon className="h-4 w-4 text-blue-500" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-blue-600">
-            {stats.today_submissions} <span className="text-lg font-normal text-blue-500">Submissions</span>
+            {stats.today_submissions} <span className="text-lg font-normal text-blue-500">Penyerahan</span>
           </div>
-          <p className="text-xs text-muted-foreground">Student activities recorded by teachers</p>
+          <p className="text-xs text-muted-foreground">Aktiviti pelajar yang direkodkan oleh guru</p>
         </CardContent>
       </Card>
 
       <Card className="border-gray-200/60 shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Students Doing Revision Today</CardTitle>
+          <CardTitle className="text-sm font-medium">Pelajar Sedang Murajaah Hari Ini</CardTitle>
           <BookOpen className="h-4 w-4 text-green-500" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-green-600">
             {stats.students_revising_today}<span className="text-lg font-normal text-green-500"> / {stats.total_active_students}</span>
           </div>
-          <p className="text-xs text-muted-foreground">Active students practicing review</p>
+          <p className="text-xs text-muted-foreground">Pelajar aktif berlatih ulang kaji</p>
         </CardContent>
       </Card>
       
       <Card className="border-gray-200/60 shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Students Memorizing Today</CardTitle>
+          <CardTitle className="text-sm font-medium">Pelajar Sedang Menghafal Hari Ini</CardTitle>
           <BookOpen className="h-4 w-4 text-orange-500" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-orange-600">
             {stats.students_memorizing_today}<span className="text-lg font-normal text-orange-500"> / {stats.total_active_students}</span>
           </div>
-          <p className="text-xs text-muted-foreground">Active students learning new verses</p>
+          <p className="text-xs text-muted-foreground">Pelajar aktif menghafal ayat baharu</p>
         </CardContent>
       </Card>
     </div>

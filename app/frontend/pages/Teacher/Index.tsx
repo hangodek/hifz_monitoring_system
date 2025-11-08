@@ -14,8 +14,8 @@ import {
 
 // Activity types
 const activityTypes = [
-  { value: "memorization", label: "Memorization", icon: BookOpen, color: "bg-blue-500" },
-  { value: "revision", label: "Revision", icon: Star, color: "bg-green-500" },
+  { value: "memorization", label: "Hafalan", icon: BookOpen, color: "bg-blue-500" },
+  { value: "revision", label: "Murajaah", icon: Star, color: "bg-green-500" },
 ]
 
 // Surah list for reference
