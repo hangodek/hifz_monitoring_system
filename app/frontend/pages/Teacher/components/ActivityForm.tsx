@@ -341,7 +341,7 @@ export function ActivityForm({
 
             <Button 
               onClick={handleSubmit} 
-              className="w-full cursor-pointer text-sm sm:text-base"
+              className="w-full cursor-pointer text-sm sm:text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               disabled={
                 !selectedStudent || 
                 !activityType || 

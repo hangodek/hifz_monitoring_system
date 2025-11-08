@@ -794,8 +794,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2 text-slate-900">
-                    <div className="h-10 w-10 rounded-full bg-slate-500/20 flex items-center justify-center">
-                      <Clock className="h-5 w-5 text-slate-600" />
+                    <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-indigo-600" />
                     </div>
                     Aktiviti Terkini
                   </CardTitle>
@@ -822,15 +822,15 @@ export default function StudentShow({ student, recent_activities, total_activiti
                         </div>
                       ) : (
                         <div className="space-y-4 mt-4">
-                          {allActivities.map((activity, index) => (
-                          <div key={activity.id} className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg">
+                          {allActivities.map((activity) => (
+                          <div key={activity.id} className="flex items-start space-x-3 p-4 border-0 bg-gradient-to-r from-white to-slate-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                             <div
                               className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
                                 activity.type === "memorization"
-                                  ? "bg-blue-500"
+                                  ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
                                   : activity.type === "revision"
-                                    ? "bg-green-500"
-                                    : "bg-gray-500"
+                                    ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
+                                    : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
                               }`}
                             >
                               {activity.type === "memorization" ? (
@@ -910,15 +910,15 @@ export default function StudentShow({ student, recent_activities, total_activiti
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recent_activities.map((activity, index) => (
-                <div key={activity.id} className="flex items-start space-x-3">
+              {recent_activities.map((activity) => (
+                <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-colors duration-200">
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs ${
                       activity.type === "memorization"
-                        ? "bg-blue-500"
+                        ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
                         : activity.type === "revision"
-                          ? "bg-green-500"
-                          : "bg-gray-500"
+                          ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
+                          : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
                     }`}
                   >
                     {activity.type === "memorization" ? (

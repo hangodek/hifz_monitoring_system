@@ -166,7 +166,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
                 disabled={disabled}
                 variant={isRecording ? "destructive" : "default"}
                 size="lg"
-                className="cursor-pointer"
+                className={`cursor-pointer ${!isRecording ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700' : ''}`}
               >
                 {isRecording ? (
                   <>
