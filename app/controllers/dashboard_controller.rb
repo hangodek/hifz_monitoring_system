@@ -126,7 +126,7 @@ class DashboardController < ApplicationController
                                     activity: format_activity_description(activity),
                                     time: time_ago_in_words(activity.created_at) + " ago",
                                     type: activity.activity_type,
-                                    grade: activity.activity_grade.humanize,
+                                    grade: translate_grade(activity.activity_grade),
                                     surah_from: activity.surah_from,
                                     surah_to: activity.surah_to,
                                     page_from: activity.page_from,
@@ -153,6 +153,16 @@ class DashboardController < ApplicationController
   def calculate_progress(current_juz)
     # Calculate progress as percentage (30 Juz = 100%)
     ((current_juz.to_f / 30) * 100).round
+  end
+
+  def translate_grade(grade)
+    translations = {
+      'excellent' => 'Cemerlang',
+      'good' => 'Baik',
+      'fair' => 'Sederhana',
+      'needs_improvement' => 'Perlu Diperbaiki'
+    }
+    translations[grade] || grade.humanize
   end
 
   def format_activity_description(activity)

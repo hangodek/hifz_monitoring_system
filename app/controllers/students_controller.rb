@@ -104,7 +104,7 @@ class StudentsController < ApplicationController
                                     activity: format_activity_description(activity),
                                     time: time_ago_in_words(activity.created_at) + " ago",
                                     type: activity.activity_type,
-                                    grade: activity.activity_grade.humanize,
+                                    grade: translate_grade(activity.activity_grade),
                                     surah_from: activity.surah_from,
                                     surah_to: activity.surah_to,
                                     page_from: activity.page_from,
@@ -171,6 +171,16 @@ class StudentsController < ApplicationController
 
   def student_params
     params.expect(student: [ :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :father_phone, :mother_phone, :date_joined ])
+  end
+
+  def translate_grade(grade)
+    translations = {
+      'excellent' => 'Cemerlang',
+      'good' => 'Baik',
+      'fair' => 'Sederhana',
+      'needs_improvement' => 'Perlu Diperbaiki'
+    }
+    translations[grade] || grade.humanize
   end
 
   def format_activity_description(activity)

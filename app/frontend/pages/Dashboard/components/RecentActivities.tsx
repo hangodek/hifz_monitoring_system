@@ -160,9 +160,9 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             </Link>
                             <p className="text-xs text-muted-foreground">{activity.activity}</p>
                           </div>
-                          <Badge variant={activity.grade === "Excellent" ? "default" : 
-                                        activity.grade === "Good" ? "secondary" : 
-                                        activity.grade === "Fair" ? "outline" : "destructive"}>
+                          <Badge variant={activity.grade === "Cemerlang" ? "default" : 
+                                        activity.grade === "Baik" ? "secondary" : 
+                                        activity.grade === "Sederhana" ? "outline" : "destructive"}>
                             {activity.grade}
                           </Badge>
                         </div>

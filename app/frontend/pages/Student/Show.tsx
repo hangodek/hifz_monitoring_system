@@ -846,9 +846,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
                             <div className="flex-1 space-y-2">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium">{activity.activity}</p>
-                                <Badge variant={activity.grade === "Excellent" ? "default" : 
-                                              activity.grade === "Good" ? "secondary" : 
-                                              activity.grade === "Fair" ? "outline" : "destructive"}>
+                                <Badge variant={activity.grade === "Cemerlang" ? "default" : 
+                                              activity.grade === "Baik" ? "secondary" : 
+                                              activity.grade === "Sederhana" ? "outline" : "destructive"}>
                                   {activity.grade}
                                 </Badge>
                               </div>
