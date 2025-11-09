@@ -106,7 +106,7 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
             return (
               <div key={activity.id} className="flex items-start space-x-2 sm:space-x-3">
                 <div
-                  className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white text-xs ${activityType?.color || 'bg-gray-500'}`}
+                  className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${activityType?.color || 'bg-gray-500'}`}
                 >
                   {activityType ? (
                     <activityType.icon className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -115,12 +115,16 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
                   )}
                 </div>
                 <div className="flex-1 space-y-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-medium truncate">{activityDescription}</p>
+                  <p className="text-xs sm:text-sm font-medium line-clamp-2" title={activityDescription}>
+                    {activityDescription}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {gradeLabels[activity.activity_grade as keyof typeof gradeLabels]} • {formatTimeAgo(activity.created_at)}
                   </p>
                   {activity.notes && (
-                    <p className="text-xs text-muted-foreground italic truncate">{activity.notes}</p>
+                    <p className="text-xs text-muted-foreground italic line-clamp-2" title={activity.notes}>
+                      {activity.notes}
+                    </p>
                   )}
                   {activity.audio_url && (
                     <div className="mt-1">

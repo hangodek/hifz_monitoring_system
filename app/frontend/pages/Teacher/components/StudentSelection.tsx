@@ -3,9 +3,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Check, ChevronsUpDown, Search, Users } from "lucide-react"
+import { Check, ChevronsUpDown, Search, Users, ExternalLink } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { Link } from "@inertiajs/react"
 
 interface Student {
   id: string
@@ -117,20 +118,34 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
 
         {currentStudent && (
           <div className="mt-4 p-3 sm:p-4 bg-blue-50 rounded-lg">
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>
-                  {currentStudent.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-sm sm:text-base font-semibold">{currentStudent.name}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">{currentStudent.class_level}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 sm:space-x-3 flex-1">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarFallback>
+                    {currentStudent.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <Link 
+                    href={`/students/${currentStudent.id}`}
+                    className="text-sm sm:text-base font-semibold hover:underline hover:text-blue-600 cursor-pointer block truncate"
+                  >
+                    {currentStudent.name}
+                  </Link>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{currentStudent.class_level}</p>
+                </div>
               </div>
+              <Link 
+                href={`/students/${currentStudent.id}`}
+                className="ml-2 p-2 hover:bg-blue-100 rounded-full transition-colors cursor-pointer flex-shrink-0"
+                title="Lihat profil lengkap"
+              >
+                <ExternalLink className="h-4 w-4 text-blue-600" />
+              </Link>
             </div>
           </div>
         )}
