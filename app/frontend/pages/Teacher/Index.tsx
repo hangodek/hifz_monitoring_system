@@ -184,15 +184,36 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
 
   const currentStudent = students.find((s) => s.id === selectedStudent)
 
-  // Auto-fill surahFrom, pageFrom, and juzFrom for memorization activity based on current student progress
+  // Reset form when activity type changes, then auto-fill for memorization
   useEffect(() => {
-    if (activityType === "memorization" && currentStudent) {
-      setActivityDetails((prev) => ({
-        ...prev,
-        surahFrom: currentStudent.current_hifz_in_surah || "",
-        pageFrom: currentStudent.current_hifz_in_pages || "",
-        juzFrom: currentStudent.current_hifz_in_juz || "",
-      }))
+    if (activityType) {
+      // Reset form first
+      setActivityDetails({
+        surahFrom: "",
+        surahTo: "",
+        pageFrom: "",
+        pageTo: "",
+        juz: "",
+        juzFrom: "",
+        juzTo: "",
+        notes: "",
+        evaluation: "",
+      })
+
+      // Then auto-fill for memorization
+      if (activityType === "memorization" && currentStudent) {
+        setActivityDetails({
+          surahFrom: currentStudent.current_hifz_in_surah || "",
+          surahTo: "",
+          pageFrom: currentStudent.current_hifz_in_pages || "",
+          pageTo: "",
+          juz: "",
+          juzFrom: currentStudent.current_hifz_in_juz || "",
+          juzTo: "",
+          notes: "",
+          evaluation: "",
+        })
+      }
     }
   }, [activityType, currentStudent])
 
