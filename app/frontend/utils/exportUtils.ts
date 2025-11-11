@@ -2,7 +2,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { format } from 'date-fns'
 import * as XLSX from 'xlsx'
-import matanLogo from '@/assets/matan_logo.jpeg'
+import matanLogo from '@/assets/matan_logo.png'
 
 interface Student {
   id: string
@@ -98,77 +98,109 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     }
   })
   
-  // Detailed class sections
-  sortedClasses.forEach((className) => {
-    const classStudents = studentsByClass[className]
+  // Helper function to create table for a status group
+  const createStatusTable = (students: Student[], className: string, statusLabel: string, statusColor: number[]) => {
+    if (students.length === 0) return
     
-    // Add new page for each class
     doc.addPage()
     
-    // Add logo at the top of each class page
+    // Add logo at the top
     doc.addImage(matanLogo, 'JPEG', pageWidth - 35, 10, 25, 25)
     
     // Class header
     doc.setFontSize(18)
     doc.setTextColor(40, 40, 40)
-    doc.text(`Kelas: ${className}`, 14, 25)
+    doc.text(`${className}`, 14, 25)
+    
+    doc.setFontSize(14)
+    doc.setTextColor(statusColor[0], statusColor[1], statusColor[2])
+    doc.text(`Pelajar ${statusLabel}`, 14, 37)
     
     doc.setFontSize(12)
     doc.setTextColor(100, 100, 100)
-    doc.text(`${classStudents.length} pelajar`, 14, 35)
+    doc.text(`${students.length} pelajar`, 14, 47)
     
-    // Class statistics
-    const activeInClass = classStudents.filter(s => s.status === 'active').length
-    const graduatedInClass = classStudents.filter(s => s.status === 'graduated').length
-    const inactiveInClass = classStudents.filter(s => s.status === 'inactive').length
-    
-    doc.text(`Aktif: ${activeInClass} | Lulus: ${graduatedInClass} | Tidak Aktif: ${inactiveInClass}`, 14, 45)
-    
-    // Sort students by status: graduated > active > inactive
-    const sortedClassStudents = classStudents.sort((a, b) => {
-      const statusOrder: Record<string, number> = { 'graduated': 0, 'active': 1, 'inactive': 2 }
-      return (statusOrder[a.status] || 3) - (statusOrder[b.status] || 3)
-    })
-
-    // Prepare table data for this class with Bahasa Malaysia
-    const tableData = sortedClassStudents.map((student, index) => [
+    // Prepare table data
+    const tableData = students.map((student, index) => [
       index + 1,
       student.name,
       student.gender === 'male' ? 'L' : 'P',
       `Juz ${student.current_hifz_in_juz}`,
       `${student.current_hifz_in_pages} halaman`,
-      student.status === 'active' ? 'Aktif' : student.status === 'graduated' ? 'Lulus' : 'Tidak Aktif',
       format(new Date(student.date_joined), 'dd/MM/yyyy')
     ])
     
-    // Create table for this class
+    // Create table
     autoTable(doc, {
-      head: [['No', 'Nama', 'Jantina', 'Juz Semasa', 'Halaman', 'Status', 'Tarikh Menyertai']],
+      head: [['No', 'Nama', 'Jantina', 'Juz Semasa', 'Halaman', 'Tarikh Menyertai']],
       body: tableData,
-      startY: 55,
+      startY: 57,
       styles: {
         fontSize: 8,
         cellPadding: 2,
       },
       headStyles: {
-        fillColor: [59, 130, 246], // Blue color
+        fillColor: statusColor,
         textColor: [255, 255, 255],
         fontStyle: 'bold',
       },
       alternateRowStyles: {
-        fillColor: [248, 250, 252], // Light gray
+        fillColor: [248, 250, 252],
       },
       columnStyles: {
-        0: { cellWidth: 15 }, // No
-        1: { cellWidth: 50 }, // Nama
-        2: { cellWidth: 20 }, // Jantina
-        3: { cellWidth: 25 }, // Juz Semasa
-        4: { cellWidth: 25 }, // Halaman
-        5: { cellWidth: 25 }, // Status
-        6: { cellWidth: 25 }, // Tarikh Menyertai
+        0: { cellWidth: 15 },
+        1: { cellWidth: 55 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 30 },
+        4: { cellWidth: 30 },
+        5: { cellWidth: 30 },
       },
-      margin: { top: 55 },
+      margin: { top: 57 },
     })
+  }
+  
+  // Section 1: All classes - Active students only (sorted by hafalan)
+  sortedClasses.forEach((className) => {
+    const classStudents = studentsByClass[className]
+    const activeStudentsInClass = classStudents.filter(s => s.status === 'active')
+    
+    // Sort active students by hafalan (highest to lowest)
+    const sortedActiveStudents = activeStudentsInClass.sort((a, b) => {
+      const juzA = parseInt(a.current_hifz_in_juz) || 0
+      const juzB = parseInt(b.current_hifz_in_juz) || 0
+      
+      if (juzA !== juzB) {
+        return juzB - juzA
+      }
+      
+      const pagesA = parseInt(a.current_hifz_in_pages) || 0
+      const pagesB = parseInt(b.current_hifz_in_pages) || 0
+      return pagesB - pagesA
+    })
+    
+    if (sortedActiveStudents.length > 0) {
+      createStatusTable(sortedActiveStudents, className, 'Aktif', [34, 197, 94])
+    }
+  })
+  
+  // Section 2: All classes - Inactive students
+  sortedClasses.forEach((className) => {
+    const classStudents = studentsByClass[className]
+    const inactiveStudentsInClass = classStudents.filter(s => s.status === 'inactive')
+    
+    if (inactiveStudentsInClass.length > 0) {
+      createStatusTable(inactiveStudentsInClass, className, 'Tidak Aktif', [156, 163, 175])
+    }
+  })
+  
+  // Section 3: All classes - Graduated students
+  sortedClasses.forEach((className) => {
+    const classStudents = studentsByClass[className]
+    const graduatedStudentsInClass = classStudents.filter(s => s.status === 'graduated')
+    
+    if (graduatedStudentsInClass.length > 0) {
+      createStatusTable(graduatedStudentsInClass, className, 'Lulus', [59, 130, 246])
+    }
   })
   
   // Footer
