@@ -126,12 +126,14 @@ class DashboardController < ApplicationController
                                     activity: format_activity_description(activity),
                                     time: time_ago_in_words(activity.created_at) + " ago",
                                     type: activity.activity_type,
-                                    grade: activity.activity_grade.humanize,
+                                    grade: translate_grade(activity.activity_grade),
                                     surah_from: activity.surah_from,
                                     surah_to: activity.surah_to,
                                     page_from: activity.page_from,
                                     page_to: activity.page_to,
                                     juz: activity.juz,
+                                    juz_from: activity.juz_from,
+                                    juz_to: activity.juz_to,
                                     notes: activity.notes,
                                     audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
                                   }
@@ -153,12 +155,22 @@ class DashboardController < ApplicationController
     ((current_juz.to_f / 30) * 100).round
   end
 
+  def translate_grade(grade)
+    translations = {
+      'excellent' => 'Cemerlang',
+      'good' => 'Baik',
+      'fair' => 'Sederhana',
+      'needs_improvement' => 'Perlu Diperbaiki'
+    }
+    translations[grade] || grade.humanize
+  end
+
   def format_activity_description(activity)
-    type_text = activity.activity_type == "memorization" ? "Memorized" : "Reviewed"
+    type_text = activity.activity_type == "memorization" ? "Menghafal" : "Murajaah"
     if activity.surah_from == activity.surah_to
-      "#{type_text} #{activity.surah_from} pages #{activity.page_from}-#{activity.page_to}"
+      "#{type_text} #{activity.surah_from} muka surat #{activity.page_from}-#{activity.page_to}"
     else
-      "#{type_text} from #{activity.surah_from} to #{activity.surah_to}"
+      "#{type_text} dari #{activity.surah_from} hingga #{activity.surah_to}"
     end
   end
 end

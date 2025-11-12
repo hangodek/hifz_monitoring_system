@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   BookOpen,
   Star,
@@ -14,8 +14,8 @@ import {
 
 // Activity types
 const activityTypes = [
-  { value: "memorization", label: "Memorization", icon: BookOpen, color: "bg-blue-500" },
-  { value: "revision", label: "Revision", icon: Star, color: "bg-green-500" },
+  { value: "memorization", label: "Hafalan", icon: BookOpen, color: "bg-blue-500" },
+  { value: "revision", label: "Murajaah", icon: Star, color: "bg-green-500" },
 ]
 
 // Surah list for reference
@@ -154,6 +154,8 @@ type TeacherIndexProps = {
     page_from: number
     page_to: number
     juz: number | null
+    juz_from: number | null
+    juz_to: number | null
     notes: string | null
     created_at: string
     student: {
@@ -174,11 +176,46 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
     pageFrom: "",
     pageTo: "",
     juz: "",
+    juzFrom: "",
+    juzTo: "",
     notes: "",
     evaluation: "",
   })
 
   const currentStudent = students.find((s) => s.id === selectedStudent)
+
+  // Reset form when activity type changes, then auto-fill for memorization
+  useEffect(() => {
+    if (activityType) {
+      // Reset form first
+      setActivityDetails({
+        surahFrom: "",
+        surahTo: "",
+        pageFrom: "",
+        pageTo: "",
+        juz: "",
+        juzFrom: "",
+        juzTo: "",
+        notes: "",
+        evaluation: "",
+      })
+
+      // Then auto-fill for memorization
+      if (activityType === "memorization" && currentStudent) {
+        setActivityDetails({
+          surahFrom: currentStudent.current_hifz_in_surah || "",
+          surahTo: "",
+          pageFrom: currentStudent.current_hifz_in_pages || "",
+          pageTo: "",
+          juz: "",
+          juzFrom: currentStudent.current_hifz_in_juz || "",
+          juzTo: "",
+          notes: "",
+          evaluation: "",
+        })
+      }
+    }
+  }, [activityType, currentStudent])
 
   const handleSaveActivity = () => {
     // This function is now handled by the ActivityForm component itself
@@ -189,6 +226,8 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
       pageFrom: "",
       pageTo: "",
       juz: "",
+      juzFrom: "",
+      juzTo: "",
       notes: "",
       evaluation: "",
     })

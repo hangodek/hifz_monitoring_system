@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DatePicker } from "@/components/ui/date-picker"
-import { Target } from "lucide-react"
+import { BookOpen } from "lucide-react"
 
 interface StudentFormData {
   name: string
@@ -38,14 +38,16 @@ export function ProgramInformationForm({ formData, errors, handleInputChange }: 
   const selectedDateJoined = formData.date_joined ? new Date(formData.date_joined + 'T12:00:00') : undefined
 
   return (
-    <Card className="border-gray-200/60 shadow-lg">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-amber-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5" />
-          Program Information
+        <CardTitle className="flex items-center gap-2 text-amber-900">
+          <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+            <BookOpen className="h-5 w-5 text-amber-600" />
+          </div>
+          Maklumat Program Hifz
         </CardTitle>
         <CardDescription>
-          Tahfidz program settings and current progress
+          Butiran kemajuan hafalan Al-Quran pelajar
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -19,6 +19,8 @@ class TeachersController < ApplicationController
           page_from: activity.page_from,
           page_to: activity.page_to,
           juz: activity.juz,
+          juz_from: activity.juz_from,
+          juz_to: activity.juz_to,
           notes: activity.notes,
           created_at: activity.created_at.iso8601,
           audio_url: activity.audio.attached? ? url_for(activity.audio) : nil,

@@ -93,7 +93,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
 
     } catch (error) {
       console.error('Error starting recording:', error)
-      alert('Unable to access microphone. Please check permissions.')
+      alert('Tidak dapat mengakses mikrofon. Sila semak kebenaran.')
     }
   }
 
@@ -141,17 +141,19 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
   }
 
   return (
-    <Card className="border-gray-200/60">
+    <Card className="border-0 shadow-md bg-gradient-to-br from-white to-rose-50/30">
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Mic className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Audio Recording (Optional)</span>
+            <div className="h-8 w-8 rounded-full bg-rose-500/20 flex items-center justify-center">
+              <Mic className="h-4 w-4 text-rose-600" />
+            </div>
+            <span className="text-sm font-medium text-rose-900">Rakaman Audio (Pilihan)</span>
           </div>
           {hasRecording && (
             <Badge variant="secondary" className="text-xs">
               <Upload className="h-3 w-3 mr-1" />
-              Ready to upload
+              Sedia untuk dimuat naik
             </Badge>
           )}
         </div>
@@ -164,17 +166,17 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
                 disabled={disabled}
                 variant={isRecording ? "destructive" : "default"}
                 size="lg"
-                className="cursor-pointer"
+                className={`cursor-pointer ${!isRecording ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700' : ''}`}
               >
                 {isRecording ? (
                   <>
                     <Square className="h-4 w-4 mr-2" />
-                    Stop Recording
+                    Hentikan Rakaman
                   </>
                 ) : (
                   <>
                     <Mic className="h-4 w-4 mr-2" />
-                    Start Recording
+                    Mula Rakam
                   </>
                 )}
               </Button>
@@ -186,7 +188,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     <span className="text-sm text-muted-foreground">
-                      Recording... {formatTime(recordingTime)}
+                      Merakam... {formatTime(recordingTime)}
                     </span>
                   </div>
                 </div>
@@ -198,7 +200,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
-                Recording: {formatTime(recordingTime)}
+                Rakaman: {formatTime(recordingTime)}
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -236,7 +238,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
         )}
 
         <p className="text-xs text-muted-foreground">
-          Record student's recitation for quality assessment and future reference.
+          Rakam bacaan pelajar untuk penilaian kualiti dan rujukan masa hadapan.
         </p>
       </CardContent>
     </Card>

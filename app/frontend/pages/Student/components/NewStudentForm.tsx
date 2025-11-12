@@ -115,14 +115,16 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
   return (
     <div className="space-y-6">
       {/* Avatar Upload */}
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-indigo-50/30 hover:shadow-xl transition-shadow duration-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Student Photo
+          <CardTitle className="flex items-center gap-2 text-indigo-900">
+            <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+              <Upload className="h-5 w-5 text-indigo-600" />
+            </div>
+            Foto Pelajar
           </CardTitle>
           <CardDescription>
-            Upload a profile photo for the student
+            Muat naik foto profil untuk pelajar
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,7 +144,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 className="cursor-pointer"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {isEdit ? "Upload new photo to replace current (optional)" : "Recommended: Square image, max 5MB"}
+                {isEdit ? "Muat naik foto baharu untuk menggantikan yang sedia ada (pilihan)" : "Disyorkan: Imej segi empat sama, maksimum 5MB"}
               </p>
             </div>
           </div>
@@ -150,40 +152,42 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
       </Card>
 
       {/* Basic Information */}
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30 hover:shadow-xl transition-shadow duration-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Basic Information
+          <CardTitle className="flex items-center gap-2 text-blue-900">
+            <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <User className="h-5 w-5 text-blue-600" />
+            </div>
+            Maklumat Asas
           </CardTitle>
           <CardDescription>
-            Student's personal details
+            Butiran peribadi pelajar
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name *</Label>
+              <Label htmlFor="name">Nama Penuh *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Enter student's full name"
+                placeholder="Masukkan nama penuh pelajar"
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Gender *</Label>
+              <Label htmlFor="gender">Jantina *</Label>
               <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
                 <SelectTrigger className={`cursor-pointer border-gray-300/60 ${errors.gender ? "border-red-500" : ""}`}>
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder="Pilih jantina" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
                   {genders.map((gender) => (
                     <SelectItem key={gender} value={gender} className="cursor-pointer" >
-                      {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                      {gender === "male" ? "Lelaki" : "Perempuan"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -192,49 +196,49 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_place">Place of Birth *</Label>
+              <Label htmlFor="birth_place">Tempat Lahir *</Label>
               <Input
                 id="birth_place"
                 value={formData.birth_place}
                 onChange={(e) => handleInputChange("birth_place", e.target.value)}
-                placeholder="Enter place of birth"
+                placeholder="Masukkan tempat lahir"
                 className={errors.birth_place ? "border-red-500" : ""}
               />
               {errors.birth_place && <p className="text-sm text-red-500">{errors.birth_place}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Date of Birth *</Label>
+              <Label htmlFor="birth_date">Tarikh Lahir *</Label>
               <DatePicker
                 id="birth_date"
                 date={selectedBirthDate}
                 onDateChange={handleDateChange('birth_date')}
-                placeholder="Select date of birth"
+                placeholder="Pilih tarikh lahir"
                 className={`cursor-pointer border-gray-300/60 ${errors.birth_date ? "border-red-500" : ""}`}
               />
               {errors.birth_date && <p className="text-sm text-red-500">{errors.birth_date}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">Nombor Telefon</Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
-                placeholder="e.g., 081234567890"
+                placeholder="Contoh: 081234567890"
                 className={errors.phone ? "border-red-500" : ""}
               />
               {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">Alamat Emel</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="student@email.com"
+                placeholder="pelajar@email.com"
                 className={errors.email ? "border-red-500" : ""}
               />
               {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
@@ -242,12 +246,12 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">Alamat</Label>
             <Textarea
               id="address"
               value={formData.address}
               onChange={(e) => handleInputChange("address", e.target.value)}
-              placeholder="Enter complete address"
+              placeholder="Masukkan alamat lengkap"
               rows={3}
               className={errors.address ? "border-red-500" : ""}
             />
@@ -257,61 +261,63 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
       </Card>
 
       {/* Parent Information */}
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30 hover:shadow-xl transition-shadow duration-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Parent Information
+          <CardTitle className="flex items-center gap-2 text-purple-900">
+            <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center">
+              <User className="h-5 w-5 text-purple-600" />
+            </div>
+            Maklumat Ibu Bapa
           </CardTitle>
           <CardDescription>
-            Information about student's parents or guardians
+            Maklumat mengenai ibu bapa atau penjaga pelajar
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="father_name">Father's Name *</Label>
+              <Label htmlFor="father_name">Nama Bapa *</Label>
               <Input
                 id="father_name"
                 value={formData.father_name}
                 onChange={(e) => handleInputChange("father_name", e.target.value)}
-                placeholder="Enter father's full name"
+                placeholder="Masukkan nama penuh bapa"
                 className={errors.father_name ? "border-red-500" : ""}
               />
               {errors.father_name && <p className="text-sm text-red-500">{errors.father_name}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="mother_name">Mother's Name *</Label>
+              <Label htmlFor="mother_name">Nama Ibu *</Label>
               <Input
                 id="mother_name"
                 value={formData.mother_name}
                 onChange={(e) => handleInputChange("mother_name", e.target.value)}
-                placeholder="Enter mother's full name"
+                placeholder="Masukkan nama penuh ibu"
                 className={errors.mother_name ? "border-red-500" : ""}
               />
               {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="father_phone">Father's Phone</Label>
+              <Label htmlFor="father_phone">Telefon Bapa</Label>
               <Input
                 id="father_phone"
                 value={formData.father_phone}
                 onChange={(e) => handleInputChange("father_phone", e.target.value)}
-                placeholder="e.g., 081234567890"
+                placeholder="Contoh: 081234567890"
                 className={errors.father_phone ? "border-red-500" : ""}
               />
               {errors.father_phone && <p className="text-sm text-red-500">{errors.father_phone}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="mother_phone">Mother's Phone</Label>
+              <Label htmlFor="mother_phone">Telefon Ibu</Label>
               <Input
                 id="mother_phone"
                 value={formData.mother_phone}
                 onChange={(e) => handleInputChange("mother_phone", e.target.value)}
-                placeholder="e.g., 081234567890"
+                placeholder="Contoh: 081234567890"
                 className={errors.mother_phone ? "border-red-500" : ""}
               />
               {errors.mother_phone && <p className="text-sm text-red-500">{errors.mother_phone}</p>}
@@ -321,23 +327,25 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
       </Card>
 
       {/* Academic Information */}
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-emerald-50/30 hover:shadow-xl transition-shadow duration-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Academic Information
+          <CardTitle className="flex items-center gap-2 text-emerald-900">
+            <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <User className="h-5 w-5 text-emerald-600" />
+            </div>
+            Maklumat Akademik
           </CardTitle>
           <CardDescription>
-            Class and program information
+            Maklumat kelas dan program
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="class">Class *</Label>
+              <Label htmlFor="class">Kelas *</Label>
               <Select value={formData.class_level} onValueChange={(value) => handleInputChange("class_level", value)}>
                 <SelectTrigger className={`cursor-pointer ${errors.class_level ? "border-red-500" : ""}`}>
-                  <SelectValue placeholder="Select class" />
+                  <SelectValue placeholder="Pilih kelas" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
                   {classes.map((cls) => (
@@ -354,12 +362,12 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
               <Label htmlFor="status">Status *</Label>
               <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
                 <SelectTrigger className="cursor-pointer">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Pilih status" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
                   {statuses.map((status) => (
                     <SelectItem key={status} value={status} className="cursor-pointer">
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                      {status === "active" ? "Aktif" : status === "inactive" ? "Tidak Aktif" : "Lulus"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -367,19 +375,19 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="date_joined">Date Joined *</Label>
+              <Label htmlFor="date_joined">Tarikh Menyertai *</Label>
               <DatePicker
                 id="date_joined"
                 date={selectedDateJoined}
                 onDateChange={handleDateChange('date_joined')}
-                placeholder="Select date joined"
+                placeholder="Pilih tarikh menyertai"
                 className={`cursor-pointer border-gray-300/60 ${errors.date_joined ? "border-red-500" : ""}`}
               />
               {errors.date_joined && <p className="text-sm text-red-500">{errors.date_joined}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_juz">Current Juz Memorized *</Label>
+              <Label htmlFor="current_hifz_in_juz">Juz Semasa Dihafal *</Label>
               <Input
                 id="current_hifz_in_juz"
                 type="number"
@@ -389,11 +397,11 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 onChange={(e) => handleInputChange("current_hifz_in_juz", e.target.value)}
                 placeholder="1"
               />
-              <p className="text-xs text-muted-foreground">Enter number of Juz completed (0-30)</p>
+              <p className="text-xs text-muted-foreground">Masukkan bilangan Juz yang telah disiapkan (0-30)</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_pages">Current Pages *</Label>
+              <Label htmlFor="current_hifz_in_pages">Halaman Semasa *</Label>
               <Input
                 id="current_hifz_in_pages"
                 type="number"
@@ -403,17 +411,17 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 onChange={(e) => handleInputChange("current_hifz_in_pages", e.target.value)}
                 placeholder="1"
               />
-              <p className="text-xs text-muted-foreground">Enter current pages in ongoing Juz (1 - 20)</p>
+              <p className="text-xs text-muted-foreground">Masukkan halaman semasa dalam Juz yang sedang dihafal (1 - 20)</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_surah">Current Surah</Label>
+              <Label htmlFor="current_hifz_in_surah">Surah Semasa</Label>
               <Select
                 value={formData.current_hifz_in_surah || ""}
                 onValueChange={(value) => handleInputChange("current_hifz_in_surah", value)}
               >
                 <SelectTrigger className="cursor-pointer">
-                  <SelectValue placeholder="Select current surah" />
+                  <SelectValue placeholder="Pilih surah semasa" />
                 </SelectTrigger>
                 <SelectContent>
                   {surahList.map((surah, index) => (
@@ -423,7 +431,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">Select the current surah being memorized</p>
+              <p className="text-xs text-muted-foreground">Pilih surah yang sedang dihafal</p>
             </div>
           </div>
         </CardContent>

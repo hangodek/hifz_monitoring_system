@@ -13,51 +13,59 @@ interface StatsSummaryProps {
 export function StatsSummary({ students }: StatsSummaryProps) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100/50 hover:shadow-xl transition-shadow duration-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Total Students</CardTitle>
-          <Users className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium text-blue-900">Jumlah Pelajar</CardTitle>
+          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-2xl font-bold text-blue-600">{students.length}</div>
-          <p className="text-xs text-muted-foreground">Active students</p>
+          <p className="text-xs text-blue-700/70">Pelajar aktif</p>
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100/50 hover:shadow-xl transition-shadow duration-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Active Students</CardTitle>
-          <Users className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium text-green-900">Pelajar Aktif</CardTitle>
+          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-2xl font-bold text-green-600">
             {students.filter((s) => s.status === "active").length}
           </div>
-          <p className="text-xs text-muted-foreground">Currently active</p>
+          <p className="text-xs text-green-700/70">Sedang aktif</p>
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-red-50 to-red-100/50 hover:shadow-xl transition-shadow duration-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Inactive Students</CardTitle>
-          <Users className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium text-red-900">Pelajar Tidak Aktif</CardTitle>
+          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-red-500/20 flex items-center justify-center">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-2xl font-bold text-red-600">
             {students.filter((s) => s.status === "inactive").length}
           </div>
-          <p className="text-xs text-muted-foreground">Currently inactive</p>
+          <p className="text-xs text-red-700/70">Sedang tidak aktif</p>
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200/60 shadow-lg">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-orange-100/50 hover:shadow-xl transition-shadow duration-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Graduated Students</CardTitle>
-          <Award className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium text-orange-900">Pelajar Lulus</CardTitle>
+          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-orange-500/20 flex items-center justify-center">
+            <Award className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-2xl font-bold text-orange-600">{students.filter((s) => s.status === "graduated").length}</div>
-          <p className="text-xs text-muted-foreground">Students who completed hifz</p>
+          <p className="text-xs text-orange-700/70">Pelajar yang selesai hafalan</p>
         </CardContent>
       </Card>
     </div>

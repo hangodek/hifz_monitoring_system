@@ -44,6 +44,8 @@ interface DetailedActivity {
   page_from: number
   page_to: number
   juz: number
+  juz_from?: number | null
+  juz_to?: number | null
   notes?: string
   audio_url?: string | null
 }
@@ -95,28 +97,30 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
     }
   }
   return (
-    <Card className="border-gray-200/60 shadow-lg">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Recent Activities
+            <CardTitle className="flex items-center gap-2 text-slate-800">
+              <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-indigo-600" />
+              </div>
+              Aktiviti Terkini
             </CardTitle>
-            <CardDescription>Student memorization activities in the last few hours</CardDescription>
+            <CardDescription>Aktiviti hafalan pelajar dalam beberapa jam terakhir</CardDescription>
           </div>
           {totalActivitiesCount > 5 && (
             <Dialog open={isOpen} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="cursor-pointer border-gray-200/60">
-                  View All ({totalActivitiesCount})
+                <Button variant="outline" size="sm" className="cursor-pointer border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+                  Lihat Semua ({totalActivitiesCount})
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>All Recent Activities</DialogTitle>
+                  <DialogTitle>Semua Aktiviti Terkini</DialogTitle>
                   <DialogDescription>
-                    Complete history of student memorization and revision activities
+                    Sejarah lengkap aktiviti hafalan dan murajaah pelajar
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -127,14 +131,14 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                 ) : (
                   <div className="space-y-4 mt-4">
                     {allActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg">
+                    <div key={activity.id} className="flex items-start space-x-3 p-4 border-0 bg-gradient-to-r from-white to-slate-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
                           activity.type === "memorization"
-                            ? "bg-blue-500"
+                            ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
                             : activity.type === "revision"
-                              ? "bg-green-500"
-                              : "bg-gray-500"
+                              ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
+                              : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
                         }`}
                       >
                         {activity.type === "memorization" ? (
@@ -156,9 +160,9 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             </Link>
                             <p className="text-xs text-muted-foreground">{activity.activity}</p>
                           </div>
-                          <Badge variant={activity.grade === "Excellent" ? "default" : 
-                                        activity.grade === "Good" ? "secondary" : 
-                                        activity.grade === "Fair" ? "outline" : "destructive"}>
+                          <Badge variant={activity.grade === "Cemerlang" ? "default" : 
+                                        activity.grade === "Baik" ? "secondary" : 
+                                        activity.grade === "Sederhana" ? "outline" : "destructive"}>
                             {activity.grade}
                           </Badge>
                         </div>
@@ -168,18 +172,21 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                           </div>
                           <div>
-                            <span className="font-medium">Pages:</span> {activity.page_from}-{activity.page_to}
+                            <span className="font-medium">Muka Surat:</span> {activity.page_from}-{activity.page_to}
                           </div>
                           <div>
-                            <span className="font-medium">Juz:</span> {activity.juz || 'N/A'}
+                            <span className="font-medium">Juz:</span>{' '}
+                            {activity.type === 'revision' && activity.juz_from && activity.juz_to 
+                              ? `${activity.juz_from}${activity.juz_from !== activity.juz_to ? `-${activity.juz_to}` : ''}`
+                              : activity.juz || 'T/A'}
                           </div>
                           <div>
-                            <span className="font-medium">Time:</span> {activity.time}
+                            <span className="font-medium">Masa:</span> {activity.time}
                           </div>
                         </div>
                         {activity.notes && (
                           <div className="text-xs text-muted-foreground">
-                            <span className="font-medium">Notes:</span> {activity.notes}
+                            <span className="font-medium">Catatan:</span> {activity.notes}
                           </div>
                         )}
                         {activity.audio_url && (
@@ -206,10 +213,10 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                         {isLoading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Loading...
+                            Memuatkan...
                           </>
                         ) : (
-                          `Load More (${totalActivitiesCount - allActivities.length} remaining)`
+                          `Muatkan Lagi (${totalActivitiesCount - allActivities.length} lagi)`
                         )}
                       </Button>
                     </div>
@@ -223,14 +230,14 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
         {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start space-x-3">
+          <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-colors duration-200">
             <div
               className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
                 activity.type === "memorization"
-                  ? "bg-blue-500"
+                  ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
                   : activity.type === "revision"
-                    ? "bg-green-500"
-                    : "bg-gray-500"
+                    ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
+                    : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
               }`}
             >
               {activity.type === "memorization" ? (
@@ -265,15 +272,15 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
         {activities.length === 0 && (
           <div className="text-center py-8">
             <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No recent activities found</p>
-            <p className="text-sm text-muted-foreground">Activities will appear here when students start memorizing</p>
+            <p className="text-muted-foreground">Tiada aktiviti terkini dijumpai</p>
+            <p className="text-sm text-muted-foreground">Aktiviti akan muncul di sini apabila pelajar mula menghafal</p>
           </div>
         )}
         {totalActivitiesCount > 5 && (
           <div className="text-center pt-4 border-t border-gray-200">
             <p className="text-xs text-muted-foreground">
-              Showing 5 most recent activities. 
-              <span className="font-medium"> {totalActivitiesCount - 5} more activities available.</span>
+              Menunjukkan 5 aktiviti terkini. 
+              <span className="font-medium"> {totalActivitiesCount - 5} aktiviti lagi tersedia.</span>
             </p>
           </div>
         )}

@@ -48,19 +48,21 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
   }
 
   return (
-    <Card className="border-gray-200/60 shadow-lg">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
         <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
-              Daily Submissions
+            <CardTitle className="flex items-center gap-2 text-blue-900">
+              <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <CalendarIcon className="h-5 w-5 text-blue-600" />
+              </div>
+              Penyerahan Harian
             </CardTitle>
-            <CardDescription>Number of student activities submitted per day</CardDescription>
+            <CardDescription>Bilangan aktiviti pelajar yang diserahkan setiap hari</CardDescription>
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="border-gray-200/60 cursor-pointer w-full md:w-auto">
+              <Button variant="outline" size="sm" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 cursor-pointer w-full md:w-auto">
                 <CalendarIcon className="h-4 w-4 mr-2" />
                 <span className="text-xs sm:text-sm">
                   {format(dateRange.from, "dd MMM", { locale: id })} -{" "}
@@ -72,7 +74,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
             <PopoverContent className="w-auto p-0 border-gray-200/60" align="end">
               <div className="p-4 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Start Date</label>
+                  <label className="text-sm font-medium">Tarikh Mula</label>
                   <Calendar
                     mode="single"
                     selected={dateRange.from}
@@ -82,7 +84,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">End Date</label>
+                  <label className="text-sm font-medium">Tarikh Akhir</label>
                   <Calendar
                     mode="single"
                     selected={dateRange.to}
@@ -95,7 +97,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-gray-200/60 cursor-pointer text-xs"
+                    className="border-blue-200 hover:bg-blue-50 cursor-pointer text-xs"
                     onClick={() =>
                       handleDateRangeChange({
                         from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
@@ -103,12 +105,12 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                       })
                     }
                   >
-                    7 Days
+                    7 Hari
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-gray-200/60 cursor-pointer text-xs"
+                    className="border-blue-200 hover:bg-blue-50 cursor-pointer text-xs"
                     onClick={() =>
                       handleDateRangeChange({
                         from: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
@@ -116,7 +118,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                       })
                     }
                   >
-                    30 Days
+                    30 Hari
                   </Button>
                 </div>
               </div>
@@ -141,7 +143,13 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
               labelStyle={{ fontSize: '12px' }}
               contentStyle={{ fontSize: '12px' }}
             />
-            <Bar dataKey="submissions" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="submissions" fill="url(#colorSubmissions)" radius={[4, 4, 0, 0]} />
+            <defs>
+              <linearGradient id="colorSubmissions" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+              </linearGradient>
+            </defs>
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

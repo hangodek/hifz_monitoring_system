@@ -17,8 +17,19 @@ interface JuzDistributionChartProps {
   data: JuzDistribution[]
 }
 
-// Colors for the pie chart
-const colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316", "#84cc16", "#ec4899", "#6366f1"]
+// Colors for the pie chart - using gradient-friendly colors
+const colors = [
+  "#3b82f6", // blue-500
+  "#10b981", // green-500  
+  "#f59e0b", // amber-500
+  "#ef4444", // red-500
+  "#8b5cf6", // violet-500
+  "#06b6d4", // cyan-500
+  "#f97316", // orange-500
+  "#84cc16", // lime-500
+  "#ec4899", // pink-500
+  "#6366f1"  // indigo-500
+]
 
 // Custom Legend Component
 const CustomLegend = ({ chartData }: { chartData: Array<{ name: string; value: number; color: string }> }) => {
@@ -53,13 +64,15 @@ export function JuzDistributionChart({ data }: JuzDistributionChartProps) {
   }))
 
   return (
-    <Card className="border-gray-200/60 shadow-lg ">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5" />
-          Student Juz Distribution
+        <CardTitle className="flex items-center gap-2 text-purple-900">
+          <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center">
+            <BookOpen className="h-5 w-5 text-purple-600" />
+          </div>
+          Taburan Juz Pelajar
         </CardTitle>
-        <CardDescription>Student distribution based on current memorization juz</CardDescription>
+        <CardDescription>Taburan pelajar berdasarkan juz hafalan semasa</CardDescription>
       </CardHeader>
       <CardContent className="mt-2">
         <ResponsiveContainer width="100%" height={250}>

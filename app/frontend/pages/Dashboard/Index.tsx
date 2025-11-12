@@ -90,8 +90,8 @@ export default function DashboardIndex({
                   <BarChart3 className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-blue-800">Charts Available on Larger Screens</p>
-                  <p className="text-xs text-blue-600">View detailed analytics and progress charts on tablet or desktop</p>
+                  <p className="text-sm font-medium text-blue-800">Carta Tersedia pada Skrin Lebih Besar</p>
+                  <p className="text-xs text-blue-600">Lihat analitik terperinci dan carta kemajuan pada tablet atau desktop</p>
                 </div>
               </div>
             </CardContent>

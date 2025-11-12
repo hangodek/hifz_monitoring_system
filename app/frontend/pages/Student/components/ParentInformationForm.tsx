@@ -22,37 +22,39 @@ interface ParentInformationFormProps {
 
 export function ParentInformationForm({ formData, errors, handleInputChange }: ParentInformationFormProps) {
   return (
-    <Card className="border-gray-200/60 shadow-lg">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-pink-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Parent Information
+        <CardTitle className="flex items-center gap-2 text-pink-900">
+          <div className="h-10 w-10 rounded-full bg-pink-500/20 flex items-center justify-center">
+            <Users className="h-5 w-5 text-pink-600" />
+          </div>
+          Maklumat Ibu Bapa
         </CardTitle>
         <CardDescription>
-          Information about student's parents or guardians
+          Maklumat mengenai ibu bapa atau penjaga pelajar
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="father_name">Father's Name *</Label>
+            <Label htmlFor="father_name">Nama Bapa *</Label>
             <Input
               id="father_name"
               value={formData.father_name}
               onChange={(e) => handleInputChange("father_name", e.target.value)}
-              placeholder="Enter father's full name"
+              placeholder="Masukkan nama penuh bapa"
               className={errors.father_name ? "border-red-500" : ""}
             />
             {errors.father_name && <p className="text-sm text-red-500">{errors.father_name}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="mother_name">Mother's Name *</Label>
+            <Label htmlFor="mother_name">Nama Ibu *</Label>
             <Input
               id="mother_name"
               value={formData.mother_name}
               onChange={(e) => handleInputChange("mother_name", e.target.value)}
-              placeholder="Enter mother's full name"
+              placeholder="Masukkan nama penuh ibu"
               className={errors.mother_name ? "border-red-500" : ""}
             />
             {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}

@@ -104,12 +104,14 @@ class StudentsController < ApplicationController
                                     activity: format_activity_description(activity),
                                     time: time_ago_in_words(activity.created_at) + " ago",
                                     type: activity.activity_type,
-                                    grade: activity.activity_grade.humanize,
+                                    grade: translate_grade(activity.activity_grade),
                                     surah_from: activity.surah_from,
                                     surah_to: activity.surah_to,
                                     page_from: activity.page_from,
                                     page_to: activity.page_to,
                                     juz: activity.juz,
+                                    juz_from: activity.juz_from,
+                                    juz_to: activity.juz_to,
                                     notes: activity.notes,
                                     audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
                                   }
@@ -171,16 +173,26 @@ class StudentsController < ApplicationController
     params.expect(student: [ :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :father_phone, :mother_phone, :date_joined ])
   end
 
+  def translate_grade(grade)
+    translations = {
+      'excellent' => 'Cemerlang',
+      'good' => 'Baik',
+      'fair' => 'Sederhana',
+      'needs_improvement' => 'Perlu Diperbaiki'
+    }
+    translations[grade] || grade.humanize
+  end
+
   def format_activity_description(activity)
     surah_display = activity.surah_from == activity.surah_to ? activity.surah_from : "#{activity.surah_from} - #{activity.surah_to}"
 
     case activity.activity_type
     when "memorization"
-      "Memorized #{surah_display} pages #{activity.page_from}-#{activity.page_to}"
+      "Menghafal #{surah_display} muka surat #{activity.page_from}-#{activity.page_to}"
     when "revision"
-      "Revised #{surah_display} pages #{activity.page_from}-#{activity.page_to}"
+      "Murajaah #{surah_display} muka surat #{activity.page_from}-#{activity.page_to}"
     else
-      "#{activity.activity_type.humanize} #{surah_display} pages #{activity.page_from}-#{activity.page_to}"
+      "#{activity.activity_type.humanize} #{surah_display} muka surat #{activity.page_from}-#{activity.page_to}"
     end
   end
 

@@ -50,6 +50,6 @@ class ActivitiesController < ApplicationController
   end
 
   def create_activity_params
-    params.expect(activity: [ :activity_type, :activity_grade, :surah_from, :surah_to, :page_from, :page_to, :juz, :notes, :audio ])
+    params.expect(activity: [ :activity_type, :activity_grade, :surah_from, :surah_to, :page_from, :page_to, :juz, :juz_from, :juz_to, :notes, :audio ])
   end
 end

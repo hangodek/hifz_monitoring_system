@@ -36,11 +36,11 @@ interface StudentListViewProps {
 
 export function StudentListView({ filteredStudents, getStatusBadge, handleSelectStudent }: StudentListViewProps) {
   return (
-    <Card className="border-gray-200/60 shadow-lg">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/20 hover:shadow-xl transition-shadow duration-200">
       <CardContent className="p-0">
-        <div className="divide-y divide-gray-200/60">
+        <div className="divide-y divide-gray-200/30">
           {filteredStudents.map((student) => (
-            <div key={student.id} className="p-3 sm:p-4 hover:bg-muted/50 transition-colors">
+            <div key={student.id} className="p-3 sm:p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
               <div className="flex items-center justify-center">
                 <div className="flex items-center space-x-3 sm:space-x-4 min-w-2 flex-1">
                   <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
@@ -57,7 +57,7 @@ export function StudentListView({ filteredStudents, getStatusBadge, handleSelect
                     <h3 className="text-sm sm:text-base font-medium truncate">{student.name}</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">{student.class_level}</p>
                     <p className="text-xs text-muted-foreground truncate hidden sm:block">
-                      {student.father_name || student.mother_name || 'No parent info'}
+                      {student.father_name || student.mother_name || 'Tiada maklumat ibu bapa'}
                     </p>
                   </div>
                 </div>
