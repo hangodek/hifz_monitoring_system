@@ -16,7 +16,24 @@ Activity.destroy_all
 
 puts "Seeding initial data..."
 
-User.create!(username: "admin", password: "admin", name: "Administrator", role: "admin") unless User.exists?(username: "admin")
+# Create default users with different roles
+User.find_or_create_by!(username: "admin") do |user|
+  user.password = "admin"
+  user.name = "Administrator"
+  user.role = "pengurus"
+end
+
+User.find_or_create_by!(username: "guru1") do |user|
+  user.password = "guru123"
+  user.name = "Ustadz Ahmad"
+  user.role = "guru"
+end
+
+User.find_or_create_by!(username: "guru2") do |user|
+  user.password = "guru123"
+  user.name = "Ustadzah Fatimah"
+  user.role = "guru"
+end
 
 puts "Creating new student records..."
 

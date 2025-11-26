@@ -1,6 +1,10 @@
 class StudentsController < ApplicationController
   include ActionView::Helpers::DateHelper
   include AvatarHelper
+  include RoleAuthorization
+
+  skip_before_action :authorize_role
+  before_action :require_pengurus!
   
   def index
     students = Student.all.order(name: :asc).map do |student|

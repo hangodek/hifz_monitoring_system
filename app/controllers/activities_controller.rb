@@ -1,4 +1,8 @@
 class ActivitiesController < ApplicationController
+  include RoleAuthorization
+
+  skip_before_action :authorize_role
+  before_action :require_guru_or_pengurus!
   before_action :set_student
   before_action :set_activity, only: [ :destroy ]
 

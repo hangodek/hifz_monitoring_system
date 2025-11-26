@@ -4,11 +4,28 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
 
   inertia_share do
-    {
-      flash: {
-        alert: flash[:alert],
-        notice: flash[:notice]
+    if Current.user
+      {
+        flash: {
+          alert: flash[:alert],
+          notice: flash[:notice]
+        },
+        auth: {
+          user: {
+            id: Current.user.id,
+            name: Current.user.name,
+            username: Current.user.username,
+            role: Current.user.role
+          }
+        }
       }
-    }
+    else
+      {
+        flash: {
+          alert: flash[:alert],
+          notice: flash[:notice]
+        }
+      }
+    end
   end
 end
