@@ -20,8 +20,10 @@ module RoleAuthorization
         redirect_to teachers_path, alert: "Anda tidak memiliki akses ke halaman ini"
       end
     when "orang_tua"
-      # Orang tua will have limited access (implement later)
-      redirect_to root_path, alert: "Fitur untuk orang tua belum tersedia"
+      # Orang tua can only access parent dashboard
+      unless allowed_for_orang_tua?
+        redirect_to parent_path, alert: "Anda hanya dapat melihat progress anak Anda"
+      end
     end
   end
 
@@ -34,6 +36,17 @@ module RoleAuthorization
     action_name = params[:action]
 
     allowed_controllers = %w[teachers activities sessions]
+    
+    allowed_controllers.include?(controller_name)
+  end
+
+  def allowed_for_orang_tua?
+    # Allow orang_tua to access:
+    # - parents controller (view only)
+    # - sessions (logout)
+    controller_name = params[:controller]
+    
+    allowed_controllers = %w[parents sessions]
     
     allowed_controllers.include?(controller_name)
   end

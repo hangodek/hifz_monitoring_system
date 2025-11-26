@@ -232,4 +232,22 @@ Student.all.each do |student|
 end
 
 puts "Created #{Activity.count} activities."
+
+puts "Creating parent (orang_tua) users..."
+
+# Create parent users for first 5 students
+Student.limit(5).each_with_index do |student, index|
+  parent_username = "parent#{index + 1}"
+  
+  User.find_or_create_by!(username: parent_username) do |user|
+    user.password = "parent123"
+    user.name = student.father_name # Use father's name as parent account
+    user.role = "orang_tua"
+    user.student_id = student.id
+  end
+  
+  puts "Created parent user '#{parent_username}' for student '#{student.name}'"
+end
+
+puts "Created #{User.where(role: 'orang_tua').count} parent users."
 puts "Seeding completed successfully!"

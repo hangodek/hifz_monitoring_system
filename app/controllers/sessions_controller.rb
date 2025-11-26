@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
     when "guru"
       teachers_path   # Redirect to teacher mode for guru
     when "orang_tua"
-      root_path       # Temporary redirect for orang_tua (will implement later)
+      parent_path     # Redirect to parent dashboard
     else
       dashboard_path  # Default fallback
     end

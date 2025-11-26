@@ -12,6 +12,12 @@ Rails.application.routes.draw do
     end
   end
   resources :teachers, only: [ :index ]
+  
+  # Parent dashboard - orang tua can only view their child's progress
+  resource :parent, only: [ :show ], controller: 'parents' do
+    get :activities_list, on: :member
+  end
+  
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

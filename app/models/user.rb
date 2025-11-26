@@ -1,11 +1,15 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  belongs_to :student, optional: true
 
   # Define role enum: pengurus (admin), guru (teacher), orang_tua (parent)
   enum :role, { pengurus: "pengurus", guru: "guru", orang_tua: "orang_tua" }, validate: true
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  # Validations
+  validates :student_id, presence: true, if: :orang_tua?
 
   # Role check helpers
   def pengurus?

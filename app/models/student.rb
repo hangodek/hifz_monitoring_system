@@ -5,6 +5,7 @@ class Student < ApplicationRecord
   end
 
   has_many :activities, dependent: :destroy
+  has_many :parent_users, -> { where(role: "orang_tua") }, class_name: "User", foreign_key: "student_id"
 
   scope :active, -> { where(status: "active") }
 
