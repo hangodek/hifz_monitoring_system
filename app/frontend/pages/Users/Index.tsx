@@ -23,6 +23,8 @@ import { router } from "@inertiajs/react"
 
 interface User {
   id: number
+  username: string
+  name: string
   email: string
   role: string
   student_name: string | null
@@ -33,11 +35,22 @@ interface User {
 interface UsersIndexProps {
   users: User[]
   available_roles: string[]
+  current_filter?: string | null
 }
 
-export default function UsersIndex({ users: initialUsers, available_roles }: UsersIndexProps) {
+export default function UsersIndex({ users: initialUsers, available_roles, current_filter }: UsersIndexProps) {
   const [users, setUsers] = useState<User[]>(initialUsers)
   const [updatingUserId, setUpdatingUserId] = useState<number | null>(null)
+  const [activeFilter, setActiveFilter] = useState<string | null>(current_filter || null)
+
+  const handleFilter = (role: string | null) => {
+    setActiveFilter(role)
+    const url = role ? `/users?role=${role}` : '/users'
+    router.visit(url, {
+      preserveState: false,
+      preserveScroll: true
+    })
+  }
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -112,21 +125,65 @@ export default function UsersIndex({ users: initialUsers, available_roles }: Use
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      <div className="flex flex-col space-y-6 p-6">
+      <div className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Pengurusan Pengguna</h1>
-            <p className="text-muted-foreground">Urus role dan akses pengguna sistem</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pengurusan Pengguna</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Urus role dan akses pengguna sistem</p>
           </div>
           <Button
             variant="outline"
             onClick={() => router.visit('/dashboard')}
-            className="cursor-pointer"
+            className="cursor-pointer w-full sm:w-auto"
           >
             Kembali ke Dashboard
           </Button>
         </div>
+
+        {/* Filter Buttons */}
+        <Card className="border-0 shadow-md">
+          <CardContent className="">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+              <Button
+                variant={activeFilter === null ? "default" : "outline"}
+                onClick={() => handleFilter(null)}
+                className="cursor-pointer w-full sm:w-auto"
+              >
+                <UsersIcon className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Semua ({initialUsers.length})</span>
+                <span className="sm:hidden">Semua</span>
+              </Button>
+              <Button
+                variant={activeFilter === "pengurus" ? "default" : "outline"}
+                onClick={() => handleFilter("pengurus")}
+                className={activeFilter === "pengurus" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-red-200 hover:bg-red-50 hover:text-red-700"}
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Pengurus ({initialUsers.filter(u => u.role === "pengurus").length})</span>
+                <span className="sm:hidden">Pengurus</span>
+              </Button>
+              <Button
+                variant={activeFilter === "guru" ? "default" : "outline"}
+                onClick={() => handleFilter("guru")}
+                className={activeFilter === "guru" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-blue-200 hover:bg-blue-50 hover:text-blue-700"}
+              >
+                <GraduationCap className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Guru ({initialUsers.filter(u => u.role === "guru").length})</span>
+                <span className="sm:hidden">Guru</span>
+              </Button>
+              <Button
+                variant={activeFilter === "orang_tua" ? "default" : "outline"}
+                onClick={() => handleFilter("orang_tua")}
+                className={activeFilter === "orang_tua" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-green-200 hover:bg-green-50 hover:text-green-700"}
+              >
+                <UserCircle className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Orang Tua ({initialUsers.filter(u => u.role === "orang_tua").length})</span>
+                <span className="sm:hidden">Orang Tua</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-3">
@@ -189,6 +246,8 @@ export default function UsersIndex({ users: initialUsers, available_roles }: Use
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]">No</TableHead>
+                    <TableHead>Username</TableHead>
+                    <TableHead>Nama</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Pelajar</TableHead>
@@ -199,7 +258,7 @@ export default function UsersIndex({ users: initialUsers, available_roles }: Use
                 <TableBody>
                   {users.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <UsersIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                         <p className="text-muted-foreground">Tiada pengguna dijumpai</p>
                       </TableCell>
@@ -210,9 +269,15 @@ export default function UsersIndex({ users: initialUsers, available_roles }: Use
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="font-medium">{user.email}</span>
+                            <span className="font-medium text-blue-600">@{user.username}</span>
                             <span className="text-xs text-muted-foreground">ID: {user.id}</span>
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-medium">{user.name}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">{user.email}</span>
                         </TableCell>
                         <TableCell>
                           <Badge className={`${getRoleBadgeColor(user.role)} flex items-center gap-1 w-fit`}>

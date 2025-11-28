@@ -6,9 +6,16 @@ class UsersController < ApplicationController
   def index
     @users = User.includes(:student).order(created_at: :desc)
     
+    # Filter by role if provided
+    if params[:role].present? && User.roles.keys.include?(params[:role])
+      @users = @users.where(role: params[:role])
+    end
+    
     users_data = @users.map do |user|
       {
         id: user.id,
+        username: user.username,
+        name: user.name,
         email: user.email_address,
         role: user.role,
         student_name: user.student&.name,
@@ -21,7 +28,8 @@ class UsersController < ApplicationController
       format.html do
         render inertia: "Users/Index", props: {
           users: users_data,
-          available_roles: User.roles.keys
+          available_roles: User.roles.keys,
+          current_filter: params[:role]
         }
       end
     end

@@ -15,4 +15,5 @@ export interface PageProps {
     alert?: string
     notice?: string
   }
+  [key: string]: any
 }

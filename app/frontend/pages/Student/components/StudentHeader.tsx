@@ -79,7 +79,7 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Senarai Pelajar</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Senarai Pelajar</h1>
         <p className="text-sm sm:text-base text-muted-foreground">Urus dan pantau data pelajar hafalan Al-Quran</p>
       </div>
       <div className="grid grid-cols-2 gap-2">

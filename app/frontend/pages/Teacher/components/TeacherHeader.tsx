@@ -10,7 +10,7 @@ export function TeacherHeader() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Mod Guru</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Mod Guru</h1>
         <p className="text-sm sm:text-base text-muted-foreground">Catat aktiviti hafalan pelajar</p>
       </div>
       <div className="grid grid-cols-2 gap-2">

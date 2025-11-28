@@ -10,7 +10,7 @@ export function DashboardHeader() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Papan Pemuka Hifz</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Papan Pemuka Hifz</h1>
         <p className="text-sm sm:text-base text-muted-foreground">Pantau dan analisis kemajuan hafalan Al-Quran pelajar</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
