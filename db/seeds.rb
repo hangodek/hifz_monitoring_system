@@ -20,19 +20,19 @@ puts "Seeding initial data..."
 User.find_or_create_by!(username: "admin") do |user|
   user.password = "admin"
   user.name = "Administrator"
-  user.role = "pengurus"
+  user.role = "admin"
 end
 
 User.find_or_create_by!(username: "guru1") do |user|
   user.password = "guru123"
   user.name = "Ustadz Ahmad"
-  user.role = "guru"
+  user.role = "teacher"
 end
 
 User.find_or_create_by!(username: "guru2") do |user|
   user.password = "guru123"
   user.name = "Ustadzah Fatimah"
-  user.role = "guru"
+  user.role = "teacher"
 end
 
 puts "Creating new student records..."
@@ -233,7 +233,7 @@ end
 
 puts "Created #{Activity.count} activities."
 
-puts "Creating parent (orang_tua) users..."
+puts "Creating parent users..."
 
 # Create parent users for first 5 students
 Student.limit(5).each_with_index do |student, index|
@@ -242,7 +242,7 @@ Student.limit(5).each_with_index do |student, index|
   User.find_or_create_by!(username: parent_username) do |user|
     user.password = "parent123"
     user.name = student.father_name # Use father's name as parent account
-    user.role = "orang_tua"
+    user.role = "parent"
     user.student_id = student.id
   end
   

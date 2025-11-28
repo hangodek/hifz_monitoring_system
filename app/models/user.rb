@@ -3,24 +3,24 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   belongs_to :student, optional: true
 
-  # Define role enum: pengurus (admin), guru (teacher), orang_tua (parent)
-  enum :role, { pengurus: "pengurus", guru: "guru", orang_tua: "orang_tua" }, validate: true
+  # Define role enum: admin, teacher, parent
+  enum :role, { admin: "admin", teacher: "teacher", parent: "parent" }, validate: true
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   # Validations
-  validates :student_id, presence: true, if: :orang_tua?
+  validates :student_id, presence: true, if: :parent?
 
   # Role check helpers
-  def pengurus?
-    role == "pengurus"
+  def admin?
+    role == "admin"
   end
 
-  def guru?
-    role == "guru"
+  def teacher?
+    role == "teacher"
   end
 
-  def orang_tua?
-    role == "orang_tua"
+  def parent?
+    role == "parent"
   end
 end

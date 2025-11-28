@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!
-  before_action :require_pengurus!
+  include RoleAuthorization
+  
+  skip_before_action :authorize_role
+  before_action :require_admin!
   before_action :set_user, only: [ :update_role ]
 
   def index
@@ -61,15 +63,5 @@ class UsersController < ApplicationController
 
   def set_user
     @user = User.find(params[:id])
-  end
-
-  def require_pengurus!
-    unless Current.user&.pengurus?
-      redirect_to root_path, alert: "Akses ditolak. Hanya pengurus yang boleh mengakses halaman ini."
-    end
-  end
-
-  def authenticate_user!
-    redirect_to new_session_path, alert: "Sila log masuk terlebih dahulu" unless Current.user
   end
 end

@@ -4,7 +4,7 @@ class StudentsController < ApplicationController
   include RoleAuthorization
 
   skip_before_action :authorize_role
-  before_action :require_pengurus!
+  before_action :require_admin!
   
   def index
     students = Student.all.order(name: :asc).map do |student|

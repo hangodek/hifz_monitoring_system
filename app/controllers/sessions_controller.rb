@@ -25,11 +25,11 @@ class SessionsController < ApplicationController
 
   def redirect_path_for_role(user)
     case user.role
-    when "pengurus"
+    when "admin"
       dashboard_index_path  # Keep existing dashboard for pengurus
-    when "guru"
+    when "teacher"
       teachers_path   # Redirect to teacher mode for guru
-    when "orang_tua"
+    when "parent"
       parent_path     # Redirect to parent dashboard
     else
       dashboard_path  # Default fallback

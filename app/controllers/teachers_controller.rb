@@ -2,7 +2,7 @@ class TeachersController < ApplicationController
   include RoleAuthorization
 
   skip_before_action :authorize_role
-  before_action :require_guru_or_pengurus!
+  before_action :require_teacher_or_admin!
 
   def index
     students = Student.active.includes(:activities).order(name: :asc)

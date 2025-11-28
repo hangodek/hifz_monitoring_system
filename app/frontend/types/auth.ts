@@ -2,7 +2,7 @@ export interface User {
   id: number
   name: string
   username: string
-  role: "pengurus" | "guru" | "orang_tua"
+  role: "admin" | "teacher" | "parent"
 }
 
 export interface Auth {

@@ -4,7 +4,7 @@ class ParentsController < ApplicationController
   include RoleAuthorization
 
   skip_before_action :authorize_role
-  before_action :require_orang_tua!
+  before_action :require_parent!
   before_action :ensure_student_assigned
 
   def show
@@ -120,12 +120,6 @@ class ParentsController < ApplicationController
   end
 
   private
-
-  def require_orang_tua!
-    unless Current.user&.orang_tua?
-      redirect_to root_path, alert: "Akses ditolak. Hanya orang tua yang dapat mengakses halaman ini."
-    end
-  end
 
   def ensure_student_assigned
     unless Current.user.student_id.present?

@@ -14,8 +14,8 @@ export function DashboardHeader() {
         <p className="text-sm sm:text-base text-muted-foreground">Pantau dan analisis kemajuan hafalan Al-Quran pelajar</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {/* Only pengurus can see all students */}
-        {userRole === "pengurus" && (
+        {/* Only admin can see all students */}
+        {userRole === "admin" && (
           <>
             <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer w-full" onClick={() => router.visit("/students")}>
               <Users className="h-4 w-4 mr-2" />
@@ -29,8 +29,8 @@ export function DashboardHeader() {
             </Button>
           </>
         )}
-        {/* Both pengurus and guru can access teacher mode */}
-        {(userRole === "pengurus" || userRole === "guru") && (
+        {/* Both admin and teacher can access teacher mode */}
+        {(userRole === "admin" || userRole === "teacher") && (
           <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 cursor-pointer w-full col-span-full" onClick={() => router.visit("/teachers")}>
             <Mic className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Mod Guru</span>

@@ -14,8 +14,8 @@ export function TeacherHeader() {
         <p className="text-sm sm:text-base text-muted-foreground">Catat aktiviti hafalan pelajar</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {/* Only show "View All Students" for pengurus */}
-        {userRole === "pengurus" && (
+        {/* Only show "View All Students" for admin */}
+        {userRole === "admin" && (
           <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer" onClick={() => router.visit("/students")}>
             <Users className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Lihat Semua Pelajar</span>

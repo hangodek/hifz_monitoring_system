@@ -54,11 +54,11 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case "pengurus":
+      case "admin":
         return <Shield className="h-4 w-4" />
-      case "guru":
+      case "teacher":
         return <GraduationCap className="h-4 w-4" />
-      case "orang_tua":
+      case "parent":
         return <UserCircle className="h-4 w-4" />
       default:
         return <UserCircle className="h-4 w-4" />
@@ -67,11 +67,11 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case "pengurus":
+      case "admin":
         return "bg-red-100 text-red-800 border-red-200"
-      case "guru":
+      case "teacher":
         return "bg-blue-100 text-blue-800 border-blue-200"
-      case "orang_tua":
+      case "parent":
         return "bg-green-100 text-green-800 border-green-200"
       default:
         return "bg-gray-100 text-gray-800 border-gray-200"
@@ -80,11 +80,11 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case "pengurus":
+      case "admin":
         return "Pengurus"
-      case "guru":
+      case "teacher":
         return "Guru"
-      case "orang_tua":
+      case "parent":
         return "Orang Tua"
       default:
         return role
@@ -155,30 +155,30 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                 <span className="sm:hidden">Semua</span>
               </Button>
               <Button
-                variant={activeFilter === "pengurus" ? "default" : "outline"}
-                onClick={() => handleFilter("pengurus")}
-                className={activeFilter === "pengurus" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-red-200 hover:bg-red-50 hover:text-red-700"}
+                variant={activeFilter === "admin" ? "default" : "outline"}
+                onClick={() => handleFilter("admin")}
+                className={activeFilter === "admin" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-red-200 hover:bg-red-50 hover:text-red-700"}
               >
                 <Shield className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Pengurus ({initialUsers.filter(u => u.role === "pengurus").length})</span>
+                <span className="hidden sm:inline">Pengurus ({initialUsers.filter(u => u.role === "admin").length})</span>
                 <span className="sm:hidden">Pengurus</span>
               </Button>
               <Button
-                variant={activeFilter === "guru" ? "default" : "outline"}
-                onClick={() => handleFilter("guru")}
-                className={activeFilter === "guru" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-blue-200 hover:bg-blue-50 hover:text-blue-700"}
+                variant={activeFilter === "teacher" ? "default" : "outline"}
+                onClick={() => handleFilter("teacher")}
+                className={activeFilter === "teacher" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-blue-200 hover:bg-blue-50 hover:text-blue-700"}
               >
                 <GraduationCap className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Guru ({initialUsers.filter(u => u.role === "guru").length})</span>
+                <span className="hidden sm:inline">Guru ({initialUsers.filter(u => u.role === "teacher").length})</span>
                 <span className="sm:hidden">Guru</span>
               </Button>
               <Button
-                variant={activeFilter === "orang_tua" ? "default" : "outline"}
-                onClick={() => handleFilter("orang_tua")}
-                className={activeFilter === "orang_tua" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-green-200 hover:bg-green-50 hover:text-green-700"}
+                variant={activeFilter === "parent" ? "default" : "outline"}
+                onClick={() => handleFilter("parent")}
+                className={activeFilter === "parent" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-green-200 hover:bg-green-50 hover:text-green-700"}
               >
                 <UserCircle className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Orang Tua ({initialUsers.filter(u => u.role === "orang_tua").length})</span>
+                <span className="hidden sm:inline">Orang Tua ({initialUsers.filter(u => u.role === "parent").length})</span>
                 <span className="sm:hidden">Orang Tua</span>
               </Button>
             </div>
@@ -194,7 +194,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {users.filter(u => u.role === "pengurus").length}
+                {users.filter(u => u.role === "admin").length}
               </div>
               <p className="text-xs text-red-700/70">Pentadbir sistem</p>
             </CardContent>
@@ -207,7 +207,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {users.filter(u => u.role === "guru").length}
+                {users.filter(u => u.role === "teacher").length}
               </div>
               <p className="text-xs text-blue-700/70">Tenaga pengajar</p>
             </CardContent>
@@ -220,7 +220,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {users.filter(u => u.role === "orang_tua").length}
+                {users.filter(u => u.role === "parent").length}
               </div>
               <p className="text-xs text-green-700/70">Ibu bapa pelajar</p>
             </CardContent>
