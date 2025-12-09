@@ -13,8 +13,12 @@ class StudentsController < ApplicationController
       )
     end
 
+    # Get parent credentials from flash if available
+    parent_credentials = flash[:parent_credentials]
+
     render inertia: "Student/Index", props: {
-      students: students
+      students: students,
+      parent_credentials: parent_credentials
     }
   end
 
@@ -138,7 +142,30 @@ class StudentsController < ApplicationController
     @student = Student.new(student_params)
 
     if @student.save
-      redirect_to students_path, notice: "Student created successfully!"
+      # Auto-generate parent account
+      parent_username = generate_parent_username(@student.name)
+      parent_password = parent_username # Same as username for simplicity
+      
+      parent_user = User.create(
+        username: parent_username,
+        name: "Orang Tua #{@student.name}",
+        password: parent_password,
+        password_confirmation: parent_password,
+        role: "parent",
+        student_id: @student.id
+      )
+
+      if parent_user.persisted?
+        # Store credentials in flash to display to admin
+        flash[:parent_credentials] = {
+          student_name: @student.name,
+          username: parent_username,
+          password: parent_password
+        }
+        redirect_to students_path, notice: "Student and parent account created successfully!"
+      else
+        redirect_to students_path, notice: "Student created but failed to create parent account: #{parent_user.errors.full_messages.join(', ')}"
+      end
     else
       render inertia: "Student/New", props: {
         errors: @student.errors
@@ -336,5 +363,24 @@ class StudentsController < ApplicationController
     else
       "#6b7280" # gray
     end
+  end
+
+  def generate_parent_username(student_name)
+    # Convert to lowercase, remove special characters, replace spaces with nothing
+    clean_name = student_name.downcase
+                            .gsub(/[^a-z0-9\s]/, '') # Remove special chars
+                            .gsub(/\s+/, '')          # Remove all spaces
+    
+    base_username = "orangtua_#{clean_name}"
+    
+    # Check if username already exists, add number suffix if needed
+    username = base_username
+    counter = 1
+    while User.exists?(username: username)
+      username = "#{base_username}#{counter}"
+      counter += 1
+    end
+    
+    username
   end
 end

@@ -53,19 +53,22 @@ module RoleAuthorization
 
   def require_admin!
     unless Current.user&.admin?
-      redirect_to root_path, alert: "Akses ditolak. Hanya pengurus yang dapat mengakses halaman ini."
+      destination = request.referrer
+      redirect_to destination, alert: "Akses ditolak. Hanya pengurus yang dapat mengakses halaman ini."
     end
   end
 
   def require_teacher_or_admin!
     unless Current.user&.teacher? || Current.user&.admin?
-      redirect_to root_path, alert: "Akses ditolak."
+      destination = request.referrer
+      redirect_to destination, alert: "Akses ditolak."
     end
   end
 
   def require_parent!
     unless Current.user&.parent?
-      redirect_to root_path, alert: "Akses ditolak. Hanya orang tua yang dapat mengakses halaman ini."
+      destination = request.referrer
+      redirect_to destination, alert: "Akses ditolak. Hanya orang tua yang dapat mengakses halaman ini."
     end
   end
 end

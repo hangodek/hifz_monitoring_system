@@ -22,16 +22,16 @@ export function TeacherHeader() {
             <span className="sm:hidden">Pelajar</span>
           </Button>
         )}
-        {/* Only show "Back to Dashboard" for pengurus */}
-        {userRole === "pengurus" && (
+        {/* Only show "Back to Dashboard" for admin */}
+        {userRole === "admin" && (
           <Button variant="outline" className="border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 cursor-pointer" onClick={() => router.visit("/dashboard")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Kembali ke Papan Pemuka</span>
             <span className="sm:hidden">Kembali</span>
           </Button>
         )}
-        {/* Show logout for guru role */}
-        {userRole === "guru" && (
+        {/* Show logout for teacher role */}
+        {userRole === "teacher" && (
           <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer col-span-2" onClick={() => router.delete("/session")}>
             <LogOut className="h-4 w-4 mr-2" />
             Log Keluar
