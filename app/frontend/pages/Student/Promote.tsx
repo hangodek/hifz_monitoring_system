@@ -138,25 +138,25 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
       <div className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Naik Kelas Pelajar
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Pilih pelajar dan kelas tujuan untuk kenaikan kelas
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
             <Button
               variant="outline"
-              size="icon"
+              className="border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
               onClick={() => router.visit('/students')}
-              className="rounded-full hover:bg-gray-100"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Kembali ke Senarai Pelajar</span>
+              <span className="sm:hidden">Kembali</span>
             </Button>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Naik Kelas Pelajar
-              </h1>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Pilih pelajar dan kelas tujuan untuk kenaikan kelas
-              </p>
-            </div>
           </div>
-          <GraduationCap className="h-8 w-8 sm:h-12 sm:w-12 text-blue-600/20" />
         </div>
 
         {/* Status Alert */}
