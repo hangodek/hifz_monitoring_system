@@ -222,18 +222,45 @@ class StudentsController < ApplicationController
   def bulk_promote
     student_ids = params[:student_ids]
     target_class = params[:target_class]
+    mark_as_graduated = params[:mark_as_graduated]
 
-    if student_ids.blank? || target_class.blank?
-      render json: { error: "Student IDs dan kelas tujuan harus diisi" }, status: :unprocessable_entity
+    if student_ids.blank?
+      render json: { error: "Student IDs harus diisi" }, status: :unprocessable_entity
+      return
+    end
+
+    if target_class.blank? && !mark_as_graduated
+      render json: { error: "Kelas tujuan atau status kelulusan harus dipilih" }, status: :unprocessable_entity
       return
     end
 
     begin
-      updated_count = Student.where(id: student_ids).update_all(class_level: target_class)
+      updates = {}
+      
+      # If graduating students, set status to graduated
+      if mark_as_graduated
+        updates[:status] = "graduated"
+      end
+      
+      # If moving to new class, update class_level
+      if target_class.present?
+        updates[:class_level] = target_class
+      end
+      
+      updated_count = Student.where(id: student_ids).update_all(updates)
+      
+      # Generate appropriate message
+      if mark_as_graduated && target_class.present?
+        message = "Berhasil memindahkan #{updated_count} pelajar ke #{target_class} dan mengubah status menjadi Lulus"
+      elsif mark_as_graduated
+        message = "Berhasil meluluskan #{updated_count} pelajar"
+      else
+        message = "Berhasil memindahkan #{updated_count} pelajar ke #{target_class}"
+      end
       
       render json: { 
         success: true, 
-        message: "Berhasil memindahkan #{updated_count} siswa ke #{target_class}",
+        message: message,
         updated_count: updated_count
       }
     rescue => e
