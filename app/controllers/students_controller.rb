@@ -274,54 +274,78 @@ class StudentsController < ApplicationController
   end
 
   def download_template
-    require 'csv'
-    
-    csv_data = CSV.generate(headers: true) do |csv|
-      csv << [
-        "Nama Lengkap*",
-        "Gender* (Laki-laki/Perempuan)",
-        "Tempat Lahir*",
-        "Tanggal Lahir* (YYYY-MM-DD)",
-        "Nama Ayah*",
-        "Nama Ibu*",
-        "No HP Ayah",
-        "No HP Ibu",
-        "Alamat",
-        "Kelas*",
-        "Status* (active/inactive)",
-        "Tanggal Bergabung* (YYYY-MM-DD)",
-        "Juz Hafalan Saat Ini* (1-30)",
-        "Halaman Hafalan Saat Ini* (1-604)",
-        "Surah Hafalan Saat Ini*"
-      ]
-      # Add example row
-      csv << [
-        "Ahmad Rasyid",
-        "Laki-laki",
-        "Jakarta",
-        "2012-01-15",
-        "Bapak Ahmad",
-        "Ibu Siti",
-        "081234567890",
-        "082345678901",
-        "Jl. Merdeka No. 123",
-        "1A",
-        "active",
-        Date.current.to_s,
-        "1",
-        "1",
-        "Al-Fatihah"
-      ]
+    respond_to do |format|
+      format.xlsx do
+        package = Axlsx::Package.new
+        workbook = package.workbook
+        
+        # Define styles
+        header_style = workbook.styles.add_style(
+          bg_color: "4472C4",
+          fg_color: "FFFFFF",
+          b: true,
+          alignment: { horizontal: :center, vertical: :center, wrap_text: true }
+        )
+        
+        example_style = workbook.styles.add_style(
+          bg_color: "E7E6E6",
+          alignment: { horizontal: :left, vertical: :center }
+        )
+        
+        workbook.add_worksheet(name: "Import Pelajar") do |sheet|
+          # Header row
+          sheet.add_row [
+            "Nama Lengkap*",
+            "Gender* (Laki-laki/Perempuan)",
+            "Tempat Lahir*",
+            "Tanggal Lahir* (YYYY-MM-DD)",
+            "Nama Ayah*",
+            "Nama Ibu*",
+            "No HP Ayah",
+            "No HP Ibu",
+            "Alamat",
+            "Kelas*",
+            "Status* (active/inactive)",
+            "Tanggal Bergabung* (YYYY-MM-DD)",
+            "Juz Hafalan Saat Ini* (1-30)",
+            "Halaman Hafalan Saat Ini* (1-604)",
+            "Surah Hafalan Saat Ini*"
+          ], style: header_style
+          
+          # Example row
+          sheet.add_row [
+            "Ahmad Rasyid",
+            "Laki-laki",
+            "Jakarta",
+            "2012-01-15",
+            "Bapak Ahmad",
+            "Ibu Siti",
+            "081234567890",
+            "082345678901",
+            "Jl. Merdeka No. 123",
+            "1A",
+            "active",
+            Date.current.to_s,
+            "1",
+            "1",
+            "Al-Fatihah"
+          ], style: example_style
+          
+          # Set column widths for better readability
+          sheet.column_widths 20, 25, 15, 22, 20, 20, 15, 15, 30, 10, 20, 22, 25, 28, 25
+        end
+        
+        send_data package.to_stream.read,
+                  filename: "template_import_pelajar_#{Date.current}.xlsx",
+                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  disposition: 'attachment'
+      end
     end
-
-    send_data csv_data, 
-              filename: "template_import_pelajar_#{Date.current}.csv",
-              type: 'text/csv',
-              disposition: 'attachment'
   end
 
   def preview_import
     require 'csv'
+    require 'roo'
     
     if params[:file].blank?
       render json: { error: "File tidak ditemukan" }, status: :unprocessable_entity
@@ -333,27 +357,46 @@ class StudentsController < ApplicationController
     errors = []
     
     begin
-      CSV.foreach(file.path, headers: true, encoding: 'UTF-8').with_index(2) do |row, line_num|
+      # Determine file type and read accordingly
+      spreadsheet = if file.original_filename.end_with?('.xlsx')
+        Roo::Spreadsheet.open(file.path, extension: :xlsx)
+      elsif file.original_filename.end_with?('.xls')
+        Roo::Spreadsheet.open(file.path, extension: :xls)
+      elsif file.original_filename.end_with?('.csv')
+        Roo::CSV.new(file.path)
+      else
+        render json: { error: "Format file tidak didukung. Gunakan .xlsx, .xls, atau .csv" }, status: :unprocessable_entity
+        return
+      end
+
+      headers = spreadsheet.row(1)
+      
+      (2..spreadsheet.last_row).each do |i|
+        row = spreadsheet.row(i)
+        
         # Skip empty rows
-        next if row.to_h.values.all?(&:blank?)
+        next if row.all?(&:blank?)
+        
+        # Map row to hash using headers
+        row_hash = Hash[headers.zip(row)]
         
         student_data = {
-          line_number: line_num,
-          name: row["Nama Lengkap*"]&.strip,
-          gender: row["Gender* (Laki-laki/Perempuan)"]&.strip&.downcase,
-          birth_place: row["Tempat Lahir*"]&.strip,
-          birth_date: row["Tanggal Lahir* (YYYY-MM-DD)"]&.strip,
-          father_name: row["Nama Ayah*"]&.strip,
-          mother_name: row["Nama Ibu*"]&.strip,
-          father_phone: row["No HP Ayah"]&.strip,
-          mother_phone: row["No HP Ibu"]&.strip,
-          address: row["Alamat"]&.strip,
-          class_level: row["Kelas*"]&.strip,
-          status: row["Status* (active/inactive)"]&.strip&.downcase,
-          date_joined: row["Tanggal Bergabung* (YYYY-MM-DD)"]&.strip,
-          current_hifz_in_juz: row["Juz Hafalan Saat Ini* (1-30)"]&.strip,
-          current_hifz_in_pages: row["Halaman Hafalan Saat Ini* (1-604)"]&.strip,
-          current_hifz_in_surah: row["Surah Hafalan Saat Ini*"]&.strip
+          line_number: i,
+          name: row_hash["Nama Lengkap*"]&.to_s&.strip,
+          gender: row_hash["Gender* (Laki-laki/Perempuan)"]&.to_s&.strip&.downcase,
+          birth_place: row_hash["Tempat Lahir*"]&.to_s&.strip,
+          birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"]),
+          father_name: row_hash["Nama Ayah*"]&.to_s&.strip,
+          mother_name: row_hash["Nama Ibu*"]&.to_s&.strip,
+          father_phone: row_hash["No HP Ayah"]&.to_s&.strip,
+          mother_phone: row_hash["No HP Ibu"]&.to_s&.strip,
+          address: row_hash["Alamat"]&.to_s&.strip,
+          class_level: row_hash["Kelas*"]&.to_s&.strip,
+          status: row_hash["Status* (active/inactive)"]&.to_s&.strip&.downcase,
+          date_joined: parse_date_from_excel(row_hash["Tanggal Bergabung* (YYYY-MM-DD)"]),
+          current_hifz_in_juz: row_hash["Juz Hafalan Saat Ini* (1-30)"]&.to_s&.strip,
+          current_hifz_in_pages: row_hash["Halaman Hafalan Saat Ini* (1-604)"]&.to_s&.strip,
+          current_hifz_in_surah: row_hash["Surah Hafalan Saat Ini*"]&.to_s&.strip
         }
 
         # Validate required fields
@@ -399,8 +442,6 @@ class StudentsController < ApplicationController
         valid: preview_data.count { |d| d[:valid] },
         invalid: preview_data.count { |d| !d[:valid] }
       }
-    rescue CSV::MalformedCSVError => e
-      render json: { error: "File CSV tidak valid: #{e.message}" }, status: :unprocessable_entity
     rescue => e
       render json: { error: "Gagal memproses file: #{e.message}" }, status: :internal_server_error
     end
@@ -468,6 +509,19 @@ class StudentsController < ApplicationController
   end
 
   private
+
+  def parse_date_from_excel(value)
+    return nil if value.blank?
+    
+    # If it's already a Date object (from Excel)
+    return value.to_s if value.is_a?(Date)
+    
+    # If it's a Time or DateTime object
+    return value.to_date.to_s if value.respond_to?(:to_date)
+    
+    # If it's a string, return as is
+    value.to_s.strip
+  end
 
   def student_params
     params.expect(student: [ :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :father_phone, :mother_phone, :date_joined ])

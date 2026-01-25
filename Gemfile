@@ -29,6 +29,11 @@ gem "bcrypt", "~> 3.1.7"
 # CSV for bulk import
 gem "csv"
 
+# Excel file generation and parsing
+gem "caxlsx"
+gem "caxlsx_rails"
+gem "roo"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

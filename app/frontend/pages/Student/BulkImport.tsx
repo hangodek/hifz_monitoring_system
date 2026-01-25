@@ -76,22 +76,28 @@ export default function BulkImport() {
     setIsDragging(false)
     
     const droppedFile = e.dataTransfer.files[0]
-    if (droppedFile && (droppedFile.name.endsWith('.csv') || droppedFile.name.endsWith('.CSV'))) {
+    const validExtensions = ['.xlsx', '.xls', '.csv']
+    const fileExtension = droppedFile?.name.toLowerCase().substring(droppedFile.name.lastIndexOf('.'))
+    
+    if (droppedFile && validExtensions.includes(fileExtension)) {
       setFile(droppedFile)
       setError(null)
     } else {
-      setError("File harus berformat CSV")
+      setError("File harus berformat Excel (.xlsx, .xls) atau CSV")
     }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
-      if (selectedFile.name.endsWith('.csv') || selectedFile.name.endsWith('.CSV')) {
+      const validExtensions = ['.xlsx', '.xls', '.csv']
+      const fileExtension = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'))
+      
+      if (validExtensions.includes(fileExtension)) {
         setFile(selectedFile)
         setError(null)
       } else {
-        setError("File harus berformat CSV")
+        setError("File harus berformat Excel (.xlsx, .xls) atau CSV")
       }
     }
   }
@@ -187,7 +193,7 @@ export default function BulkImport() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Import Pelajar Beramai-ramai</h1>
-            <p className="text-muted-foreground">Upload file CSV untuk menambahkan banyak pelajar sekaligus</p>
+            <p className="text-muted-foreground">Upload file Excel atau CSV untuk menambahkan banyak pelajar sekaligus</p>
           </div>
           <Button 
             variant="outline" 
@@ -217,10 +223,10 @@ export default function BulkImport() {
               className="cursor-pointer"
             >
               <Download className="h-4 w-4 mr-2" />
-              Download Template CSV
+              Download Template Excel
             </Button>
             <p className="text-sm text-muted-foreground mt-3">
-              Template sudah termasuk contoh data. Isi sesuai format yang diberikan.
+              Template Excel sudah termasuk contoh data dan format yang rapi. Lebih mudah digunakan daripada CSV.
             </p>
           </CardContent>
         </Card>
@@ -230,10 +236,10 @@ export default function BulkImport() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold text-sm">2</span>
-              Upload File CSV
+              Upload File Excel atau CSV
             </CardTitle>
             <CardDescription>
-              Upload file CSV yang sudah diisi dengan data pelajar
+              Upload file Excel (.xlsx, .xls) atau CSV yang sudah diisi dengan data pelajar
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -250,10 +256,10 @@ export default function BulkImport() {
             >
               <FileSpreadsheet className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <p className="text-lg font-medium mb-2">
-                {file ? file.name : 'Drag & drop file CSV di sini'}
+                {file ? file.name : 'Drag & drop file Excel atau CSV di sini'}
               </p>
               <p className="text-sm text-muted-foreground mb-4">
-                atau klik untuk memilih file
+                atau klik untuk memilih file (.xlsx, .xls, .csv)
               </p>
               <Button variant="outline" className="cursor-pointer">
                 <Upload className="h-4 w-4 mr-2" />
@@ -262,7 +268,7 @@ export default function BulkImport() {
               <input
                 id="file-input"
                 type="file"
-                accept=".csv"
+                accept=".xlsx,.xls,.csv"
                 onChange={handleFileChange}
                 className="hidden"
               />
