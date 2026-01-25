@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   def create
     if user = User.authenticate_by(params.permit(:username, :password))
       start_new_session_for user
-      redirect_to after_authentication_url
+      redirect_to redirect_path_for_role(user)
     else
       flash.now[:alert] = "Invalid username or password. Please try again."
       render inertia: "Session/New", status: :unprocessable_entity
@@ -19,5 +19,20 @@ class SessionsController < ApplicationController
   def destroy
     terminate_session
     redirect_to new_session_path
+  end
+
+  private
+
+  def redirect_path_for_role(user)
+    case user.role
+    when "admin"
+      dashboard_index_path  # Keep existing dashboard for pengurus
+    when "teacher"
+      teachers_path   # Redirect to teacher mode for guru
+    when "parent"
+      parent_path     # Redirect to parent dashboard
+    else
+      dashboard_path  # Default fallback
+    end
   end
 end

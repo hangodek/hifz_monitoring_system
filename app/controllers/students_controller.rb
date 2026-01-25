@@ -1,6 +1,10 @@
 class StudentsController < ApplicationController
   include ActionView::Helpers::DateHelper
   include AvatarHelper
+  include RoleAuthorization
+
+  skip_before_action :authorize_role
+  before_action :require_admin!
   
   def index
     students = Student.all.order(name: :asc).map do |student|
@@ -9,8 +13,12 @@ class StudentsController < ApplicationController
       )
     end
 
+    # Get parent credentials from flash if available
+    parent_credentials = flash[:parent_credentials]
+
     render inertia: "Student/Index", props: {
-      students: students
+      students: students,
+      parent_credentials: parent_credentials
     }
   end
 
@@ -134,7 +142,30 @@ class StudentsController < ApplicationController
     @student = Student.new(student_params)
 
     if @student.save
-      redirect_to students_path, notice: "Student created successfully!"
+      # Auto-generate parent account
+      parent_username = generate_parent_username(@student.name)
+      parent_password = parent_username # Same as username for simplicity
+      
+      parent_user = User.create(
+        username: parent_username,
+        name: "Orang Tua #{@student.name}",
+        password: parent_password,
+        password_confirmation: parent_password,
+        role: "parent",
+        student_id: @student.id
+      )
+
+      if parent_user.persisted?
+        # Store credentials in flash to display to admin
+        flash[:parent_credentials] = {
+          student_name: @student.name,
+          username: parent_username,
+          password: parent_password
+        }
+        redirect_to students_path, notice: "Student and parent account created successfully!"
+      else
+        redirect_to students_path, notice: "Student created but failed to create parent account: #{parent_user.errors.full_messages.join(', ')}"
+      end
     else
       render inertia: "Student/New", props: {
         errors: @student.errors
@@ -167,7 +198,330 @@ class StudentsController < ApplicationController
     end
   end
 
+  def promote
+    students = Student.all.order(name: :asc).map do |student|
+      student.as_json.merge(
+        avatar: avatar_url(student, size: :thumb)
+      )
+    end
+
+    # Define all available class levels (7-12 with A-D sections)
+    class_levels = []
+    (7..12).each do |grade|
+      ['A', 'B', 'C', 'D'].each do |section|
+        class_levels << "#{grade}#{section}"
+      end
+    end
+
+    render inertia: "Student/Promote", props: {
+      students: students,
+      class_levels: class_levels
+    }
+  end
+
+  def bulk_promote
+    student_ids = params[:student_ids]
+    target_class = params[:target_class]
+    mark_as_graduated = params[:mark_as_graduated]
+
+    if student_ids.blank?
+      render json: { error: "Student IDs harus diisi" }, status: :unprocessable_entity
+      return
+    end
+
+    if target_class.blank? && !mark_as_graduated
+      render json: { error: "Kelas tujuan atau status kelulusan harus dipilih" }, status: :unprocessable_entity
+      return
+    end
+
+    begin
+      updates = {}
+      
+      # If graduating students, set status to graduated
+      if mark_as_graduated
+        updates[:status] = "graduated"
+      end
+      
+      # If moving to new class, update class_level
+      if target_class.present?
+        updates[:class_level] = target_class
+      end
+      
+      updated_count = Student.where(id: student_ids).update_all(updates)
+      
+      # Generate appropriate message
+      if mark_as_graduated && target_class.present?
+        message = "Berhasil memindahkan #{updated_count} pelajar ke #{target_class} dan mengubah status menjadi Lulus"
+      elsif mark_as_graduated
+        message = "Berhasil meluluskan #{updated_count} pelajar"
+      else
+        message = "Berhasil memindahkan #{updated_count} pelajar ke #{target_class}"
+      end
+      
+      render json: { 
+        success: true, 
+        message: message,
+        updated_count: updated_count
+      }
+    rescue => e
+      render json: { error: "Terjadi kesalahan: #{e.message}" }, status: :internal_server_error
+    end
+  end
+
+  # Bulk import methods
+  def bulk_import
+    render inertia: "Student/BulkImport"
+  end
+
+  def download_template
+    respond_to do |format|
+      format.xlsx do
+        package = Axlsx::Package.new
+        workbook = package.workbook
+        
+        # Define styles
+        header_style = workbook.styles.add_style(
+          bg_color: "4472C4",
+          fg_color: "FFFFFF",
+          b: true,
+          alignment: { horizontal: :center, vertical: :center, wrap_text: true }
+        )
+        
+        example_style = workbook.styles.add_style(
+          bg_color: "E7E6E6",
+          alignment: { horizontal: :left, vertical: :center }
+        )
+        
+        workbook.add_worksheet(name: "Import Pelajar") do |sheet|
+          # Header row
+          sheet.add_row [
+            "Nama Lengkap*",
+            "Gender* (Laki-laki/Perempuan)",
+            "Tempat Lahir*",
+            "Tanggal Lahir* (YYYY-MM-DD)",
+            "Nama Ayah*",
+            "Nama Ibu*",
+            "No HP Ayah",
+            "No HP Ibu",
+            "Alamat",
+            "Kelas*",
+            "Status* (active/inactive)",
+            "Tanggal Bergabung* (YYYY-MM-DD)",
+            "Juz Hafalan Saat Ini* (1-30)",
+            "Halaman Hafalan Saat Ini* (1-604)",
+            "Surah Hafalan Saat Ini*"
+          ], style: header_style
+          
+          # Example row
+          sheet.add_row [
+            "Ahmad Rasyid",
+            "Laki-laki",
+            "Jakarta",
+            "2012-01-15",
+            "Bapak Ahmad",
+            "Ibu Siti",
+            "081234567890",
+            "082345678901",
+            "Jl. Merdeka No. 123",
+            "1A",
+            "active",
+            Date.current.to_s,
+            "1",
+            "1",
+            "Al-Fatihah"
+          ], style: example_style
+          
+          # Set column widths for better readability
+          sheet.column_widths 20, 25, 15, 22, 20, 20, 15, 15, 30, 10, 20, 22, 25, 28, 25
+        end
+        
+        send_data package.to_stream.read,
+                  filename: "template_import_pelajar_#{Date.current}.xlsx",
+                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  disposition: 'attachment'
+      end
+    end
+  end
+
+  def preview_import
+    require 'csv'
+    require 'roo'
+    
+    if params[:file].blank?
+      render json: { error: "File tidak ditemukan" }, status: :unprocessable_entity
+      return
+    end
+
+    file = params[:file]
+    preview_data = []
+    errors = []
+    
+    begin
+      # Determine file type and read accordingly
+      spreadsheet = if file.original_filename.end_with?('.xlsx')
+        Roo::Spreadsheet.open(file.path, extension: :xlsx)
+      elsif file.original_filename.end_with?('.xls')
+        Roo::Spreadsheet.open(file.path, extension: :xls)
+      elsif file.original_filename.end_with?('.csv')
+        Roo::CSV.new(file.path)
+      else
+        render json: { error: "Format file tidak didukung. Gunakan .xlsx, .xls, atau .csv" }, status: :unprocessable_entity
+        return
+      end
+
+      headers = spreadsheet.row(1)
+      
+      (2..spreadsheet.last_row).each do |i|
+        row = spreadsheet.row(i)
+        
+        # Skip empty rows
+        next if row.all?(&:blank?)
+        
+        # Map row to hash using headers
+        row_hash = Hash[headers.zip(row)]
+        
+        student_data = {
+          line_number: i,
+          name: row_hash["Nama Lengkap*"]&.to_s&.strip,
+          gender: row_hash["Gender* (Laki-laki/Perempuan)"]&.to_s&.strip&.downcase,
+          birth_place: row_hash["Tempat Lahir*"]&.to_s&.strip,
+          birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"]),
+          father_name: row_hash["Nama Ayah*"]&.to_s&.strip,
+          mother_name: row_hash["Nama Ibu*"]&.to_s&.strip,
+          father_phone: row_hash["No HP Ayah"]&.to_s&.strip,
+          mother_phone: row_hash["No HP Ibu"]&.to_s&.strip,
+          address: row_hash["Alamat"]&.to_s&.strip,
+          class_level: row_hash["Kelas*"]&.to_s&.strip,
+          status: row_hash["Status* (active/inactive)"]&.to_s&.strip&.downcase,
+          date_joined: parse_date_from_excel(row_hash["Tanggal Bergabung* (YYYY-MM-DD)"]),
+          current_hifz_in_juz: row_hash["Juz Hafalan Saat Ini* (1-30)"]&.to_s&.strip,
+          current_hifz_in_pages: row_hash["Halaman Hafalan Saat Ini* (1-604)"]&.to_s&.strip,
+          current_hifz_in_surah: row_hash["Surah Hafalan Saat Ini*"]&.to_s&.strip
+        }
+
+        # Validate required fields
+        row_errors = []
+        row_errors << "Nama lengkap wajib diisi" if student_data[:name].blank?
+        row_errors << "Gender wajib diisi (Laki-laki/Perempuan)" if student_data[:gender].blank?
+        row_errors << "Gender harus 'laki-laki' atau 'perempuan'" unless ["laki-laki", "perempuan"].include?(student_data[:gender])
+        row_errors << "Tempat lahir wajib diisi" if student_data[:birth_place].blank?
+        row_errors << "Tanggal lahir wajib diisi" if student_data[:birth_date].blank?
+        row_errors << "Nama ayah wajib diisi" if student_data[:father_name].blank?
+        row_errors << "Nama ibu wajib diisi" if student_data[:mother_name].blank?
+        row_errors << "Kelas wajib diisi" if student_data[:class_level].blank?
+        row_errors << "Status wajib diisi (active/inactive)" if student_data[:status].blank?
+        row_errors << "Status harus 'active' atau 'inactive'" unless ["active", "inactive"].include?(student_data[:status])
+        row_errors << "Tanggal bergabung wajib diisi" if student_data[:date_joined].blank?
+        row_errors << "Juz hafalan wajib diisi" if student_data[:current_hifz_in_juz].blank?
+        row_errors << "Halaman hafalan wajib diisi" if student_data[:current_hifz_in_pages].blank?
+        row_errors << "Surah hafalan wajib diisi" if student_data[:current_hifz_in_surah].blank?
+
+        # Validate date formats
+        begin
+          Date.parse(student_data[:birth_date]) if student_data[:birth_date].present?
+        rescue ArgumentError
+          row_errors << "Format tanggal lahir tidak valid (gunakan YYYY-MM-DD)"
+        end
+
+        begin
+          Date.parse(student_data[:date_joined]) if student_data[:date_joined].present?
+        rescue ArgumentError
+          row_errors << "Format tanggal bergabung tidak valid (gunakan YYYY-MM-DD)"
+        end
+
+        student_data[:errors] = row_errors
+        student_data[:valid] = row_errors.empty?
+        
+        preview_data << student_data
+      end
+
+      render json: {
+        success: true,
+        data: preview_data,
+        total: preview_data.length,
+        valid: preview_data.count { |d| d[:valid] },
+        invalid: preview_data.count { |d| !d[:valid] }
+      }
+    rescue => e
+      render json: { error: "Gagal memproses file: #{e.message}" }, status: :internal_server_error
+    end
+  end
+
+  def bulk_create
+    if params[:students].blank?
+      render json: { error: "Data pelajar tidak ditemukan" }, status: :unprocessable_entity
+      return
+    end
+
+    created_students = []
+    failed_students = []
+
+    params[:students].each do |student_params|
+      begin
+        student = Student.new(
+          name: student_params[:name],
+          gender: student_params[:gender],
+          birth_place: student_params[:birth_place],
+          birth_date: Date.parse(student_params[:birth_date]),
+          father_name: student_params[:father_name],
+          mother_name: student_params[:mother_name],
+          father_phone: student_params[:father_phone],
+          mother_phone: student_params[:mother_phone],
+          address: student_params[:address],
+          class_level: student_params[:class_level],
+          status: student_params[:status],
+          date_joined: Date.parse(student_params[:date_joined]),
+          current_hifz_in_juz: student_params[:current_hifz_in_juz],
+          current_hifz_in_pages: student_params[:current_hifz_in_pages],
+          current_hifz_in_surah: student_params[:current_hifz_in_surah]
+        )
+
+        if student.save
+          created_students << {
+            line_number: student_params[:line_number],
+            name: student.name,
+            id: student.id
+          }
+        else
+          failed_students << {
+            line_number: student_params[:line_number],
+            name: student_params[:name],
+            errors: student.errors.full_messages
+          }
+        end
+      rescue => e
+        failed_students << {
+          line_number: student_params[:line_number],
+          name: student_params[:name],
+          errors: [e.message]
+        }
+      end
+    end
+
+    render json: {
+      success: true,
+      created: created_students.length,
+      failed: failed_students.length,
+      created_students: created_students,
+      failed_students: failed_students,
+      message: "Berhasil membuat #{created_students.length} pelajar dari #{params[:students].length} data"
+    }
+  end
+
   private
+
+  def parse_date_from_excel(value)
+    return nil if value.blank?
+    
+    # If it's already a Date object (from Excel)
+    return value.to_s if value.is_a?(Date)
+    
+    # If it's a Time or DateTime object
+    return value.to_date.to_s if value.respond_to?(:to_date)
+    
+    # If it's a string, return as is
+    value.to_s.strip
+  end
 
   def student_params
     params.expect(student: [ :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :father_phone, :mother_phone, :date_joined ])
@@ -333,4 +687,24 @@ class StudentsController < ApplicationController
       "#6b7280" # gray
     end
   end
+
+  def generate_parent_username(student_name)
+    # Convert to lowercase, remove special characters, replace spaces with nothing
+    clean_name = student_name.downcase
+                            .gsub(/[^a-z0-9\s]/, '') # Remove special chars
+                            .gsub(/\s+/, '')          # Remove all spaces
+    
+    base_username = "orangtua_#{clean_name}"
+    
+    # Check if username already exists, add number suffix if needed
+    username = base_username
+    counter = 1
+    while User.exists?(username: username)
+      username = "#{base_username}#{counter}"
+      counter += 1
+    end
+    
+    username
+  end
+
 end

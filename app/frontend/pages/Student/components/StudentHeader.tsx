@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Download, Plus, Mic, FileText, FileSpreadsheet, Sheet } from "lucide-react"
+import { ArrowLeft, Download, Plus, Mic, FileText, FileSpreadsheet, Sheet, GraduationCap, Upload } from "lucide-react"
 import { router } from "@inertiajs/react"
 import {
   DropdownMenu,
@@ -79,7 +79,7 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Senarai Pelajar</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Senarai Pelajar</h1>
         <p className="text-sm sm:text-base text-muted-foreground">Urus dan pantau data pelajar hafalan Al-Quran</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -96,6 +96,24 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
           <Plus className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Tambah Pelajar</span>
           <span className="sm:hidden">Tambah</span>
+        </Button>
+        <Button
+          variant="outline"
+          className="border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700 hover:border-cyan-300 cursor-pointer md:w-full"
+          onClick={() => router.visit("/students/bulk_import")}
+        >
+          <Upload className="h-4 w-4 mr-2" />
+          <span className="hidden sm:inline">Import Beramai-ramai</span>
+          <span className="sm:hidden">Import</span>
+        </Button>
+        <Button
+          variant="outline"
+          className="border-orange-200 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 cursor-pointer md:w-full"
+          onClick={() => router.visit("/students/promote")}
+        >
+          <GraduationCap className="h-4 w-4 mr-2" />
+          <span className="hidden sm:inline">Naik Kelas</span>
+          <span className="sm:hidden">Naik Kelas</span>
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

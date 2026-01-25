@@ -16,12 +16,39 @@ Activity.destroy_all
 
 puts "Seeding initial data..."
 
-User.create!(username: "admin", password: "admin", name: "Administrator", role: "admin") unless User.exists?(username: "admin")
+# Create default users with different roles
+User.find_or_create_by!(username: "admin") do |user|
+  user.password = "admin"
+  user.name = "Administrator"
+  user.role = "admin"
+end
+
+User.find_or_create_by!(username: "guru1") do |user|
+  user.password = "guru123"
+  user.name = "Ustadz Ahmad"
+  user.role = "teacher"
+end
+
+User.find_or_create_by!(username: "guru2") do |user|
+  user.password = "guru123"
+  user.name = "Ustadzah Fatimah"
+  user.role = "teacher"
+end
 
 puts "Creating new student records..."
 
 # --- Data for random selection ---
-CLASSES = [ "Class A", "Class B", "Class C" ]
+# Updated class format for SMP/SMA (7-12 dengan A-D)
+CLASSES = [
+  # Kelas 7-9 (SMP) - fokus penelitian
+  "7A", "7B", "7C", "7D",
+  "8A", "8B", "8C", "8D",
+  "9A", "9B", "9C", "9D",
+  # Kelas 10-12 (SMA) - opsional untuk masa depan
+  "10A", "10B", "10C", "10D",
+  "11A", "11B", "11C", "11D",
+  "12A", "12B", "12C", "12D"
+]
 STATUSES = [ "active", "inactive", "graduated" ]
 GENDERS = [ "male", "female" ]
 
@@ -215,4 +242,22 @@ Student.all.each do |student|
 end
 
 puts "Created #{Activity.count} activities."
+
+puts "Creating parent users..."
+
+# Create parent users for first 5 students
+Student.limit(5).each_with_index do |student, index|
+  parent_username = "parent#{index + 1}"
+  
+  User.find_or_create_by!(username: parent_username) do |user|
+    user.password = "parent123"
+    user.name = student.father_name # Use father's name as parent account
+    user.role = "parent"
+    user.student_id = student.id
+  end
+  
+  puts "Created parent user '#{parent_username}' for student '#{student.name}'"
+end
+
+puts "Created #{User.where(role: 'orang_tua').count} parent users."
 puts "Seeding completed successfully!"

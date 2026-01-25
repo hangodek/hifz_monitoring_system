@@ -806,7 +806,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 {total_activities_count > 5 && (
                   <Dialog open={isOpen} onOpenChange={handleOpenChange}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="cursor-pointer border-gray-200/60">
+                      <Button variant="outline" size="sm" className="cursor-pointer border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
                         Lihat Semua ({total_activities_count})
                       </Button>
                     </DialogTrigger>

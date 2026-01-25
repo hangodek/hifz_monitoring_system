@@ -85,7 +85,21 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
   const selectedBirthDate = formData.birth_date ? new Date(formData.birth_date + 'T12:00:00') : undefined
   const selectedDateJoined = formData.date_joined ? new Date(formData.date_joined + 'T12:00:00') : undefined
 
-  const classes = ["Class A", "Class B", "Class C"]
+  // Generate class levels for SMP/SMA (7-12) with sections A-D
+  const classes = [
+    // Kelas 7 (SMP)
+    "7A", "7B", "7C", "7D",
+    // Kelas 8 (SMP)
+    "8A", "8B", "8C", "8D",
+    // Kelas 9 (SMP)
+    "9A", "9B", "9C", "9D",
+    // Kelas 10 (SMA)
+    "10A", "10B", "10C", "10D",
+    // Kelas 11 (SMA)
+    "11A", "11B", "11C", "11D",
+    // Kelas 12 (SMA)
+    "12A", "12B", "12C", "12D"
+  ]
   const statuses = ["active", "inactive", "graduated"]
   const genders = ["male", "female"]
   

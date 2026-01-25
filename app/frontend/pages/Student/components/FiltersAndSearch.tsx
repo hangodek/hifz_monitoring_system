@@ -38,7 +38,7 @@ export function FiltersAndSearch({
           </div>
           <h2 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-cyan-700 to-blue-700 bg-clip-text text-transparent">Penapis & Carian</h2>
         </div>
-        
+
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center flex-1">
             <div className="relative flex-1 max-w-full sm:max-w-sm">
@@ -57,9 +57,36 @@ export function FiltersAndSearch({
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
                   <SelectItem className="cursor-pointer" value="all">Semua Kelas</SelectItem>
-                  <SelectItem className="cursor-pointer" value="Class A">Kelas A</SelectItem>
-                  <SelectItem className="cursor-pointer" value="Class B">Kelas B</SelectItem>
-                  <SelectItem className="cursor-pointer" value="Class C">Kelas C</SelectItem>
+                  {/* Kelas 7 */}
+                  <SelectItem className="cursor-pointer" value="7A">7A</SelectItem>
+                  <SelectItem className="cursor-pointer" value="7B">7B</SelectItem>
+                  <SelectItem className="cursor-pointer" value="7C">7C</SelectItem>
+                  <SelectItem className="cursor-pointer" value="7D">7D</SelectItem>
+                  {/* Kelas 8 */}
+                  <SelectItem className="cursor-pointer" value="8A">8A</SelectItem>
+                  <SelectItem className="cursor-pointer" value="8B">8B</SelectItem>
+                  <SelectItem className="cursor-pointer" value="8C">8C</SelectItem>
+                  <SelectItem className="cursor-pointer" value="8D">8D</SelectItem>
+                  {/* Kelas 9 */}
+                  <SelectItem className="cursor-pointer" value="9A">9A</SelectItem>
+                  <SelectItem className="cursor-pointer" value="9B">9B</SelectItem>
+                  <SelectItem className="cursor-pointer" value="9C">9C</SelectItem>
+                  <SelectItem className="cursor-pointer" value="9D">9D</SelectItem>
+                  {/* Kelas 10 */}
+                  <SelectItem className="cursor-pointer" value="10A">10A</SelectItem>
+                  <SelectItem className="cursor-pointer" value="10B">10B</SelectItem>
+                  <SelectItem className="cursor-pointer" value="10C">10C</SelectItem>
+                  <SelectItem className="cursor-pointer" value="10D">10D</SelectItem>
+                  {/* Kelas 11 */}
+                  <SelectItem className="cursor-pointer" value="11A">11A</SelectItem>
+                  <SelectItem className="cursor-pointer" value="11B">11B</SelectItem>
+                  <SelectItem className="cursor-pointer" value="11C">11C</SelectItem>
+                  <SelectItem className="cursor-pointer" value="11D">11D</SelectItem>
+                  {/* Kelas 12 */}
+                  <SelectItem className="cursor-pointer" value="12A">12A</SelectItem>
+                  <SelectItem className="cursor-pointer" value="12B">12B</SelectItem>
+                  <SelectItem className="cursor-pointer" value="12C">12C</SelectItem>
+                  <SelectItem className="cursor-pointer" value="12D">12D</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -92,11 +119,10 @@ export function FiltersAndSearch({
               <Button
                 variant={viewMode === "grid" ? "default" : "outline"}
                 size="sm"
-                className={`cursor-pointer flex-1 sm:flex-none ${
-                  viewMode === "grid" 
-                    ? "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700" 
+                className={`cursor-pointer flex-1 sm:flex-none ${viewMode === "grid"
+                    ? "bg-black text-white hover:bg-gray-800"
                     : "border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700"
-                }`}
+                  }`}
                 onClick={() => setViewMode("grid")}
               >
                 Grid
@@ -104,11 +130,10 @@ export function FiltersAndSearch({
               <Button
                 variant={viewMode === "list" ? "default" : "outline"}
                 size="sm"
-                className={`cursor-pointer flex-1 sm:flex-none ${
-                  viewMode === "list" 
-                    ? "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700" 
+                className={`cursor-pointer flex-1 sm:flex-none ${viewMode === "list"
+                    ? "bg-black text-white hover:bg-gray-800"
                     : "border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700"
-                }`}
+                  }`}
                 onClick={() => setViewMode("list")}
               >
                 Senarai

@@ -7,11 +7,32 @@ Rails.application.routes.draw do
   end
   resources :students, only: [ :index, :new, :create, :show, :edit, :update ] do
     resources :activities, only: [ :create, :destroy ]
+    collection do
+      get :promote
+      post :bulk_promote
+      get :bulk_import
+      post :preview_import
+      post :bulk_create
+      get 'download_template', defaults: { format: 'xlsx' }
+    end
     member do
       get :activities_list
     end
   end
   resources :teachers, only: [ :index ]
+  
+  # Users management (pengurus only)
+  resources :users, only: [ :index ] do
+    member do
+      patch :update_role
+    end
+  end
+  
+  # Parent dashboard - orang tua can only view their child's progress
+  resource :parent, only: [ :show ], controller: 'parents' do
+    get :activities_list, on: :member
+  end
+  
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

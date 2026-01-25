@@ -47,7 +47,7 @@ export default function Session() {
           </div>
           <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-white to-blue-50/30">
             <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-center text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">
+              <CardTitle className="text-center text-2xl font-bold">
                 Log Masuk ke Papan Pemuka
               </CardTitle>
               <p className="text-center text-sm text-muted-foreground">Sistem Pengurusan Hifz MATAN</p>
@@ -88,7 +88,7 @@ export default function Session() {
                     className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
-                <Button type="submit" className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200" disabled={processing}>
+                <Button type="submit" className="w-full cursor-pointer shadow-lg hover:shadow-xl transition-all duration-200" disabled={processing}>
                   {processing ? 'Sedang Log Masuk...' : 'Log Masuk'}
                 </Button>
               </div>
