@@ -101,6 +101,7 @@ GEM
     crass (1.0.6)
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
+    csv (3.3.5)
     date (3.4.1)
     debug (1.11.0)
       irb (~> 1.10)
@@ -115,7 +116,12 @@ GEM
       tzinfo
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm-linux-gnu)
+    ffi (1.17.2-arm-linux-musl)
     ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -393,6 +399,7 @@ DEPENDENCIES
   capybara
   chartkick
   cssbundling-rails
+  csv
   debug
   faker
   image_processing (~> 1.2)
