@@ -281,7 +281,7 @@ export default function BulkImport() {
               </Alert>
             )}
 
-            {file && !previewData && (
+            {file && (
               <Button 
                 onClick={handleUpload} 
                 disabled={isUploading}
