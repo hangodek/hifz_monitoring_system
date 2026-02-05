@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Copy, CheckCircle2, Printer } from "lucide-react"
+import { Copy, CheckCircle2, Printer, Loader2 } from "lucide-react"
 import {
   StudentHeader,
   FiltersAndSearch,
@@ -52,16 +52,46 @@ interface StudentsIndexProps {
     username: string
     password: string
   }
+  statistics: {
+    total: number
+    active: number
+    inactive: number
+    graduated: number
+    class_distribution: Record<string, number>
+  }
+  pagination: {
+    current_page: number
+    per_page: number
+    total_count: number
+    total_pages: number
+    has_more: boolean
+  }
 }
 
-export default function StudentsIndex({ students, parent_credentials }: StudentsIndexProps) {
+export default function StudentsIndex({ students: initialStudents, parent_credentials, statistics, pagination }: StudentsIndexProps) {
+  const [students, setStudents] = useState<Student[]>(initialStudents)
+  const [allStudentsForStats] = useState<Student[]>(initialStudents) // Keep original for stats if needed
   const [searchTerm, setSearchTerm] = useState("")
+  const [searchInput, setSearchInput] = useState("") // For debouncing
   const [classFilter, setClassFilter] = useState("all")
   const [juzFilter, setJuzFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [currentPage, setCurrentPage] = useState(pagination.current_page)
+  const [hasMore, setHasMore] = useState(pagination.has_more)
+  const [totalCount, setTotalCount] = useState(pagination.total_count)
+
+  // Debounced search - trigger search 500ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(searchInput)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   // Show credentials dialog if parent_credentials is available
   useEffect(() => {
@@ -78,6 +108,35 @@ export default function StudentsIndex({ students, parent_credentials }: Students
 
   const handlePrint = () => {
     window.print()
+  }
+
+  // Load more students
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore) return
+
+    setIsLoadingMore(true)
+    try {
+      const nextPage = currentPage + 1
+      const response = await fetch(`/students/load_more?page=${nextPage}`, {
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
+      })
+      
+      const data = await response.json()
+      
+      if (data.students) {
+        setStudents(prev => [...prev, ...data.students])
+        setCurrentPage(nextPage)
+        setHasMore(data.pagination.has_more)
+        setTotalCount(data.pagination.total_count)
+      }
+    } catch (error) {
+      console.error('Error loading more students:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
   }
 
   // Filter and sort students
@@ -127,8 +186,8 @@ export default function StudentsIndex({ students, parent_credentials }: Students
 
         {/* Filters and Search */}
         <FiltersAndSearch
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          searchTerm={searchInput}
+          setSearchTerm={setSearchInput}
           classFilter={classFilter}
           setClassFilter={setClassFilter}
           statusFilter={statusFilter}
@@ -140,7 +199,7 @@ export default function StudentsIndex({ students, parent_credentials }: Students
         />
 
         {/* Stats Summary */}
-        <StatsSummary students={students} />
+        <StatsSummary statistics={statistics} />
 
         {viewMode === "grid" ? (
           <StudentGridView
@@ -157,6 +216,27 @@ export default function StudentsIndex({ students, parent_credentials }: Students
         )}
 
         {filteredStudents.length === 0 && <NoStudentsFound />}
+
+        {/* Load More Button */}
+        {hasMore && filteredStudents.length > 0 && (
+          <div className="flex justify-center py-6">
+            <Button
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              size="lg"
+              className="min-w-[200px]"
+            >
+              {isLoadingMore ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Memuat...
+                </>
+              ) : (
+                <>Muat Lebih Banyak ({students.length} dari {totalCount})</>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Parent Credentials Dialog */}

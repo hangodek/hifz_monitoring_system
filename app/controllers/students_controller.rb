@@ -7,18 +7,86 @@ class StudentsController < ApplicationController
   before_action :require_admin!
   
   def index
-    students = Student.all.order(name: :asc).map do |student|
-      student.as_json.merge(
-        avatar: avatar_url(student, size: :thumb)
-      )
-    end
+    # Pagination parameters
+    page = params[:page]&.to_i || 1
+    per_page = 20
+    
+    # Base query
+    students_query = Student.all.order(name: :asc)
+    
+    # Total count for pagination
+    total_count = students_query.count
+    
+    # Calculate statistics from all students (not just paginated)
+    all_students = students_query.to_a
+    total_students = all_students.count
+    active_students = all_students.count { |s| s.status == "active" }
+    inactive_students = all_students.count { |s| s.status == "inactive" }
+    graduated_students = all_students.count { |s| s.status == "graduated" }
+    
+    # Class distribution
+    class_distribution = all_students.group_by(&:class_level).transform_values(&:count)
+    
+    # Paginated students
+    students = students_query
+                .limit(per_page)
+                .offset((page - 1) * per_page)
+                .map do |student|
+                  student.as_json.merge(
+                    avatar: avatar_url(student, size: :thumb)
+                  )
+                end
 
     # Get parent credentials from flash if available
     parent_credentials = flash[:parent_credentials]
 
     render inertia: "Student/Index", props: {
       students: students,
-      parent_credentials: parent_credentials
+      parent_credentials: parent_credentials,
+      statistics: {
+        total: total_students,
+        active: active_students,
+        inactive: inactive_students,
+        graduated: graduated_students,
+        class_distribution: class_distribution
+      },
+      pagination: {
+        current_page: page,
+        per_page: per_page,
+        total_count: total_count,
+        total_pages: (total_count.to_f / per_page).ceil,
+        has_more: page < (total_count.to_f / per_page).ceil
+      }
+    }
+  end
+
+  def load_more
+    # Pagination parameters
+    page = params[:page]&.to_i || 1
+    per_page = 20
+    
+    # Query students
+    students_query = Student.all.order(name: :asc)
+    total_count = students_query.count
+    
+    students = students_query
+                .limit(per_page)
+                .offset((page - 1) * per_page)
+                .map do |student|
+                  student.as_json.merge(
+                    avatar: avatar_url(student, size: :thumb)
+                  )
+                end
+
+    render json: {
+      students: students,
+      pagination: {
+        current_page: page,
+        per_page: per_page,
+        total_count: total_count,
+        total_pages: (total_count.to_f / per_page).ceil,
+        has_more: page < (total_count.to_f / per_page).ceil
+      }
     }
   end
 

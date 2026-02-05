@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       post :preview_import
       post :bulk_create
       get 'download_template', defaults: { format: 'xlsx' }
+      get :load_more
     end
     member do
       get :activities_list

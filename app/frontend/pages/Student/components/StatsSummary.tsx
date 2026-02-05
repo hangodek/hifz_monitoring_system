@@ -7,10 +7,16 @@ interface Student {
 }
 
 interface StatsSummaryProps {
-  students: Student[]
+  statistics: {
+    total: number
+    active: number
+    inactive: number
+    graduated: number
+    class_distribution: Record<string, number>
+  }
 }
 
-export function StatsSummary({ students }: StatsSummaryProps) {
+export function StatsSummary({ statistics }: StatsSummaryProps) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
       <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100/50 hover:shadow-xl transition-shadow duration-200">
@@ -21,8 +27,8 @@ export function StatsSummary({ students }: StatsSummaryProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-lg sm:text-2xl font-bold text-blue-600">{students.length}</div>
-          <p className="text-xs text-blue-700/70">Pelajar aktif</p>
+          <div className="text-lg sm:text-2xl font-bold text-blue-600">{statistics.total}</div>
+          <p className="text-xs text-blue-700/70">Total pelajar</p>
         </CardContent>
       </Card>
 
@@ -35,7 +41,7 @@ export function StatsSummary({ students }: StatsSummaryProps) {
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-2xl font-bold text-green-600">
-            {students.filter((s) => s.status === "active").length}
+            {statistics.active}
           </div>
           <p className="text-xs text-green-700/70">Sedang aktif</p>
         </CardContent>
@@ -50,7 +56,7 @@ export function StatsSummary({ students }: StatsSummaryProps) {
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-2xl font-bold text-red-600">
-            {students.filter((s) => s.status === "inactive").length}
+            {statistics.inactive}
           </div>
           <p className="text-xs text-red-700/70">Sedang tidak aktif</p>
         </CardContent>
@@ -64,7 +70,7 @@ export function StatsSummary({ students }: StatsSummaryProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-lg sm:text-2xl font-bold text-orange-600">{students.filter((s) => s.status === "graduated").length}</div>
+          <div className="text-lg sm:text-2xl font-bold text-orange-600">{statistics.graduated}</div>
           <p className="text-xs text-orange-700/70">Pelajar yang selesai hafalan</p>
         </CardContent>
       </Card>
