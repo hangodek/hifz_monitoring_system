@@ -213,7 +213,7 @@ export default function BulkImport() {
               Download Template
             </CardTitle>
             <CardDescription>
-              Download template CSV terlebih dahulu untuk memastikan format data yang benar
+              Download template Excel terlebih dahulu untuk memastikan format data yang benar
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -225,9 +225,6 @@ export default function BulkImport() {
               <Download className="h-4 w-4 mr-2" />
               Download Template Excel
             </Button>
-            <p className="text-sm text-muted-foreground mt-3">
-              Template Excel sudah termasuk contoh data dan format yang rapi. Lebih mudah digunakan daripada CSV.
-            </p>
           </CardContent>
         </Card>
 
