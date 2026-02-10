@@ -269,10 +269,10 @@ export default function StudentsIndex({ students: initialStudents, parent_creden
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
-              Akaun Ibu Bapa Berjaya Dicipta
+              Akun Orang Tua Berhasil Dibuat
             </DialogTitle>
             <DialogDescription>
-              Sila simpan maklumat login ini untuk diberikan kepada ibu bapa pelajar.
+              Silakan simpan informasi login ini untuk diberikan kepada orang tua siswa.
             </DialogDescription>
           </DialogHeader>
 
@@ -280,7 +280,7 @@ export default function StudentsIndex({ students: initialStudents, parent_creden
             <div className="space-y-4">
               <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
                 <p className="text-sm font-medium text-gray-700 mb-3">
-                  Maklumat Login untuk: <span className="font-bold text-gray-900">{parent_credentials.student_name}</span>
+                  Informasi Login untuk: <span className="font-bold text-gray-900">{parent_credentials.student_name}</span>
                 </p>
 
                 <div className="space-y-3">
@@ -305,7 +305,7 @@ export default function StudentsIndex({ students: initialStudents, parent_creden
 
                   <div className="bg-white rounded p-3 border">
                     <div className="flex justify-between items-start mb-1">
-                      <span className="text-xs text-gray-500">Kata Laluan</span>
+                      <span className="text-xs text-gray-500">Kata Sandi</span>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -326,7 +326,7 @@ export default function StudentsIndex({ students: initialStudents, parent_creden
 
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <p className="text-xs text-yellow-800">
-                  ⚠️ <strong>Penting:</strong> Maklumat ini hanya ditunjukkan sekali sahaja. Sila simpan atau cetak sebelum menutup tetingkap ini.
+                  ⚠️ <strong>Penting:</strong> Informasi ini hanya ditunjukkan sekali saja. Silakan simpan atau cetak sebelum menutup jendela ini.
                 </p>
               </div>
 

@@ -58,7 +58,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
               </div>
               Penyerahan Harian
             </CardTitle>
-            <CardDescription>Bilangan aktiviti pelajar yang diserahkan setiap hari</CardDescription>
+            <CardDescription>Jumlah aktivitas siswa yang diserahkan setiap hari</CardDescription>
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -74,7 +74,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
             <PopoverContent className="w-auto p-0 border-gray-200/60" align="end">
               <div className="p-4 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Tarikh Mula</label>
+                  <label className="text-sm font-medium">Tanggal Awal</label>
                   <Calendar
                     mode="single"
                     selected={dateRange.from}
@@ -84,7 +84,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Tarikh Akhir</label>
+                  <label className="text-sm font-medium">Tanggal Akhir</label>
                   <Calendar
                     mode="single"
                     selected={dateRange.to}

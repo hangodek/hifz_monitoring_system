@@ -79,8 +79,8 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Senarai Pelajar</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">Urus dan pantau data pelajar hafalan Al-Quran</p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Daftar Siswa</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Kelola dan pantau data siswa hafalan Al-Quran</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 cursor-pointer md:w-full" onClick={() => router.visit("/teachers")}>
@@ -94,7 +94,7 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
           onClick={() => router.visit("/students/new")}
         >
           <Plus className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Tambah Pelajar</span>
+          <span className="hidden sm:inline">Tambah Siswa</span>
           <span className="sm:hidden">Tambah</span>
         </Button>
         <Button
@@ -103,7 +103,7 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
           onClick={() => router.visit("/students/bulk_import")}
         >
           <Upload className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Import Beramai-ramai</span>
+          <span className="hidden sm:inline">Import Massal</span>
           <span className="sm:hidden">Import</span>
         </Button>
         <Button
@@ -119,28 +119,28 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer md:w-full" disabled={isExporting}>
               <Download className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">{isExporting ? 'Mengeksport...' : 'Eksport Data'}</span>
-              <span className="sm:hidden">{isExporting ? '...' : 'Eksport'}</span>
+              <span className="hidden sm:inline">{isExporting ? 'Mengekspor...' : 'Ekspor Data'}</span>
+              <span className="sm:hidden">{isExporting ? '...' : 'Ekspor'}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 border-gray-200/60">
             <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer" disabled={isExporting}>
               <FileText className="h-4 w-4 mr-2" />
-              Eksport sebagai PDF
+              Ekspor sebagai PDF
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExportExcel} className="cursor-pointer" disabled={isExporting}>
               <Sheet className="h-4 w-4 mr-2" />
-              Eksport sebagai Excel
+              Ekspor sebagai Excel
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExportCSV} className="cursor-pointer" disabled={isExporting}>
               <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Eksport sebagai CSV
+              Ekspor sebagai CSV
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="outline" className="border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 cursor-pointer md:w-full" onClick={() => router.visit("/dashboard")}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Kembali ke Papan Pemuka</span>
+          <span className="hidden sm:inline">Kembali ke Dasbor</span>
           <span className="sm:hidden">Kembali</span>
         </Button>
       </div>

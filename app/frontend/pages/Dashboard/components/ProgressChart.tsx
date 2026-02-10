@@ -29,9 +29,9 @@ export function ProgressChart({ data }: ProgressChartProps) {
           <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
             <TrendingUp className="h-5 w-5 text-emerald-600" />
           </div>
-          Kemajuan Murajaah & Hafalan Bulanan
+          Kemajuan Muraja'ah & Hafalan Bulanan
         </CardTitle>
-        <CardDescription>Aktiviti bulanan semua pelajar</CardDescription>
+        <CardDescription>Aktivitas bulanan semua siswa</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>
@@ -58,7 +58,7 @@ export function ProgressChart({ data }: ProgressChartProps) {
               dataKey="revision" 
               stroke="#10b981" 
               strokeWidth={3} 
-              name="Aktiviti Murajaah"
+              name="Aktivitas Muraja'ah"
               dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6 }}
             />
@@ -67,7 +67,7 @@ export function ProgressChart({ data }: ProgressChartProps) {
               dataKey="memorization" 
               stroke="#f59e0b" 
               strokeWidth={3} 
-              name="Aktiviti Hafalan"
+              name="Aktivitas Hafalan"
               dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6 }}
             />

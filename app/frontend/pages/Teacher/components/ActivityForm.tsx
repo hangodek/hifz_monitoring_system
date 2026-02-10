@@ -250,7 +250,7 @@ export function ActivityForm({
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Muka Surat Dari <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Halaman Dari <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
                       placeholder="1"
@@ -262,7 +262,7 @@ export function ActivityForm({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Muka Surat Hingga <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Halaman Hingga <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
                       placeholder="20"
@@ -323,13 +323,13 @@ export function ActivityForm({
                 {activityType === "memorization" && currentStudent && (
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">
-                      Kemajuan Semasa: {currentStudent.current_hifz_in_surah}, Juz {currentStudent.current_hifz_in_juz}, {currentStudent.current_hifz_in_pages} muka surat
+                      Kemajuan Saat Ini: {currentStudent.current_hifz_in_surah}, Juz {currentStudent.current_hifz_in_juz}, {currentStudent.current_hifz_in_pages} halaman
                     </Label>
                     {activityDetails.juzTo && activityDetails.pageTo && (() => {
                       const newProgress = calculateNewProgress();
                       return newProgress ? (
                         <div className="text-sm text-muted-foreground">
-                          Kemajuan baharu: {activityDetails.surahTo}, Juz {newProgress.newJuz}, {newProgress.newPages} muka surat
+                          Kemajuan baru: {activityDetails.surahTo}, Juz {newProgress.newJuz}, {newProgress.newPages} halaman
                         </div>
                       ) : null;
                     })()}
@@ -341,7 +341,7 @@ export function ActivityForm({
             <div className="space-y-2">
               <Label>Catatan</Label>
               <Textarea
-                placeholder="Tambah catatan mengenai aktiviti ini..."
+                placeholder="Tambah catatan mengenai aktivitas ini..."
                 value={activityDetails.notes}
                 onChange={(e) => setActivityDetails((prev) => ({ ...prev, notes: e.target.value }))}
                 className="border-gray-200/60"
@@ -388,7 +388,7 @@ export function ActivityForm({
               }
             >
               <Save className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Simpan Aktiviti</span>
+              <span className="hidden sm:inline">Simpan Aktivitas</span>
               <span className="sm:hidden">Simpan</span>
             </Button>
           </>

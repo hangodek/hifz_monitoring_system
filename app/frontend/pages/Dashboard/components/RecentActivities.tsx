@@ -105,9 +105,9 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
               <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
                 <Clock className="h-5 w-5 text-indigo-600" />
               </div>
-              Aktiviti Terkini
+              Aktivitas Terkini
             </CardTitle>
-            <CardDescription>Aktiviti hafalan pelajar dalam beberapa jam terakhir</CardDescription>
+            <CardDescription>Aktivitas hafalan siswa dalam beberapa jam terakhir</CardDescription>
           </div>
           {totalActivitiesCount > 5 && (
             <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -118,9 +118,9 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Semua Aktiviti Terkini</DialogTitle>
+                  <DialogTitle>Semua Aktivitas Terkini</DialogTitle>
                   <DialogDescription>
-                    Sejarah lengkap aktiviti hafalan dan murajaah pelajar
+                    Sejarah lengkap aktivitas hafalan dan muraja'ah siswa
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -172,7 +172,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                           </div>
                           <div>
-                            <span className="font-medium">Muka Surat:</span> {activity.page_from}-{activity.page_to}
+                            <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
                           </div>
                           <div>
                             <span className="font-medium">Juz:</span>{' '}
@@ -181,7 +181,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                               : activity.juz || 'T/A'}
                           </div>
                           <div>
-                            <span className="font-medium">Masa:</span> {activity.time}
+                            <span className="font-medium">Waktu:</span> {activity.time}
                           </div>
                         </div>
                         {activity.notes && (
@@ -272,15 +272,15 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
         {activities.length === 0 && (
           <div className="text-center py-8">
             <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Tiada aktiviti terkini dijumpai</p>
-            <p className="text-sm text-muted-foreground">Aktiviti akan muncul di sini apabila pelajar mula menghafal</p>
+            <p className="text-muted-foreground">Tidak ada aktivitas terkini ditemukan</p>
+            <p className="text-sm text-muted-foreground">Aktivitas akan muncul di sini ketika siswa mulai menghafal</p>
           </div>
         )}
         {totalActivitiesCount > 5 && (
           <div className="text-center pt-4 border-t border-gray-200">
             <p className="text-xs text-muted-foreground">
-              Menunjukkan 5 aktiviti terkini. 
-              <span className="font-medium"> {totalActivitiesCount - 5} aktiviti lagi tersedia.</span>
+              Menunjukkan 5 aktivitas terkini. 
+              <span className="font-medium"> {totalActivitiesCount - 5} aktivitas lagi tersedia.</span>
             </p>
           </div>
         )}

@@ -36,7 +36,7 @@ export function FiltersAndSearch({
           <div className="h-10 w-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
             <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600" />
           </div>
-          <h2 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-cyan-700 to-blue-700 bg-clip-text text-transparent">Penapis & Carian</h2>
+          <h2 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-cyan-700 to-blue-700 bg-clip-text text-transparent">Filter & Pencarian</h2>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -44,7 +44,7 @@ export function FiltersAndSearch({
             <div className="relative flex-1 max-w-full sm:max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-cyan-600" />
               <Input
-                placeholder="Cari nama pelajar..."
+                placeholder="Cari nama siswa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 border-cyan-200 focus:border-cyan-400 focus:ring-cyan-400"
@@ -136,7 +136,7 @@ export function FiltersAndSearch({
                   }`}
                 onClick={() => setViewMode("list")}
               >
-                Senarai
+                Daftar
               </Button>
             </div>
           </div>

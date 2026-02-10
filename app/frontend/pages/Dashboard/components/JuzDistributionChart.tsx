@@ -70,9 +70,9 @@ export function JuzDistributionChart({ data }: JuzDistributionChartProps) {
           <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center">
             <BookOpen className="h-5 w-5 text-purple-600" />
           </div>
-          Taburan Juz Pelajar
+          Distribusi Juz Siswa
         </CardTitle>
-        <CardDescription>Taburan pelajar berdasarkan juz hafalan semasa</CardDescription>
+        <CardDescription>Distribusi siswa berdasarkan juz hafalan saat ini</CardDescription>
       </CardHeader>
       <CardContent className="mt-2">
         <ResponsiveContainer width="100%" height={250}>

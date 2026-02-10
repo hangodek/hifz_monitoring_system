@@ -20,7 +20,7 @@ export function ParentHeader({ studentName }: { studentName: string }) {
           onClick={() => router.delete("/session")}
         >
           <LogOut className="h-4 w-4 mr-2" />
-          Log Keluar
+          Keluar
         </Button>
       </div>
     </div>

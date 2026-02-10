@@ -117,7 +117,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
       }
     } catch (error: any) {
       console.error("Error updating role:", error)
-      alert(error.response?.data?.errors?.join(", ") || "Gagal mengemas kini role")
+      alert(error.response?.data?.errors?.join(", ") || "Gagal memperbarui role")
     } finally {
       setUpdatingUserId(null)
     }
@@ -129,8 +129,8 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pengurusan Pengguna</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Urus role dan akses pengguna sistem</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Manajemen Pengguna</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Kelola role dan akses pengguna sistem</p>
           </div>
           <Button
             variant="outline"
@@ -196,7 +196,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
               <div className="text-2xl font-bold text-red-600">
                 {users.filter(u => u.role === "admin").length}
               </div>
-              <p className="text-xs text-red-700/70">Pentadbir sistem</p>
+              <p className="text-xs text-red-700/70">Administrator sistem</p>
             </CardContent>
           </Card>
 
@@ -222,7 +222,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
               <div className="text-2xl font-bold text-green-600">
                 {users.filter(u => u.role === "parent").length}
               </div>
-              <p className="text-xs text-green-700/70">Ibu bapa pelajar</p>
+              <p className="text-xs text-green-700/70">Orang tua siswa</p>
             </CardContent>
           </Card>
         </div>
@@ -234,7 +234,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
               <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
                 <UsersIcon className="h-5 w-5 text-indigo-600" />
               </div>
-              Senarai Pengguna
+              Daftar Pengguna
             </CardTitle>
             <CardDescription>
               Jumlah {users.length} pengguna dalam sistem
@@ -250,8 +250,8 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                     <TableHead>Nama</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
-                    <TableHead>Pelajar</TableHead>
-                    <TableHead>Tarikh Daftar</TableHead>
+                    <TableHead>Siswa</TableHead>
+                    <TableHead>Tanggal Daftar</TableHead>
                     <TableHead className="text-right">Tindakan</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -260,7 +260,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8">
                         <UsersIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">Tiada pengguna dijumpai</p>
+                        <p className="text-muted-foreground">Tidak ada pengguna ditemukan</p>
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -308,7 +308,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                               {updatingUserId === user.id ? (
                                 <div className="flex items-center gap-2">
                                   <Loader2 className="h-4 w-4 animate-spin" />
-                                  <span>Mengemas kini...</span>
+                                  <span>Memperbarui...</span>
                                 </div>
                               ) : (
                                 <SelectValue placeholder="Pilih role" />

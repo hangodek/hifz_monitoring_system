@@ -86,20 +86,20 @@ export default function CreateStudent() {
 
     // Required fields (null: false in schema)
     if (!formData.student_number.trim()) newErrors.student_number = "No Induk diperlukan"
-    if (!formData.name.trim()) newErrors.name = "Nama pelajar diperlukan"
-    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz semasa diperlukan"
-    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman semasa diperlukan"
+    if (!formData.name.trim()) newErrors.name = "Nama siswa diperlukan"
+    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz saat ini diperlukan"
+    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman saat ini diperlukan"
     if (!formData.class_level.trim()) newErrors.class_level = "Kelas diperlukan"
     if (!formData.status.trim()) newErrors.status = "Status diperlukan"
-    if (!formData.gender.trim()) newErrors.gender = "Jantina diperlukan"
+    if (!formData.gender.trim()) newErrors.gender = "Jenis kelamin diperlukan"
     if (!formData.birth_place.trim()) newErrors.birth_place = "Tempat lahir diperlukan"
-    if (!formData.birth_date) newErrors.birth_date = "Tarikh lahir diperlukan"
-    if (!formData.father_name.trim()) newErrors.father_name = "Nama bapa diperlukan"
+    if (!formData.birth_date) newErrors.birth_date = "Tanggal lahir diperlukan"
+    if (!formData.father_name.trim()) newErrors.father_name = "Nama ayah diperlukan"
     if (!formData.mother_name.trim()) newErrors.mother_name = "Nama ibu diperlukan"
 
     // Optional fields validation (only validate format if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Format emel tidak sah"
+      newErrors.email = "Format email tidak valid"
     }
 
     setErrors(newErrors)
@@ -162,8 +162,8 @@ export default function CreateStudent() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Tambah Pelajar Baharu</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Cipta profil pelajar baharu dan tambah ke sistem</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Tambah Siswa Baru</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Buat profil siswa baru dan tambah ke sistem</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
             <Button
@@ -172,7 +172,7 @@ export default function CreateStudent() {
               onClick={handleBackClick}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Kembali ke Senarai Pelajar</span>
+              <span className="hidden sm:inline">Kembali ke Daftar Siswa</span>
               <span className="sm:hidden">Kembali</span>
             </Button>
           </div>
@@ -206,7 +206,7 @@ export default function CreateStudent() {
                   className="flex items-center gap-2 cursor-pointer bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                 >
                   <Save className="h-4 w-4" />
-                  {isSubmitting ? "Mencipta..." : "Cipta Pelajar"}
+                  {isSubmitting ? "Membuat..." : "Buat Siswa"}
                 </Button>
               </div>
             </CardContent>

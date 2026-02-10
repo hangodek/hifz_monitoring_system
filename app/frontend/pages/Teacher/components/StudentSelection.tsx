@@ -46,9 +46,9 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
           <div className="h-10 w-10 rounded-full bg-violet-500/20 flex items-center justify-center">
             <Users className="h-5 w-5 text-violet-600" />
           </div>
-          Pilih Pelajar
+          Pilih Siswa
         </CardTitle>
-        <CardDescription>Pilih pelajar untuk sesi hafalan</CardDescription>
+        <CardDescription>Pilih siswa untuk sesi hafalan</CardDescription>
       </CardHeader>
       <CardContent>
         <Popover open={open} onOpenChange={setOpen}>
@@ -61,7 +61,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             >
               {selectedStudent
                 ? students.find((student) => student.id === selectedStudent)?.name
-                : "Pilih pelajar..."}
+                : "Pilih siswa..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -69,7 +69,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             <div className="flex items-center border-b px-3">
               <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
               <Input
-                placeholder="Cari pelajar..."
+                placeholder="Cari siswa..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-10 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -78,7 +78,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             <div className="max-h-[300px] overflow-y-auto p-1">
               {filteredStudents.length === 0 && (
                 <div className="py-6 text-center text-sm text-muted-foreground">
-                  Tiada pelajar dijumpai.
+                  Tidak ada siswa ditemukan.
                 </div>
               )}
               {filteredStudents.map((student) => (

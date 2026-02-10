@@ -83,14 +83,14 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Users className="h-3 w-3 flex-shrink-0" />
                 <span className="truncate">
-                  {student.father_name ? `${student.father_name} (Bapa)` : 
-                  student.mother_name ? `${student.mother_name} (Ibu)` : 'Tiada maklumat ibu bapa'}
+                  {student.father_name ? `${student.father_name} (Ayah)` : 
+                  student.mother_name ? `${student.mother_name} (Ibu)` : 'Tidak ada informasi orang tua'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Phone className="h-3 w-3 flex-shrink-0" />
                 <span className="truncate">
-                  {student.parent_phone || 'Tiada telefon'}
+                  {student.parent_phone || 'Tidak ada telepon'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -112,7 +112,7 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
             <div className="flex gap-2 pt-2">
               <Button size="sm" className="flex-1 cursor-pointer text-xs sm:text-sm" onClick={() => handleSelectStudent(student.id)}>
                 <User className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Lihat Butiran</span>
+                <span className="hidden sm:inline">Lihat Detail</span>
                 <span className="sm:hidden">Details</span>
               </Button>
             </div>

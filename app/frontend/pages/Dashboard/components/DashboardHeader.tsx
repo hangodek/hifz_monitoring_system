@@ -10,8 +10,8 @@ export function DashboardHeader() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Papan Pemuka Hifz</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">Pantau dan analisis kemajuan hafalan Al-Quran pelajar</p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dasbor Hifz</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Pantau dan analisis kemajuan hafalan Al-Quran siswa</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
         {/* Only admin can see all students */}
@@ -19,12 +19,12 @@ export function DashboardHeader() {
           <>
             <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer w-full" onClick={() => router.visit("/students")}>
               <Users className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Lihat Semua Pelajar</span>
-              <span className="sm:hidden">Pelajar</span>
+              <span className="hidden sm:inline">Lihat Semua Siswa</span>
+              <span className="sm:hidden">Siswa</span>
             </Button>
             <Button variant="outline" className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 cursor-pointer w-full" onClick={() => router.visit("/users")}>
               <UserCog className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Pengurusan Pengguna</span>
+              <span className="hidden sm:inline">Manajemen Pengguna</span>
               <span className="sm:hidden">Pengguna</span>
             </Button>
           </>
@@ -39,7 +39,7 @@ export function DashboardHeader() {
         )}
         <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer w-full col-span-2" onClick={() => router.delete("/session")}>
           <LogOut className="h-4 w-4 mr-2" />
-          Log Keluar
+          Keluar
         </Button>
       </div>
     </div>
