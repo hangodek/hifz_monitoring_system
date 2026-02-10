@@ -341,7 +341,7 @@ export default function ParentShow({
                     }}
                     formatter={(value, name, props) => {
                       const isProjected = props?.payload?.is_projected
-                      return [`${value} Juz${isProjected ? ' (unjuran)' : ''}`, name]
+                      return [`${value} Juz${isProjected ? ' (proyeksi)' : ''}`, name]
                     }}
                   />
                   <Legend />
@@ -353,7 +353,7 @@ export default function ParentShow({
                     strokeWidth={2}
                     dot={{ fill: '#10b981', r: 4 }}
                     activeDot={{ r: 6 }}
-                    name="Kemajuan Sebenar"
+                    name="Progress Aktual"
                     connectNulls={true}
                   />
                   {/* Projected Progress Line */}
@@ -365,7 +365,7 @@ export default function ParentShow({
                     strokeDasharray="8 4"
                     dot={{ fill: '#60a5fa', r: 4, stroke: '#3b82f6' }}
                     activeDot={{ r: 6 }}
-                    name="Unjuran Kemajuan"
+                    name="Proyeksi Progress"
                     connectNulls={true}
                   />
                   {/* Bridge line to connect actual to projected */}
@@ -384,11 +384,11 @@ export default function ParentShow({
               <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-0.5 bg-green-500"></div>
-                  <span>Kemajuan Sebenar</span>
+                  <span>Progress Aktual</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
-                  <span>Unjuran Kemajuan</span>
+                  <span>Proyeksi Progress</span>
                 </div>
               </div>
             </CardContent>

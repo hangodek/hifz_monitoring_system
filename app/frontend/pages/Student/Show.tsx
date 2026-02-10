@@ -599,11 +599,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-green-500"></div>
-                <span>Kemajuan Sebenar</span>
+                <span>Progress Aktual</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
-                <span>Unjuran Kemajuan</span>
+                <span>Proyeksi Progress</span>
               </div>
             </div>
           </CardContent>
