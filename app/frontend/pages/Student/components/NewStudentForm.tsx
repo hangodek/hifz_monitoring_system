@@ -8,6 +8,8 @@ import { User, Upload } from "lucide-react"
 import { useState } from "react"
 
 interface StudentFormData {
+  nisn: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -23,9 +25,7 @@ interface StudentFormData {
   address: string
   father_name: string
   mother_name: string
-  father_phone: string
-  mother_phone: string
-  date_joined: string
+  parent_phone: string
 }
 
 interface NewStudentFormProps {
@@ -40,7 +40,7 @@ interface NewStudentFormProps {
 export function NewStudentForm({ formData, errors, handleInputChange, handleFileChange, isEdit = false, existingAvatar }: NewStudentFormProps) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
 
-  const handleDateChange = (field: 'birth_date' | 'date_joined') => (date: Date | undefined) => {
+  const handleDateChange = (field: 'birth_date') => (date: Date | undefined) => {
     if (date) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -83,7 +83,6 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
   const displayAvatar = getDisplayAvatar()
 
   const selectedBirthDate = formData.birth_date ? new Date(formData.birth_date + 'T12:00:00') : undefined
-  const selectedDateJoined = formData.date_joined ? new Date(formData.date_joined + 'T12:00:00') : undefined
 
   // Generate class levels for SMP/SMA (7-12) with sections A-D
   const classes = [
@@ -180,6 +179,30 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="nisn">NISN</Label>
+              <Input
+                id="nisn"
+                value={formData.nisn}
+                onChange={(e) => handleInputChange("nisn", e.target.value)}
+                placeholder="Nomor Induk Siswa Nasional"
+                className={errors.nisn ? "border-red-500" : ""}
+              />
+              {errors.nisn && <p className="text-sm text-red-500">{errors.nisn}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="student_number">No Induk *</Label>
+              <Input
+                id="student_number"
+                value={formData.student_number}
+                onChange={(e) => handleInputChange("student_number", e.target.value)}
+                placeholder="Nomor Induk Sekolah"
+                className={errors.student_number ? "border-red-500" : ""}
+              />
+              {errors.student_number && <p className="text-sm text-red-500">{errors.student_number}</p>}
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="name">Nama Penuh *</Label>
               <Input
@@ -312,30 +335,6 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
               />
               {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="father_phone">Telefon Bapa</Label>
-              <Input
-                id="father_phone"
-                value={formData.father_phone}
-                onChange={(e) => handleInputChange("father_phone", e.target.value)}
-                placeholder="Contoh: 081234567890"
-                className={errors.father_phone ? "border-red-500" : ""}
-              />
-              {errors.father_phone && <p className="text-sm text-red-500">{errors.father_phone}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="mother_phone">Telefon Ibu</Label>
-              <Input
-                id="mother_phone"
-                value={formData.mother_phone}
-                onChange={(e) => handleInputChange("mother_phone", e.target.value)}
-                placeholder="Contoh: 081234567890"
-                className={errors.mother_phone ? "border-red-500" : ""}
-              />
-              {errors.mother_phone && <p className="text-sm text-red-500">{errors.mother_phone}</p>}
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -386,18 +385,6 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date_joined">Tarikh Menyertai *</Label>
-              <DatePicker
-                id="date_joined"
-                date={selectedDateJoined}
-                onDateChange={handleDateChange('date_joined')}
-                placeholder="Pilih tarikh menyertai"
-                className={`cursor-pointer border-gray-300/60 ${errors.date_joined ? "border-red-500" : ""}`}
-              />
-              {errors.date_joined && <p className="text-sm text-red-500">{errors.date_joined}</p>}
             </div>
 
             <div className="space-y-2">

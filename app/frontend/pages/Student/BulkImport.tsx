@@ -26,18 +26,18 @@ import {
 
 interface PreviewStudent {
   line_number: number
+  nisn?: string
+  student_number: string
   name: string
   gender: string
   birth_place: string
   birth_date: string
   father_name: string
   mother_name: string
-  father_phone?: string
-  mother_phone?: string
+  parent_phone?: string
   address?: string
   class_level: string
   status: string
-  date_joined: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
@@ -281,7 +281,7 @@ export default function BulkImport() {
               </Alert>
             )}
 
-            {file && !previewData && (
+            {file && (
               <Button 
                 onClick={handleUpload} 
                 disabled={isUploading}
@@ -339,6 +339,8 @@ export default function BulkImport() {
                     <TableRow>
                       <TableHead className="w-12">Baris</TableHead>
                       <TableHead className="w-12">Status</TableHead>
+                      <TableHead>NISN</TableHead>
+                      <TableHead>No Induk</TableHead>
                       <TableHead>Nama</TableHead>
                       <TableHead>Gender</TableHead>
                       <TableHead>Tempat, Tanggal Lahir</TableHead>
@@ -361,6 +363,8 @@ export default function BulkImport() {
                             <XCircle className="h-5 w-5 text-red-600" />
                           )}
                         </TableCell>
+                        <TableCell>{student.nisn || '-'}</TableCell>
+                        <TableCell className="font-medium">{student.student_number}</TableCell>
                         <TableCell className="font-medium">{student.name}</TableCell>
                         <TableCell>{student.gender}</TableCell>
                         <TableCell>
@@ -371,6 +375,7 @@ export default function BulkImport() {
                           <div className="text-sm">
                             <div>Ayah: {student.father_name}</div>
                             <div>Ibu: {student.mother_name}</div>
+                            {student.parent_phone && <div>HP: {student.parent_phone}</div>}
                           </div>
                         </TableCell>
                         <TableCell>

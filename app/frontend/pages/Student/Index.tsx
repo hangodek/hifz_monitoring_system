@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Copy, CheckCircle2, Printer } from "lucide-react"
+import { Copy, CheckCircle2, Printer, Loader2 } from "lucide-react"
 import {
   StudentHeader,
   FiltersAndSearch,
@@ -23,6 +23,8 @@ import {
 
 interface Student {
   id: string
+  nisn?: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -38,9 +40,7 @@ interface Student {
   address?: string
   father_name: string
   mother_name: string
-  father_phone?: string
-  mother_phone?: string
-  date_joined: string
+  parent_phone?: string
   created_at: string
   updated_at: string
 }
@@ -52,16 +52,78 @@ interface StudentsIndexProps {
     username: string
     password: string
   }
+  statistics: {
+    total: number
+    active: number
+    inactive: number
+    graduated: number
+    class_distribution: Record<string, number>
+  }
+  pagination: {
+    current_page: number
+    per_page: number
+    total_count: number
+    total_pages: number
+    has_more: boolean
+  }
 }
 
-export default function StudentsIndex({ students, parent_credentials }: StudentsIndexProps) {
-  const [searchTerm, setSearchTerm] = useState("")
+export default function StudentsIndex({ students: initialStudents, parent_credentials, statistics, pagination }: StudentsIndexProps) {
+  const [students, setStudents] = useState<Student[]>(initialStudents)
+  const [allStudentsForStats] = useState<Student[]>(initialStudents) // Keep original for stats if needed
+  const [searchInput, setSearchInput] = useState("") // For debouncing
   const [classFilter, setClassFilter] = useState("all")
   const [juzFilter, setJuzFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [currentPage, setCurrentPage] = useState(pagination.current_page)
+  const [hasMore, setHasMore] = useState(pagination.has_more)
+  const [totalCount, setTotalCount] = useState(pagination.total_count)
+
+  // Debounced search - trigger backend search 500ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== "" || classFilter !== "all" || statusFilter !== "all" || juzFilter !== "all") {
+        // Trigger backend search via Inertia
+        router.get('/students', {
+          search: searchInput,
+          class_filter: classFilter,
+          status_filter: statusFilter,
+          juz_filter: juzFilter
+        }, {
+          preserveState: true,
+          preserveScroll: true,
+          only: ['students', 'statistics', 'pagination'],
+          onSuccess: (page) => {
+            const props = page.props as unknown as StudentsIndexProps
+            setStudents(props.students)
+            setCurrentPage(props.pagination.current_page)
+            setHasMore(props.pagination.has_more)
+            setTotalCount(props.pagination.total_count)
+          }
+        })
+      } else if (searchInput === "" && classFilter === "all" && statusFilter === "all" && juzFilter === "all") {
+        // Reset to initial state when all filters cleared
+        router.get('/students', {}, {
+          preserveState: true,
+          preserveScroll: true,
+          only: ['students', 'statistics', 'pagination'],
+          onSuccess: (page) => {
+            const props = page.props as unknown as StudentsIndexProps
+            setStudents(props.students)
+            setCurrentPage(props.pagination.current_page)
+            setHasMore(props.pagination.has_more)
+            setTotalCount(props.pagination.total_count)
+          }
+        })
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchInput, classFilter, statusFilter, juzFilter])
 
   // Show credentials dialog if parent_credentials is available
   useEffect(() => {
@@ -80,24 +142,45 @@ export default function StudentsIndex({ students, parent_credentials }: Students
     window.print()
   }
 
-  // Filter and sort students
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesClass = classFilter === "all" || student.class_level === classFilter
-    const matchesStatus = statusFilter === "all" || student.status === statusFilter
+  // Load more students
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore) return
 
-    // Convert current_hifz_in_juz to number for Juz filtering
-    const currentJuz = parseInt(student.current_hifz_in_juz) || 0
-    const matchesJuz =
-      juzFilter === "all" ||
-      (juzFilter === "Juz 1-5" && currentJuz >= 1 && currentJuz <= 5) ||
-      (juzFilter === "Juz 6-10" && currentJuz >= 6 && currentJuz <= 10) ||
-      (juzFilter === "Juz 11-15" && currentJuz >= 11 && currentJuz <= 15) ||
-      (juzFilter === "Juz 16-20" && currentJuz >= 16 && currentJuz <= 20) ||
-      (juzFilter === "Juz 21-25" && currentJuz >= 21 && currentJuz <= 25) ||
-      (juzFilter === "Juz 26-30" && currentJuz >= 26 && currentJuz <= 30)
-    return matchesSearch && matchesClass && matchesStatus && matchesJuz
-  })
+    setIsLoadingMore(true)
+    try {
+      const nextPage = currentPage + 1
+      const params = new URLSearchParams({
+        page: nextPage.toString(),
+        ...(searchInput && { search: searchInput }),
+        ...(classFilter !== "all" && { class_filter: classFilter }),
+        ...(statusFilter !== "all" && { status_filter: statusFilter }),
+        ...(juzFilter !== "all" && { juz_filter: juzFilter })
+      })
+      
+      const response = await fetch(`/students/load_more?${params}`, {
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
+      })
+      
+      const data = await response.json()
+      
+      if (data.students) {
+        setStudents(prev => [...prev, ...data.students])
+        setCurrentPage(nextPage)
+        setHasMore(data.pagination.has_more)
+        setTotalCount(data.pagination.total_count)
+      }
+    } catch (error) {
+      console.error('Error loading more students:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
+  // No need for client-side filtering anymore - backend handles it
+  const filteredStudents = students
 
   const getStatusBadge = (status: string) => {
     return status === "active" ? (
@@ -127,8 +210,8 @@ export default function StudentsIndex({ students, parent_credentials }: Students
 
         {/* Filters and Search */}
         <FiltersAndSearch
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          searchTerm={searchInput}
+          setSearchTerm={setSearchInput}
           classFilter={classFilter}
           setClassFilter={setClassFilter}
           statusFilter={statusFilter}
@@ -140,7 +223,7 @@ export default function StudentsIndex({ students, parent_credentials }: Students
         />
 
         {/* Stats Summary */}
-        <StatsSummary students={students} />
+        <StatsSummary statistics={statistics} />
 
         {viewMode === "grid" ? (
           <StudentGridView
@@ -157,6 +240,27 @@ export default function StudentsIndex({ students, parent_credentials }: Students
         )}
 
         {filteredStudents.length === 0 && <NoStudentsFound />}
+
+        {/* Load More Button */}
+        {hasMore && filteredStudents.length > 0 && (
+          <div className="flex justify-center py-6">
+            <Button
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              size="lg"
+              className="min-w-[200px]"
+            >
+              {isLoadingMore ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Memuat...
+                </>
+              ) : (
+                <>Muat Lebih Banyak ({students.length} dari {totalCount})</>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Parent Credentials Dialog */}

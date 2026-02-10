@@ -50,6 +50,8 @@ import axios from "axios"
 // Student type definition
 interface Student {
   id: string
+  nisn?: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -65,9 +67,7 @@ interface Student {
   address?: string
   father_name: string
   mother_name: string
-  father_phone?: string
-  mother_phone?: string
-  date_joined: string
+  parent_phone?: string
 }
 
 interface Activity {
@@ -329,18 +329,58 @@ export default function ParentShow({
                       border: '1px solid #e5e7eb',
                       borderRadius: '0.5rem'
                     }}
+                    formatter={(value, name, props) => {
+                      const isProjected = props?.payload?.is_projected
+                      return [`${value} Juz${isProjected ? ' (unjuran)' : ''}`, name]
+                    }}
                   />
+                  <Legend />
+                  {/* Actual Progress Line */}
                   <Line 
                     type="monotone" 
-                    dataKey="completed" 
-                    stroke="#8b5cf6" 
+                    dataKey={(entry) => !entry.is_projected ? entry.completed : null}
+                    stroke="#10b981" 
                     strokeWidth={2}
-                    dot={{ fill: '#8b5cf6', r: 4 }}
+                    dot={{ fill: '#10b981', r: 4 }}
                     activeDot={{ r: 6 }}
-                    name="Juz Lengkap"
+                    name="Kemajuan Sebenar"
+                    connectNulls={true}
+                  />
+                  {/* Projected Progress Line */}
+                  <Line 
+                    type="monotone" 
+                    dataKey={(entry) => entry.is_projected ? entry.completed : null}
+                    stroke="#3b82f6" 
+                    strokeWidth={2}
+                    strokeDasharray="8 4"
+                    dot={{ fill: '#60a5fa', r: 4, stroke: '#3b82f6' }}
+                    activeDot={{ r: 6 }}
+                    name="Unjuran Kemajuan"
+                    connectNulls={true}
+                  />
+                  {/* Bridge line to connect actual to projected */}
+                  <Line 
+                    type="monotone" 
+                    dataKey="completed"
+                    stroke="#6b7280" 
+                    strokeWidth={1} 
+                    strokeDasharray="2 2"
+                    dot={false}
+                    activeDot={false}
+                    name=""
                   />
                 </LineChart>
               </ResponsiveContainer>
+              <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-green-500"></div>
+                  <span>Kemajuan Sebenar</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
+                  <span>Unjuran Kemajuan</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
 

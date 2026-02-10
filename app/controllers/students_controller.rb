@@ -7,18 +7,165 @@ class StudentsController < ApplicationController
   before_action :require_admin!
   
   def index
-    students = Student.all.order(name: :asc).map do |student|
-      student.as_json.merge(
-        avatar: avatar_url(student, size: :thumb)
+    # Pagination parameters
+    page = params[:page]&.to_i || 1
+    per_page = 20
+    
+    # Base query
+    students_query = Student.all.order(name: :asc)
+    
+    # Apply search filter if present
+    if params[:search].present?
+      search_term = params[:search].strip.downcase
+      students_query = students_query.where(
+        "LOWER(name) LIKE ? OR LOWER(nisn) LIKE ? OR LOWER(student_number) LIKE ?",
+        "%#{search_term}%",
+        "%#{search_term}%",
+        "%#{search_term}%"
       )
     end
+    
+    # Apply class filter
+    if params[:class_filter].present? && params[:class_filter] != "all"
+      students_query = students_query.where(class_level: params[:class_filter])
+    end
+    
+    # Apply status filter
+    if params[:status_filter].present? && params[:status_filter] != "all"
+      students_query = students_query.where(status: params[:status_filter])
+    end
+    
+    # Apply juz filter
+    if params[:juz_filter].present? && params[:juz_filter] != "all"
+      case params[:juz_filter]
+      when "Juz 1-5"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 1, 5)
+      when "Juz 6-10"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 6, 10)
+      when "Juz 11-15"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 11, 15)
+      when "Juz 16-20"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 16, 20)
+      when "Juz 21-25"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 21, 25)
+      when "Juz 26-30"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 26, 30)
+      end
+    end
+    
+    # Total count for pagination (after filters applied)
+    total_count = students_query.count
+    
+    # Calculate statistics from all students (not just paginated)
+    all_students = students_query.to_a
+    total_students = all_students.count
+    active_students = all_students.count { |s| s.status == "active" }
+    inactive_students = all_students.count { |s| s.status == "inactive" }
+    graduated_students = all_students.count { |s| s.status == "graduated" }
+    
+    # Class distribution
+    class_distribution = all_students.group_by(&:class_level).transform_values(&:count)
+    
+    # Paginated students
+    students = students_query
+                .limit(per_page)
+                .offset((page - 1) * per_page)
+                .map do |student|
+                  student.as_json.merge(
+                    avatar: avatar_url(student, size: :thumb)
+                  )
+                end
 
     # Get parent credentials from flash if available
     parent_credentials = flash[:parent_credentials]
 
     render inertia: "Student/Index", props: {
       students: students,
-      parent_credentials: parent_credentials
+      parent_credentials: parent_credentials,
+      statistics: {
+        total: total_students,
+        active: active_students,
+        inactive: inactive_students,
+        graduated: graduated_students,
+        class_distribution: class_distribution
+      },
+      pagination: {
+        current_page: page,
+        per_page: per_page,
+        total_count: total_count,
+        total_pages: (total_count.to_f / per_page).ceil,
+        has_more: page < (total_count.to_f / per_page).ceil
+      }
+    }
+  end
+
+  def load_more
+    # Pagination parameters
+    page = params[:page]&.to_i || 1
+    per_page = 20
+    
+    # Base query
+    students_query = Student.all.order(name: :asc)
+    
+    # Apply search filter if present
+    if params[:search].present?
+      search_term = params[:search].strip.downcase
+      students_query = students_query.where(
+        "LOWER(name) LIKE ? OR LOWER(nisn) LIKE ? OR LOWER(student_number) LIKE ?",
+        "%#{search_term}%",
+        "%#{search_term}%",
+        "%#{search_term}%"
+      )
+    end
+    
+    # Apply class filter
+    if params[:class_filter].present? && params[:class_filter] != "all"
+      students_query = students_query.where(class_level: params[:class_filter])
+    end
+    
+    # Apply status filter
+    if params[:status_filter].present? && params[:status_filter] != "all"
+      students_query = students_query.where(status: params[:status_filter])
+    end
+    
+    # Apply juz filter
+    if params[:juz_filter].present? && params[:juz_filter] != "all"
+      case params[:juz_filter]
+      when "Juz 1-5"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 1, 5)
+      when "Juz 6-10"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 6, 10)
+      when "Juz 11-15"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 11, 15)
+      when "Juz 16-20"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 16, 20)
+      when "Juz 21-25"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 21, 25)
+      when "Juz 26-30"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 26, 30)
+      end
+    end
+    
+    total_count = students_query.count
+    
+    students = students_query
+                .limit(per_page)
+                .offset((page - 1) * per_page)
+                .map do |student|
+                  student.as_json.merge(
+                    avatar: avatar_url(student, size: :thumb)
+                  )
+                end
+
+    render json: {
+      students: students,
+      pagination: {
+        current_page: page,
+        per_page: per_page,
+        total_count: total_count,
+        total_pages: (total_count.to_f / per_page).ceil,
+        has_more: page < (total_count.to_f / per_page).ceil
+      }
     }
   end
 
@@ -293,20 +440,20 @@ class StudentsController < ApplicationController
         )
         
         workbook.add_worksheet(name: "Import Pelajar") do |sheet|
-          # Header row
+          # Header row - Urutan: NISN, No Induk, Nama, Gender, dst
           sheet.add_row [
+            "NISN",
+            "No Induk*",
             "Nama Lengkap*",
             "Gender* (Laki-laki/Perempuan)",
             "Tempat Lahir*",
             "Tanggal Lahir* (YYYY-MM-DD)",
             "Nama Ayah*",
             "Nama Ibu*",
-            "No HP Ayah",
-            "No HP Ibu",
+            "No HP Orang Tua",
             "Alamat",
-            "Kelas*",
+            "Kelas* (7A-12D)",
             "Status* (active/inactive)",
-            "Tanggal Bergabung* (YYYY-MM-DD)",
             "Juz Hafalan Saat Ini* (1-30)",
             "Halaman Hafalan Saat Ini* (1-604)",
             "Surah Hafalan Saat Ini*"
@@ -314,25 +461,25 @@ class StudentsController < ApplicationController
           
           # Example row
           sheet.add_row [
+            "0123456789",
+            "2024001",
             "Ahmad Rasyid",
             "Laki-laki",
             "Jakarta",
             "2012-01-15",
-            "Bapak Ahmad",
-            "Ibu Siti",
+            "Ahmad",
+            "Siti",
             "081234567890",
-            "082345678901",
             "Jl. Merdeka No. 123",
-            "1A",
+            "7A",
             "active",
-            Date.current.to_s,
             "1",
             "1",
             "Al-Fatihah"
           ], style: example_style
           
           # Set column widths for better readability
-          sheet.column_widths 20, 25, 15, 22, 20, 20, 15, 15, 30, 10, 20, 22, 25, 28, 25
+          sheet.column_widths 15, 12, 20, 15, 15, 18, 20, 20, 17, 30, 10, 12, 25, 28, 25
         end
         
         send_data package.to_stream.read,
@@ -382,18 +529,18 @@ class StudentsController < ApplicationController
         
         student_data = {
           line_number: i,
+          nisn: row_hash["NISN"]&.to_s&.strip,
+          student_number: row_hash["No Induk*"]&.to_s&.strip,
           name: row_hash["Nama Lengkap*"]&.to_s&.strip,
           gender: row_hash["Gender* (Laki-laki/Perempuan)"]&.to_s&.strip&.downcase,
           birth_place: row_hash["Tempat Lahir*"]&.to_s&.strip,
           birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"]),
           father_name: row_hash["Nama Ayah*"]&.to_s&.strip,
           mother_name: row_hash["Nama Ibu*"]&.to_s&.strip,
-          father_phone: row_hash["No HP Ayah"]&.to_s&.strip,
-          mother_phone: row_hash["No HP Ibu"]&.to_s&.strip,
+          parent_phone: row_hash["No HP Orang Tua"]&.to_s&.strip,
           address: row_hash["Alamat"]&.to_s&.strip,
           class_level: row_hash["Kelas*"]&.to_s&.strip,
           status: row_hash["Status* (active/inactive)"]&.to_s&.strip&.downcase,
-          date_joined: parse_date_from_excel(row_hash["Tanggal Bergabung* (YYYY-MM-DD)"]),
           current_hifz_in_juz: row_hash["Juz Hafalan Saat Ini* (1-30)"]&.to_s&.strip,
           current_hifz_in_pages: row_hash["Halaman Hafalan Saat Ini* (1-604)"]&.to_s&.strip,
           current_hifz_in_surah: row_hash["Surah Hafalan Saat Ini*"]&.to_s&.strip
@@ -401,6 +548,7 @@ class StudentsController < ApplicationController
 
         # Validate required fields
         row_errors = []
+        row_errors << "No Induk wajib diisi" if student_data[:student_number].blank?
         row_errors << "Nama lengkap wajib diisi" if student_data[:name].blank?
         row_errors << "Gender wajib diisi (Laki-laki/Perempuan)" if student_data[:gender].blank?
         row_errors << "Gender harus 'laki-laki' atau 'perempuan'" unless ["laki-laki", "perempuan"].include?(student_data[:gender])
@@ -409,9 +557,16 @@ class StudentsController < ApplicationController
         row_errors << "Nama ayah wajib diisi" if student_data[:father_name].blank?
         row_errors << "Nama ibu wajib diisi" if student_data[:mother_name].blank?
         row_errors << "Kelas wajib diisi" if student_data[:class_level].blank?
+        
+        # Validate class level format (7A-12D only)
+        if student_data[:class_level].present?
+          unless valid_class_level?(student_data[:class_level])
+            row_errors << "Kelas harus antara 7A-12D (contoh: 7A, 8B, 12D)"
+          end
+        end
+        
         row_errors << "Status wajib diisi (active/inactive)" if student_data[:status].blank?
         row_errors << "Status harus 'active' atau 'inactive'" unless ["active", "inactive"].include?(student_data[:status])
-        row_errors << "Tanggal bergabung wajib diisi" if student_data[:date_joined].blank?
         row_errors << "Juz hafalan wajib diisi" if student_data[:current_hifz_in_juz].blank?
         row_errors << "Halaman hafalan wajib diisi" if student_data[:current_hifz_in_pages].blank?
         row_errors << "Surah hafalan wajib diisi" if student_data[:current_hifz_in_surah].blank?
@@ -421,12 +576,6 @@ class StudentsController < ApplicationController
           Date.parse(student_data[:birth_date]) if student_data[:birth_date].present?
         rescue ArgumentError
           row_errors << "Format tanggal lahir tidak valid (gunakan YYYY-MM-DD)"
-        end
-
-        begin
-          Date.parse(student_data[:date_joined]) if student_data[:date_joined].present?
-        rescue ArgumentError
-          row_errors << "Format tanggal bergabung tidak valid (gunakan YYYY-MM-DD)"
         end
 
         student_data[:errors] = row_errors
@@ -459,18 +608,18 @@ class StudentsController < ApplicationController
     params[:students].each do |student_params|
       begin
         student = Student.new(
+          nisn: student_params[:nisn],
+          student_number: student_params[:student_number],
           name: student_params[:name],
           gender: student_params[:gender],
           birth_place: student_params[:birth_place],
           birth_date: Date.parse(student_params[:birth_date]),
           father_name: student_params[:father_name],
           mother_name: student_params[:mother_name],
-          father_phone: student_params[:father_phone],
-          mother_phone: student_params[:mother_phone],
+          parent_phone: student_params[:parent_phone],
           address: student_params[:address],
-          class_level: student_params[:class_level],
+          class_level: student_params[:class_level]&.upcase,
           status: student_params[:status],
-          date_joined: Date.parse(student_params[:date_joined]),
           current_hifz_in_juz: student_params[:current_hifz_in_juz],
           current_hifz_in_pages: student_params[:current_hifz_in_pages],
           current_hifz_in_surah: student_params[:current_hifz_in_surah]
@@ -510,6 +659,21 @@ class StudentsController < ApplicationController
 
   private
 
+  def valid_class_level?(class_level)
+    # Match format: grade (7-12) + section (A-D)
+    # Example: 7A, 8B, 10C, 12D
+    return false if class_level.blank?
+    
+    match = class_level.match(/^(\d+)([A-D])$/i)
+    return false unless match
+    
+    grade = match[1].to_i
+    section = match[2].upcase
+    
+    # Grade must be between 7-12, section must be A-D
+    grade >= 7 && grade <= 12 && ['A', 'B', 'C', 'D'].include?(section)
+  end
+
   def parse_date_from_excel(value)
     return nil if value.blank?
     
@@ -524,7 +688,7 @@ class StudentsController < ApplicationController
   end
 
   def student_params
-    params.expect(student: [ :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :father_phone, :mother_phone, :date_joined ])
+    params.expect(student: [ :nisn, :student_number, :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :parent_phone ])
   end
 
   def translate_grade(grade)

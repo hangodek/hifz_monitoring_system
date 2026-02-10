@@ -9,6 +9,8 @@ import { NewStudentForm } from "./components/NewStudentForm"
 
 interface Student {
   id: string
+  nisn?: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -24,14 +26,14 @@ interface Student {
   address?: string
   father_name: string
   mother_name: string
-  father_phone?: string
-  mother_phone?: string
-  date_joined: string
+  parent_phone?: string
   created_at: string
   updated_at: string
 }
 
 interface StudentFormData {
+  nisn: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -47,9 +49,7 @@ interface StudentFormData {
   address: string
   father_name: string
   mother_name: string
-  father_phone: string
-  mother_phone: string
-  date_joined: string
+  parent_phone: string
 }
 
 interface EditStudentProps {
@@ -59,6 +59,8 @@ interface EditStudentProps {
 
 export default function EditStudent({ student, errors: serverErrors = {} }: EditStudentProps) {
   const [formData, setFormData] = useState<StudentFormData>({
+    nisn: student.nisn || "",
+    student_number: student.student_number || "",
     name: student.name || "",
     current_hifz_in_juz: student.current_hifz_in_juz || "0",
     current_hifz_in_pages: student.current_hifz_in_pages || "0",
@@ -74,9 +76,7 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
     address: student.address || "",
     father_name: student.father_name || "",
     mother_name: student.mother_name || "",
-    father_phone: student.father_phone || "",
-    mother_phone: student.mother_phone || "",
-    date_joined: student.date_joined || "",
+    parent_phone: student.parent_phone || "",
   })
 
   const [errors, setErrors] = useState<Partial<StudentFormData>>(serverErrors)
@@ -114,6 +114,7 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
     const newErrors: Partial<StudentFormData> = {}
 
     // Required fields (null: false in schema)
+    if (!formData.student_number.trim()) newErrors.student_number = "No Induk diperlukan"
     if (!formData.name.trim()) newErrors.name = "Nama pelajar diperlukan"
     if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz semasa diperlukan"
     if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman semasa diperlukan"
@@ -124,7 +125,6 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
     if (!formData.birth_date) newErrors.birth_date = "Tarikh lahir diperlukan"
     if (!formData.father_name.trim()) newErrors.father_name = "Nama bapa diperlukan"
     if (!formData.mother_name.trim()) newErrors.mother_name = "Nama ibu diperlukan"
-    if (!formData.date_joined) newErrors.date_joined = "Tarikh menyertai diperlukan"
 
     // Optional fields validation (only validate format if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -149,9 +149,12 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
       const formDataToSend = new FormData()
       
       // Add all form fields
+      formDataToSend.append('student[nisn]', formData.nisn)
+      formDataToSend.append('student[student_number]', formData.student_number)
       formDataToSend.append('student[name]', formData.name.charAt(0).toUpperCase() + formData.name.slice(1))
       formDataToSend.append('student[current_hifz_in_juz]', formData.current_hifz_in_juz)
       formDataToSend.append('student[current_hifz_in_pages]', formData.current_hifz_in_pages)
+      formDataToSend.append('student[current_hifz_in_surah]', formData.current_hifz_in_surah)
       formDataToSend.append('student[class_level]', formData.class_level)
       formDataToSend.append('student[phone]', formData.phone)
       formDataToSend.append('student[email]', formData.email)
@@ -162,10 +165,7 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
       formDataToSend.append('student[address]', formData.address)
       formDataToSend.append('student[father_name]', formData.father_name.charAt(0).toUpperCase() + formData.father_name.slice(1))
       formDataToSend.append('student[mother_name]', formData.mother_name.charAt(0).toUpperCase() + formData.mother_name.slice(1))
-      formDataToSend.append('student[father_phone]', formData.father_phone)
-      formDataToSend.append('student[mother_phone]', formData.mother_phone)
-      formDataToSend.append('student[date_joined]', formData.date_joined)
-      formDataToSend.append('student[current_hifz_in_surah]', formData.current_hifz_in_surah)
+      formDataToSend.append('student[parent_phone]', formData.parent_phone)
       
       // Add avatar file if a new one was selected
       if (formData.avatar) {

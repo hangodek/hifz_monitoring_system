@@ -53,6 +53,8 @@ import axios from "axios"
 // Student type definition matching database schema
 interface Student {
   id: string
+  nisn?: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -68,9 +70,7 @@ interface Student {
   address?: string
   father_name: string
   mother_name: string
-  father_phone?: string
-  mother_phone?: string
-  date_joined: string
+  parent_phone?: string
   created_at: string
   updated_at: string
 }
@@ -349,6 +349,14 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-3 sm:space-y-4">
                 <div>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">NISN</label>
+                  <p className="text-sm sm:text-base mt-1">{student.nisn || '-'}</p>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">No Induk</label>
+                  <p className="text-sm sm:text-base mt-1">{student.student_number}</p>
+                </div>
+                <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Penuh</label>
                   <p className="text-sm sm:text-base mt-1">{student.name}</p>
                 </div>
@@ -363,15 +371,15 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Alamat</label>
-                  <p className="text-sm sm:text-base mt-1">{student.address || 'Tidak diberikan'}</p>
-                </div>
-                <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Kelas</label>
                   <p className="text-sm sm:text-base mt-1">{student.class_level}</p>
                 </div>
               </div>
               <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Alamat</label>
+                  <p className="text-sm sm:text-base mt-1">{student.address || 'Tidak diberikan'}</p>
+                </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Bapa</label>
                   <p className="text-sm sm:text-base mt-1">{student.father_name}</p>
@@ -381,16 +389,12 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   <p className="text-sm sm:text-base mt-1">{student.mother_name}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Telefon Bapa</label>
-                  <p className="text-sm sm:text-base mt-1">{student.father_phone || 'Tidak diberikan'}</p>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">No HP Orang Tua</label>
+                  <p className="text-sm sm:text-base mt-1">{student.parent_phone || 'Tidak diberikan'}</p>
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Telefon Ibu</label>
-                  <p className="text-sm sm:text-base mt-1">{student.mother_phone || 'Tidak diberikan'}</p>
-                </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Tarikh Menyertai</label>
-                  <p className="text-sm sm:text-base mt-1">{student.date_joined}</p>
+                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Email</label>
+                  <p className="text-sm sm:text-base mt-1">{student.email || 'Tidak diberikan'}</p>
                 </div>
               </div>
             </div>

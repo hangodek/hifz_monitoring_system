@@ -122,6 +122,8 @@ JUZ_TO_SURAHS = {
   current_surah = JUZ_TO_SURAHS[current_juz]&.sample || "Al-Fatihah"
 
   Student.create!(
+    nisn: "#{rand(1000000000..9999999999)}", # NISN 10 digit
+    student_number: "#{Date.today.year}#{sprintf('%03d', i + 1)}", # Format: 2026001, 2026002, dst
     name: student_name,
     current_hifz_in_juz: current_juz.to_s,
     current_hifz_in_pages: current_pages.to_s,
@@ -136,9 +138,7 @@ JUZ_TO_SURAHS = {
     address: "#{rand(10..100)} Jalan Merdeka, #{CITIES.sample}",
     father_name: father_name,
     mother_name: mother_name,
-    father_phone: "085#{rand(100..999)}#{rand(1000..9999)}",
-    mother_phone: "087#{rand(100..999)}#{rand(1000..9999)}",
-    date_joined: (Date.today - rand(0..3).years - rand(0..365).days).to_s
+    parent_phone: "08#{rand(1..9)}#{rand(100..999)}#{rand(1000..9999)}" # No HP Orang Tua (1 saja)
     # avatar is skipped as requested
   )
 end
@@ -150,8 +150,14 @@ puts "Creating activities for students..."
 
 # Create activities for each student
 Student.all.each do |student|
-  # Get student's join date to create realistic activity timeline
-  join_date = student.date_joined.is_a?(String) ? Date.parse(student.date_joined) : student.date_joined
+  # Use created_at or generate a realistic join date (1-3 years ago based on their class)
+  # For students in higher grades, assume they joined earlier
+  class_number = student.class_level.to_i
+  years_in_school = [12 - class_number + 1, 6].min.clamp(1, 6) # Calculate years since they would have joined
+  
+  # Generate join date: earlier for senior students, more recent for junior students
+  months_ago = rand((years_in_school * 12 - 6)..(years_in_school * 12 + 6))
+  join_date = Date.current - months_ago.months
 
   # Create activities from join date to now, with more activities in recent months
   total_days_since_joining = (Date.current - join_date).to_i

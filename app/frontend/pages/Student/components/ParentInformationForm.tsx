@@ -59,6 +59,18 @@ export function ParentInformationForm({ formData, errors, handleInputChange }: P
             />
             {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="parent_phone">No HP Orang Tua</Label>
+            <Input
+              id="parent_phone"
+              value={formData.parent_phone}
+              onChange={(e) => handleInputChange("parent_phone", e.target.value)}
+              placeholder="Contoh: 081234567890"
+              className={errors.parent_phone ? "border-red-500" : ""}
+            />
+            {errors.parent_phone && <p className="text-sm text-red-500">{errors.parent_phone}</p>}
+          </div>
         </div>
       </CardContent>
     </Card>

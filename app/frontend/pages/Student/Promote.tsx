@@ -29,6 +29,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface Student {
   id: string
+  nisn?: string
+  student_number: string
   name: string
   current_hifz_in_juz: string
   current_hifz_in_pages: string
@@ -44,9 +46,7 @@ interface Student {
   address?: string
   father_name: string
   mother_name: string
-  father_phone?: string
-  mother_phone?: string
-  date_joined: string
+  parent_phone?: string
   created_at: string
   updated_at: string
 }

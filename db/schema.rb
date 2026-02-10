@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_26_125434) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_28_073132) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -90,12 +90,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_26_125434) do
     t.text "address"
     t.string "father_name", null: false
     t.string "mother_name", null: false
-    t.string "father_phone"
-    t.string "mother_phone"
-    t.date "date_joined", null: false
+    t.string "parent_phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_hifz_in_surah", default: "Al-Fatihah", null: false
+    t.string "nisn"
+    t.string "student_number"
   end
 
   create_table "users", force: :cascade do |t|
