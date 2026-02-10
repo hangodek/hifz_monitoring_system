@@ -134,10 +134,10 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
               <Upload className="h-5 w-5 text-indigo-600" />
             </div>
-            Foto Pelajar
+            Foto Siswa
           </CardTitle>
           <CardDescription>
-            Muat naik foto profil untuk pelajar
+            Unggah foto profil untuk siswa
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -157,7 +157,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 className="cursor-pointer"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {isEdit ? "Muat naik foto baharu untuk menggantikan yang sedia ada (pilihan)" : "Disyorkan: Imej segi empat sama, maksimum 5MB"}
+                {isEdit ? "Unggah foto baru untuk menggantikan yang ada (opsional)" : "Disarankan: Gambar persegi, maksimum 5MB"}
               </p>
             </div>
           </div>
@@ -171,10 +171,10 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
               <User className="h-5 w-5 text-blue-600" />
             </div>
-            Maklumat Asas
+            Informasi Dasar
           </CardTitle>
           <CardDescription>
-            Butiran peribadi pelajar
+            Detail pribadi siswa
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -204,27 +204,27 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">Nama Penuh *</Label>
+              <Label htmlFor="name">Nama Lengkap *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Masukkan nama penuh pelajar"
+                placeholder="Masukkan nama lengkap siswa"
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Jantina *</Label>
+              <Label htmlFor="gender">Jenis Kelamin *</Label>
               <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
                 <SelectTrigger className={`cursor-pointer border-gray-300/60 ${errors.gender ? "border-red-500" : ""}`}>
-                  <SelectValue placeholder="Pilih jantina" />
+                  <SelectValue placeholder="Pilih jenis kelamin" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
                   {genders.map((gender) => (
                     <SelectItem key={gender} value={gender} className="cursor-pointer" >
-                      {gender === "male" ? "Lelaki" : "Perempuan"}
+                      {gender === "male" ? "Laki-laki" : "Perempuan"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -245,19 +245,19 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Tarikh Lahir *</Label>
+              <Label htmlFor="birth_date">Tanggal Lahir *</Label>
               <DatePicker
                 id="birth_date"
                 date={selectedBirthDate}
                 onDateChange={handleDateChange('birth_date')}
-                placeholder="Pilih tarikh lahir"
+                placeholder="Pilih tanggal lahir"
                 className={`cursor-pointer border-gray-300/60 ${errors.birth_date ? "border-red-500" : ""}`}
               />
               {errors.birth_date && <p className="text-sm text-red-500">{errors.birth_date}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Nombor Telefon</Label>
+              <Label htmlFor="phone">Nomor Telepon</Label>
               <Input
                 id="phone"
                 value={formData.phone}
@@ -269,13 +269,13 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Alamat Emel</Label>
+              <Label htmlFor="email">Alamat Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="pelajar@email.com"
+                placeholder="siswa@email.com"
                 className={errors.email ? "border-red-500" : ""}
               />
               {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
@@ -304,21 +304,21 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center">
               <User className="h-5 w-5 text-purple-600" />
             </div>
-            Maklumat Ibu Bapa
+            Informasi Orang Tua
           </CardTitle>
           <CardDescription>
-            Maklumat mengenai ibu bapa atau penjaga pelajar
+            Informasi mengenai orang tua atau wali siswa
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="father_name">Nama Bapa *</Label>
+              <Label htmlFor="father_name">Nama Ayah *</Label>
               <Input
                 id="father_name"
                 value={formData.father_name}
                 onChange={(e) => handleInputChange("father_name", e.target.value)}
-                placeholder="Masukkan nama penuh bapa"
+                placeholder="Masukkan nama lengkap ayah"
                 className={errors.father_name ? "border-red-500" : ""}
               />
               {errors.father_name && <p className="text-sm text-red-500">{errors.father_name}</p>}
@@ -330,7 +330,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 id="mother_name"
                 value={formData.mother_name}
                 onChange={(e) => handleInputChange("mother_name", e.target.value)}
-                placeholder="Masukkan nama penuh ibu"
+                placeholder="Masukkan nama lengkap ibu"
                 className={errors.mother_name ? "border-red-500" : ""}
               />
               {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}
@@ -346,10 +346,10 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
               <User className="h-5 w-5 text-emerald-600" />
             </div>
-            Maklumat Akademik
+            Informasi Akademik
           </CardTitle>
           <CardDescription>
-            Maklumat kelas dan program
+            Informasi kelas dan program
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -388,7 +388,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_juz">Juz Semasa Dihafal *</Label>
+              <Label htmlFor="current_hifz_in_juz">Juz Saat Ini Dihafal *</Label>
               <Input
                 id="current_hifz_in_juz"
                 type="number"
@@ -398,11 +398,11 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 onChange={(e) => handleInputChange("current_hifz_in_juz", e.target.value)}
                 placeholder="1"
               />
-              <p className="text-xs text-muted-foreground">Masukkan bilangan Juz yang telah disiapkan (0-30)</p>
+              <p className="text-xs text-muted-foreground">Masukkan jumlah Juz yang telah diselesaikan (0-30)</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_pages">Halaman Semasa *</Label>
+              <Label htmlFor="current_hifz_in_pages">Halaman Saat Ini *</Label>
               <Input
                 id="current_hifz_in_pages"
                 type="number"
@@ -412,17 +412,17 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
                 onChange={(e) => handleInputChange("current_hifz_in_pages", e.target.value)}
                 placeholder="1"
               />
-              <p className="text-xs text-muted-foreground">Masukkan halaman semasa dalam Juz yang sedang dihafal (1 - 20)</p>
+              <p className="text-xs text-muted-foreground">Masukkan halaman saat ini dalam Juz yang sedang dihafal (1 - 20)</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_surah">Surah Semasa</Label>
+              <Label htmlFor="current_hifz_in_surah">Surah Saat Ini</Label>
               <Select
                 value={formData.current_hifz_in_surah || ""}
                 onValueChange={(value) => handleInputChange("current_hifz_in_surah", value)}
               >
                 <SelectTrigger className="cursor-pointer">
-                  <SelectValue placeholder="Pilih surah semasa" />
+                  <SelectValue placeholder="Pilih surah saat ini" />
                 </SelectTrigger>
                 <SelectContent>
                   {surahList.map((surah, index) => (

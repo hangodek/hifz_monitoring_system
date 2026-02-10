@@ -28,21 +28,21 @@ export function ParentInformationForm({ formData, errors, handleInputChange }: P
           <div className="h-10 w-10 rounded-full bg-pink-500/20 flex items-center justify-center">
             <Users className="h-5 w-5 text-pink-600" />
           </div>
-          Maklumat Ibu Bapa
+          Informasi Orang Tua
         </CardTitle>
         <CardDescription>
-          Maklumat mengenai ibu bapa atau penjaga pelajar
+          Informasi mengenai orang tua atau wali siswa
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="father_name">Nama Bapa *</Label>
+            <Label htmlFor="father_name">Nama Ayah *</Label>
             <Input
               id="father_name"
               value={formData.father_name}
               onChange={(e) => handleInputChange("father_name", e.target.value)}
-              placeholder="Masukkan nama penuh bapa"
+              placeholder="Masukkan nama lengkap ayah"
               className={errors.father_name ? "border-red-500" : ""}
             />
             {errors.father_name && <p className="text-sm text-red-500">{errors.father_name}</p>}
@@ -54,7 +54,7 @@ export function ParentInformationForm({ formData, errors, handleInputChange }: P
               id="mother_name"
               value={formData.mother_name}
               onChange={(e) => handleInputChange("mother_name", e.target.value)}
-              placeholder="Masukkan nama penuh ibu"
+              placeholder="Masukkan nama lengkap ibu"
               className={errors.mother_name ? "border-red-500" : ""}
             />
             {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}

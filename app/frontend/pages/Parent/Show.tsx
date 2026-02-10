@@ -212,7 +212,7 @@ export default function ParentShow({
   }
 
   const getGenderText = (gender: string) => {
-    return gender === "male" ? "Lelaki" : "Perempuan"
+    return gender === "male" ? "Laki-laki" : "Perempuan"
   }
 
   const formatDate = (dateString: string) => {
@@ -257,7 +257,7 @@ export default function ParentShow({
                   <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Juz Semasa</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Juz Saat Ini</p>
                   <p className="text-lg sm:text-2xl font-bold text-blue-600">{student.current_hifz_in_juz}</p>
                 </div>
               </div>
@@ -268,7 +268,7 @@ export default function ParentShow({
                   <Star className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Surah Semasa</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Surah Saat Ini</p>
                   <p className="text-base sm:text-lg font-bold text-purple-600">{student.current_hifz_in_surah}</p>
                 </div>
               </div>
@@ -279,7 +279,7 @@ export default function ParentShow({
                   <Target className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Muka Surat</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Halaman</p>
                   <p className="text-lg sm:text-2xl font-bold text-green-600">{student.current_hifz_in_pages}</p>
                 </div>
               </div>
@@ -290,7 +290,7 @@ export default function ParentShow({
                   <Award className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Jumlah Aktiviti</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Jumlah Aktivitas</p>
                   <p className="text-lg sm:text-2xl font-bold text-orange-600">{total_activities}</p>
                 </div>
               </div>
@@ -389,7 +389,7 @@ export default function ParentShow({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-blue-600" />
-                Aktiviti Bulanan
+                Aktivitas Bulanan
               </CardTitle>
               <CardDescription>Jumlah hafalan dan murajaah dalam 6 bulan terakhir</CardDescription>
             </CardHeader>
@@ -427,7 +427,7 @@ export default function ParentShow({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Award className="h-5 w-5 text-green-600" />
-                  Taburan Gred
+                  Distribusi Nilai
                 </CardTitle>
                 <CardDescription>Prestasi keseluruhan</CardDescription>
               </CardHeader>
@@ -461,7 +461,7 @@ export default function ParentShow({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-orange-600" />
-                  Jenis Aktiviti
+                  Jenis Aktivitas
                 </CardTitle>
                 <CardDescription>Pembahagian hafalan vs murajaah</CardDescription>
               </CardHeader>
@@ -499,8 +499,8 @@ export default function ParentShow({
                   <BarChart3 className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-blue-800">Carta Tersedia pada Skrin Lebih Besar</p>
-                  <p className="text-xs text-blue-600">Lihat analitik terperinci dan carta kemajuan pada tablet atau desktop</p>
+                  <p className="text-sm font-medium text-blue-800">Grafik Tersedia pada Layar Lebih Besar</p>
+                  <p className="text-xs text-blue-600">Lihat analitik terperinci dan grafik kemajuan pada tablet atau desktop</p>
                 </div>
               </div>
             </CardContent>
@@ -516,9 +516,9 @@ export default function ParentShow({
                   <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
                       <Clock className="h-5 w-5 text-indigo-600" />
                     </div>
-                    Aktiviti Terkini
+                    Aktivitas Terbaru
                 </CardTitle>
-                <CardDescription>5 aktiviti hafalan terkini</CardDescription>
+                <CardDescription>5 aktivitas hafalan terbaru</CardDescription>
               </div>
               <Button
                 variant="outline"
@@ -533,7 +533,7 @@ export default function ParentShow({
                   </>
                 ) : (
                   <>
-                    Lihat Semua Aktiviti ({total_activities_count})
+                    Lihat Semua Aktivitas ({total_activities_count})
                   </>
                 )}
               </Button>
@@ -578,9 +578,9 @@ export default function ParentShow({
         <Dialog open={isActivityDialogOpen} onOpenChange={setIsActivityDialogOpen}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
             <DialogHeader>
-              <DialogTitle>Semua Aktiviti Hafalan</DialogTitle>
+              <DialogTitle>Semua Aktivitas Hafalan</DialogTitle>
               <DialogDescription>
-                Senarai lengkap aktiviti hafalan ({total_activities_count} aktiviti)
+                Daftar lengkap aktivitas hafalan ({total_activities_count} aktivitas)
               </DialogDescription>
             </DialogHeader>
             <div className="flex-1 overflow-y-auto space-y-3 pr-2">
@@ -623,7 +623,7 @@ export default function ParentShow({
                         {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                       </div>
                       <div>
-                        <span className="font-medium">Muka Surat:</span> {activity.page_from}-{activity.page_to}
+                        <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
                       </div>
                       <div>
                         <span className="font-medium">Juz:</span>{' '}

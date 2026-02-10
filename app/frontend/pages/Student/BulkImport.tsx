@@ -176,10 +176,10 @@ export default function BulkImport() {
           router.visit('/students')
         }, 3000)
       } else {
-        setError(data.error || 'Gagal membuat pelajar')
+        setError(data.error || 'Gagal membuat siswa')
       }
     } catch (err) {
-      setError('Terjadi kesalahan saat membuat pelajar')
+      setError('Terjadi kesalahan saat membuat siswa')
       console.error(err)
     } finally {
       setIsCreating(false)
@@ -192,8 +192,8 @@ export default function BulkImport() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Import Pelajar Beramai-ramai</h1>
-            <p className="text-muted-foreground">Upload file Excel atau CSV untuk menambahkan banyak pelajar sekaligus</p>
+            <h1 className="text-3xl font-bold tracking-tight">Import Siswa Massal</h1>
+            <p className="text-muted-foreground">Upload file Excel atau CSV untuk menambahkan banyak siswa sekaligus</p>
           </div>
           <Button 
             variant="outline" 
@@ -239,7 +239,7 @@ export default function BulkImport() {
               Upload File Excel atau CSV
             </CardTitle>
             <CardDescription>
-              Upload file Excel (.xlsx, .xls) atau CSV yang sudah diisi dengan data pelajar
+              Upload file Excel (.xlsx, .xls) atau CSV yang sudah diisi dengan data siswa
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -302,7 +302,7 @@ export default function BulkImport() {
                 Preview & Validasi Data
               </CardTitle>
               <CardDescription>
-                Periksa data sebelum membuat pelajar. Data yang tidak valid akan ditandai dengan warna merah.
+                Periksa data sebelum membuat siswa. Data yang tidak valid akan ditandai dengan warna merah.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -400,7 +400,7 @@ export default function BulkImport() {
                     disabled={isCreating}
                     className="flex-1 cursor-pointer"
                   >
-                    {isCreating ? 'Membuat Pelajar...' : `Buat ${previewData.valid} Pelajar`}
+                    {isCreating ? 'Membuat Siswa...' : `Buat ${previewData.valid} Siswa`}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -448,7 +448,7 @@ export default function BulkImport() {
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    {creationResult.failed} pelajar gagal dibuat
+                    {creationResult.failed} siswa gagal dibuat
                   </AlertDescription>
                 </Alert>
               )}
@@ -456,7 +456,7 @@ export default function BulkImport() {
               <Progress value={progress} className="h-2" />
 
               <p className="text-sm text-muted-foreground text-center">
-                Mengalihkan ke halaman pelajar...
+                Mengarahkan ke halaman siswa...
               </p>
             </CardContent>
           </Card>

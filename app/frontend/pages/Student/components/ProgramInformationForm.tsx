@@ -44,10 +44,10 @@ export function ProgramInformationForm({ formData, errors, handleInputChange }: 
           <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center">
             <BookOpen className="h-5 w-5 text-amber-600" />
           </div>
-          Maklumat Program Hifz
+          Informasi Program Hifz
         </CardTitle>
         <CardDescription>
-          Butiran kemajuan hafalan Al-Quran pelajar
+          Detail kemajuan hafalan Al-Quran siswa
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

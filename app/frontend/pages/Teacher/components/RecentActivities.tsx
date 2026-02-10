@@ -81,12 +81,12 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
   return (
     <Card className="border-gray-200/60 shadow-lg">
       <CardHeader>
-        <CardTitle>Aktiviti Terkini</CardTitle>
+        <CardTitle>Aktivitas Terbaru</CardTitle>
         <CardDescription>{currentStudent.name}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {studentActivities.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Tiada aktiviti terkini dijumpai.</p>
+          <p className="text-sm text-muted-foreground">Tidak ada aktivitas terkini ditemukan.</p>
         ) : (
           studentActivities.map((activity) => {
             const activityType = activityTypes.find((t) => t.value === activity.activity_type)
@@ -101,7 +101,7 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
               activityDescription += `, Juz ${activity.juz}`
             }
             
-            activityDescription += `, muka surat ${activity.page_from}-${activity.page_to}`
+            activityDescription += `, halaman ${activity.page_from}-${activity.page_to}`
             
             return (
               <div key={activity.id} className="flex items-start space-x-2 sm:space-x-3">

@@ -148,12 +148,12 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
             <div className="h-8 w-8 rounded-full bg-rose-500/20 flex items-center justify-center">
               <Mic className="h-4 w-4 text-rose-600" />
             </div>
-            <span className="text-sm font-medium text-rose-900">Rakaman Audio (Pilihan)</span>
+            <span className="text-sm font-medium text-rose-900">Rekaman Audio (Opsional)</span>
           </div>
           {hasRecording && (
             <Badge variant="secondary" className="text-xs">
               <Upload className="h-3 w-3 mr-1" />
-              Sedia untuk dimuat naik
+              Siap untuk diunggah
             </Badge>
           )}
         </div>
@@ -171,12 +171,12 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
                 {isRecording ? (
                   <>
                     <Square className="h-4 w-4 mr-2" />
-                    Hentikan Rakaman
+                    Hentikan Rekaman
                   </>
                 ) : (
                   <>
                     <Mic className="h-4 w-4 mr-2" />
-                    Mula Rakam
+                    Mulai Rekam
                   </>
                 )}
               </Button>
@@ -188,7 +188,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     <span className="text-sm text-muted-foreground">
-                      Merakam... {formatTime(recordingTime)}
+                      Merekam... {formatTime(recordingTime)}
                     </span>
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
-                Rakaman: {formatTime(recordingTime)}
+                Rekaman: {formatTime(recordingTime)}
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -238,7 +238,7 @@ export function AudioRecorder({ onAudioRecorded, disabled = false }: AudioRecord
         )}
 
         <p className="text-xs text-muted-foreground">
-          Rakam bacaan pelajar untuk penilaian kualiti dan rujukan masa hadapan.
+          Rekam bacaan siswa untuk penilaian kualitas dan referensi masa depan.
         </p>
       </CardContent>
     </Card>

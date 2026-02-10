@@ -115,20 +115,20 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
 
     // Required fields (null: false in schema)
     if (!formData.student_number.trim()) newErrors.student_number = "No Induk diperlukan"
-    if (!formData.name.trim()) newErrors.name = "Nama pelajar diperlukan"
-    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz semasa diperlukan"
-    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman semasa diperlukan"
+    if (!formData.name.trim()) newErrors.name = "Nama siswa diperlukan"
+    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz saat ini diperlukan"
+    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman saat ini diperlukan"
     if (!formData.class_level.trim()) newErrors.class_level = "Kelas diperlukan"
     if (!formData.status.trim()) newErrors.status = "Status diperlukan"
-    if (!formData.gender.trim()) newErrors.gender = "Jantina diperlukan"
+    if (!formData.gender.trim()) newErrors.gender = "Jenis kelamin diperlukan"
     if (!formData.birth_place.trim()) newErrors.birth_place = "Tempat lahir diperlukan"
-    if (!formData.birth_date) newErrors.birth_date = "Tarikh lahir diperlukan"
-    if (!formData.father_name.trim()) newErrors.father_name = "Nama bapa diperlukan"
+    if (!formData.birth_date) newErrors.birth_date = "Tanggal lahir diperlukan"
+    if (!formData.father_name.trim()) newErrors.father_name = "Nama ayah diperlukan"
     if (!formData.mother_name.trim()) newErrors.mother_name = "Nama ibu diperlukan"
 
     // Optional fields validation (only validate format if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Format emel tidak sah"
+      newErrors.email = "Format email tidak valid"
     }
 
     setErrors(newErrors)
@@ -194,8 +194,8 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Edit Pelajar</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Kemaskini maklumat profil {student.name}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Edit Siswa</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Perbarui informasi profil {student.name}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
             <Button
@@ -240,7 +240,7 @@ export default function EditStudent({ student, errors: serverErrors = {} }: Edit
                   className="flex items-center gap-2 cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 >
                   <Save className="h-4 w-4" />
-                  {isSubmitting ? "Mengemaskini..." : "Kemaskini Pelajar"}
+                  {isSubmitting ? "Memperbarui..." : "Perbarui Siswa"}
                 </Button>
               </div>
             </CardContent>

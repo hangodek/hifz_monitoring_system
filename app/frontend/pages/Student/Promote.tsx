@@ -95,13 +95,13 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
   const handleSubmit = async () => {
     if (selectedStudents.size === 0) {
       setSubmitStatus("error")
-      setSubmitMessage("Sila pilih sekurang-kurangnya satu pelajar")
+      setSubmitMessage("Silakan pilih minimal satu siswa")
       return
     }
 
     if (!targetClass && !markAsGraduated) {
       setSubmitStatus("error")
-      setSubmitMessage("Sila pilih kelas tujuan atau tandai sebagai lulus")
+      setSubmitMessage("Silakan pilih kelas tujuan atau tandai sebagai lulus")
       return
     }
 
@@ -146,11 +146,11 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
         }, 2000)
       } else {
         setSubmitStatus("error")
-        setSubmitMessage(data.error || "Ralat berlaku")
+        setSubmitMessage(data.error || "Terjadi kesalahan")
       }
     } catch (error) {
       setSubmitStatus("error")
-      setSubmitMessage("Ralat sambungan berlaku")
+      setSubmitMessage("Terjadi kesalahan koneksi")
     } finally {
       setIsSubmitting(false)
     }
@@ -163,10 +163,10 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Naik Kelas Pelajar
+              Naik Kelas Siswa
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Pilih pelajar dan kelas tujuan untuk kenaikan kelas
+              Pilih siswa dan kelas tujuan untuk kenaikan kelas
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
@@ -176,7 +176,7 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
               onClick={() => router.visit('/students')}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Kembali ke Senarai Pelajar</span>
+              <span className="hidden sm:inline">Kembali ke Daftar Siswa</span>
               <span className="sm:hidden">Kembali</span>
             </Button>
           </div>
@@ -199,10 +199,10 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Users className="h-5 w-5" />
-              Maklumat Kenaikan Kelas
+              Informasi Kenaikan Kelas
             </CardTitle>
             <CardDescription>
-              {selectedStudents.size} pelajar dipilih dari {filteredStudents.length} pelajar yang dipaparkan
+              {selectedStudents.size} siswa dipilih dari {filteredStudents.length} siswa yang ditampilkan
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -264,11 +264,11 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
                         <AlertTriangle className={`h-4 w-4 ${
                           markAsGraduated ? 'text-orange-600' : 'text-gray-400'
                         }`} />
-                        Luluskan pelajar (ubah status menjadi Lulus)
+                        Luluskan siswa (ubah status menjadi Lulus)
                       </Label>
                       {markAsGraduated && (
                         <p className="text-xs text-orange-600 mt-1">
-                          Perhatian: Tindakan ini akan mengubah status pelajar
+                          Perhatian: Tindakan ini akan mengubah status siswa
                         </p>
                       )}
                     </div>
@@ -278,11 +278,11 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
 
               {/* Search */}
               <div className="space-y-2">
-                <Label>Cari Pelajar</Label>
+                <Label>Cari Siswa</Label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Nama pelajar..."
+                    placeholder="Nama siswa..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -310,8 +310,8 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
                 {isSubmitting
                   ? "Memproses..."
                   : markAsGraduated
-                  ? `Luluskan ${selectedStudents.size} Pelajar`
-                  : `Naikkan ${selectedStudents.size} Pelajar`}
+                  ? `Luluskan ${selectedStudents.size} Siswa`
+                  : `Naikkan ${selectedStudents.size} Siswa`}
               </Button>
             </div>
           </CardContent>
@@ -320,9 +320,9 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
         {/* Students List */}
         <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/20 hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl">Senarai Pelajar Aktif</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">Daftar Siswa Aktif</CardTitle>
             <CardDescription>
-              Pilih pelajar yang akan naik kelas (hanya pelajar aktif yang dipaparkan)
+              Pilih siswa yang akan naik kelas (hanya siswa aktif yang ditampilkan)
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -330,7 +330,7 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
               {filteredStudents.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
                   <Users className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                  <p>Tiada pelajar yang dijumpai</p>
+                  <p>Tidak ada siswa yang ditemukan</p>
                 </div>
               ) : (
                 filteredStudents.map((student) => (
@@ -358,7 +358,7 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-medium truncate">{student.name}</h3>
                         <p className="text-xs text-muted-foreground">
-                          {student.father_name || student.mother_name || "Tiada maklumat ibu bapa"}
+                          {student.father_name || student.mother_name || "Tidak ada informasi orang tua"}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
@@ -387,10 +387,10 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-orange-600">
               <AlertTriangle className="h-5 w-5" />
-              Pengesahan Kelulusan Pelajar
+              Konfirmasi Kelulusan Siswa
             </DialogTitle>
             <DialogDescription className="pt-2">
-              Anda akan mengubah status <span className="font-bold">{selectedStudents.size} pelajar</span> menjadi{" "}
+              Anda akan mengubah status <span className="font-bold">{selectedStudents.size} siswa</span> menjadi{" "}
               <span className="font-bold text-orange-600">LULUS</span>.
             </DialogDescription>
           </DialogHeader>
@@ -401,15 +401,15 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
               <AlertDescription className="text-orange-800">
                 <div className="font-semibold mb-1">Perhatian!</div>
                 <ul className="list-disc pl-4 space-y-1 text-sm">
-                  <li>Tindakan ini akan mengubah status pelajar dari "Aktif" ke "Lulus"</li>
-                  <li>Pelajar yang lulus tidak akan muncul di senarai pelajar aktif</li>
+                  <li>Tindakan ini akan mengubah status siswa dari "Aktif" ke "Lulus"</li>
+                  <li>Siswa yang lulus tidak akan muncul di daftar siswa aktif</li>
                   {targetClass && <li>Kelas akan diubah ke: <strong>{targetClass}</strong></li>}
                 </ul>
               </AlertDescription>
             </Alert>
 
             <div className="text-sm text-muted-foreground">
-              Jumlah pelajar terpilih: <span className="font-semibold text-foreground">{selectedStudents.size}</span>
+              Jumlah siswa terpilih: <span className="font-semibold text-foreground">{selectedStudents.size}</span>
             </div>
           </div>
 
@@ -429,7 +429,7 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
               disabled={isSubmitting}
               className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white"
             >
-              {isSubmitting ? "Memproses..." : "Ya, Luluskan Pelajar"}
+              {isSubmitting ? "Memproses..." : "Ya, Luluskan Siswa"}
             </Button>
           </DialogFooter>
         </DialogContent>

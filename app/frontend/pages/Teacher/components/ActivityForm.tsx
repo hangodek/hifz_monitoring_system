@@ -100,12 +100,12 @@ export function ActivityForm({
   
   const handleSubmit = () => {
     if (!selectedStudent || !activityType || !activityDetails.surahFrom || !activityDetails.surahTo || !activityDetails.pageFrom || !activityDetails.pageTo) {
-      alert('Sila lengkapkan semua ruangan yang diperlukan');
+      alert('Silakan lengkapi semua kolom yang diperlukan');
       return;
     }
 
     if (!validateMemorizationProgress()) {
-      alert('Kemajuan hafalan baharu mestilah lebih tinggi daripada kemajuan semasa');
+      alert('Kemajuan hafalan baru harus lebih tinggi dari kemajuan saat ini');
       return;
     }
 
@@ -167,7 +167,7 @@ export function ActivityForm({
       },
       onError: (errors) => {
         console.error('Failed to save activity:', errors);
-        alert('Gagal menyimpan aktiviti. Sila cuba lagi.');
+        alert('Gagal menyimpan aktivitas. Silakan coba lagi.');
       }
     });
   };
@@ -179,16 +179,16 @@ export function ActivityForm({
           <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
             <Plus className="h-5 w-5 text-indigo-600" />
           </div>
-          Tambah Aktiviti
+          Tambah Aktivitas
         </CardTitle>
-        <CardDescription>Rekod aktiviti pelajar</CardDescription>
+        <CardDescription>Rekod aktivitas siswa</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Jenis Aktiviti</Label>
+          <Label>Jenis Aktivitas</Label>
           <Select value={activityType} onValueChange={setActivityType}>
             <SelectTrigger className="border-indigo-200 hover:border-indigo-300 cursor-pointer">
-              <SelectValue placeholder="Pilih jenis aktiviti..." />
+              <SelectValue placeholder="Pilih jenis aktivitas..." />
             </SelectTrigger>
             <SelectContent className="border-gray-200/60">
               {activityTypes.map((type) => (

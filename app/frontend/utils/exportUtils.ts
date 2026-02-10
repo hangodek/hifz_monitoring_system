@@ -33,7 +33,7 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
   
   // Group students by class
   const studentsByClass = dataToExport.reduce((acc, student) => {
-    const className = student.class_level || 'Tiada Kelas'
+    const className = student.class_level || 'Tidak Ada Kelas'
     if (!acc[className]) {
       acc[className] = []
     }
@@ -54,14 +54,14 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
   
   doc.setFontSize(24)
   doc.setTextColor(40, 40, 40)
-  doc.text('Laporan Pelajar Hifz', pageWidth / 2, 60, { align: 'center' })
-  doc.text('Dikelaskan mengikut Kelas', pageWidth / 2, 75, { align: 'center' })
+  doc.text('Laporan Siswa Hifz', pageWidth / 2, 60, { align: 'center' })
+  doc.text('Dikelompokkan berdasarkan Kelas', pageWidth / 2, 75, { align: 'center' })
 
   // Subtitle with date
   doc.setFontSize(12)
   doc.setTextColor(100, 100, 100)
-  doc.text(`Dijana pada: ${format(new Date(), 'dd MMMM yyyy')}`, 14, 95)
-  doc.text(`Jumlah Pelajar: ${dataToExport.length}`, 14, 105)
+  doc.text(`Dibuat pada: ${format(new Date(), 'dd MMMM yyyy')}`, 14, 95)
+  doc.text(`Jumlah Siswa: ${dataToExport.length}`, 14, 105)
   doc.text(`Jumlah Kelas: ${sortedClasses.length}`, 14, 115)
   
   // Overall summary statistics
@@ -88,7 +88,7 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     const graduatedInClass = classStudents.filter(s => s.status === 'graduated').length
     const inactiveInClass = classStudents.filter(s => s.status === 'inactive').length
     
-    doc.text(`${className}: ${classStudents.length} pelajar (Aktif: ${activeInClass}, Lulus: ${graduatedInClass}, Tidak Aktif: ${inactiveInClass})`, 20, currentY)
+    doc.text(`${className}: ${classStudents.length} siswa (Aktif: ${activeInClass}, Lulus: ${graduatedInClass}, Tidak Aktif: ${inactiveInClass})`, 20, currentY)
     currentY += 8
     
     // Add new page if needed
@@ -114,11 +114,11 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     
     doc.setFontSize(14)
     doc.setTextColor(statusColor[0], statusColor[1], statusColor[2])
-    doc.text(`Pelajar ${statusLabel}`, 14, 37)
+    doc.text(`Siswa ${statusLabel}`, 14, 37)
     
     doc.setFontSize(12)
     doc.setTextColor(100, 100, 100)
-    doc.text(`${students.length} pelajar`, 14, 47)
+    doc.text(`${students.length} siswa`, 14, 47)
     
     // Prepare table data
     const tableData = students.map((student, index) => [
@@ -132,7 +132,7 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     
     // Create table
     autoTable(doc, {
-      head: [['No', 'Nama', 'Jantina', 'Juz Semasa', 'Halaman', 'Tarikh Menyertai']],
+      head: [['No', 'Nama', 'Jenis Kelamin', 'Juz Saat Ini', 'Halaman', 'Tanggal Bergabung']],
       body: tableData,
       startY: 57,
       styles: {
@@ -217,7 +217,7 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     const titleX = (pageWidth - titleWidth) / 2
     
     doc.text(title, titleX, doc.internal.pageSize.height - 10)
-    doc.text(`Halaman ${i} daripada ${pageCount}`, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 10)
+    doc.text(`Halaman ${i} dari ${pageCount}`, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 10)
   }
   
   // Save the PDF
@@ -233,28 +233,28 @@ export const exportStudentsToCSV = (students: Student[], filteredStudents?: Stud
     'No',
     'Nama',
     'Kelas',
-    'Jantina',
+    'Jenis Kelamin',
     'Tempat Lahir',
-    'Tarikh Lahir',
+    'Tanggal Lahir',
     'Alamat',
-    'Juz Semasa',
+    'Juz Saat Ini',
     'Halaman Dihafal',
     'Status',
-    'Nama Bapa',
+    'Nama Ayah',
     'Nama Ibu',
-    'Telefon Bapa',
-    'Telefon Ibu',
-    'Emel',
-    'Telefon',
-    'Tarikh Menyertai'
+    'Telepon Ayah',
+    'Telepon Ibu',
+    'Email',
+    'Telepon',
+    'Tanggal Bergabung'
   ]
   
-  // Prepare CSV data with Bahasa Malaysia translations
+  // Prepare CSV data with Bahasa Indonesia translations
   const csvData = dataToExport.map((student, index) => [
     index + 1,
     student.name,
     student.class_level,
-    student.gender === 'male' ? 'Lelaki' : 'Perempuan',
+    student.gender === 'male' ? 'Laki-laki' : 'Perempuan',
     student.birth_place,
     student.birth_date,
     student.address || '',
@@ -297,7 +297,7 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   
   // Group students by class
   const studentsByClass = dataToExport.reduce((acc, student) => {
-    const className = student.class_level || 'Tiada Kelas'
+    const className = student.class_level || 'Tidak Ada Kelas'
     if (!acc[className]) {
       acc[className] = []
     }
@@ -311,20 +311,20 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   // Create a new workbook
   const workbook = XLSX.utils.book_new()
   
-  // Summary sheet in Bahasa Malaysia
+  // Summary sheet in Bahasa Indonesia
   const summaryData = [
-    ['Laporan Pelajar Hifz - Ringkasan'],
-    ['Dijana pada:', format(new Date(), 'dd MMMM yyyy')],
-    ['Jumlah Pelajar:', dataToExport.length],
+    ['Laporan Siswa Hifz - Ringkasan'],
+    ['Dibuat pada:', format(new Date(), 'dd MMMM yyyy')],
+    ['Jumlah Siswa:', dataToExport.length],
     ['Jumlah Kelas:', sortedClasses.length],
     [''],
     ['Ringkasan Status Keseluruhan:'],
-    ['Pelajar Aktif:', dataToExport.filter(s => s.status === 'active').length],
-    ['Pelajar Lulus:', dataToExport.filter(s => s.status === 'graduated').length],
-    ['Pelajar Tidak Aktif:', dataToExport.filter(s => s.status === 'inactive').length],
+    ['Siswa Aktif:', dataToExport.filter(s => s.status === 'active').length],
+    ['Siswa Lulus:', dataToExport.filter(s => s.status === 'graduated').length],
+    ['Siswa Tidak Aktif:', dataToExport.filter(s => s.status === 'inactive').length],
     [''],
-    ['Pecahan Kelas:'],
-    ['Nama Kelas', 'Jumlah Pelajar', 'Aktif', 'Lulus', 'Tidak Aktif']
+    ['Pembagian Kelas:'],
+    ['Nama Kelas', 'Jumlah Siswa', 'Aktif', 'Lulus', 'Tidak Aktif']
   ]
   
   // Add class breakdown data
@@ -356,13 +356,13 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
       return (statusOrder[a.status] || 3) - (statusOrder[b.status] || 3)
     })
     
-    // Prepare data for this class with Bahasa Malaysia headers
+    // Prepare data for this class with Bahasa Indonesia headers
     const classData = [
-      ['No', 'Nama', 'Jantina', 'Tempat Lahir', 'Tarikh Lahir', 'Alamat', 'Juz Semasa', 'Halaman Dihafal', 'Status', 'Nama Bapa', 'Nama Ibu', 'Telefon Bapa', 'Telefon Ibu', 'Emel', 'Telefon', 'Tarikh Menyertai'],
+      ['No', 'Nama', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Alamat', 'Juz Saat Ini', 'Halaman Dihafal', 'Status', 'Nama Ayah', 'Nama Ibu', 'Telepon Ayah', 'Telepon Ibu', 'Email', 'Telepon', 'Tanggal Bergabung'],
       ...sortedClassStudents.map((student, index) => [
         index + 1,
         student.name,
-        student.gender === 'male' ? 'Lelaki' : 'Perempuan',
+        student.gender === 'male' ? 'Laki-laki' : 'Perempuan',
         student.birth_place,
         student.birth_date,
         student.address || '',
@@ -395,14 +395,14 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
     XLSX.utils.book_append_sheet(workbook, classSheet, cleanClassName)
   })
   
-  // Create all students sheet with Bahasa Malaysia headers
+  // Create all students sheet with Bahasa Indonesia headers
   const allStudentsData = [
-    ['No', 'Nama', 'Kelas', 'Jantina', 'Tempat Lahir', 'Tarikh Lahir', 'Alamat', 'Juz Semasa', 'Halaman Dihafal', 'Status', 'Nama Bapa', 'Nama Ibu', 'Telefon Bapa', 'Telefon Ibu', 'Emel', 'Telefon', 'Tarikh Menyertai'],
+    ['No', 'Nama', 'Kelas', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Alamat', 'Juz Saat Ini', 'Halaman Dihafal', 'Status', 'Nama Ayah', 'Nama Ibu', 'Telepon Ayah', 'Telepon Ibu', 'Email', 'Telepon', 'Tanggal Bergabung'],
     ...dataToExport.map((student, index) => [
       index + 1,
       student.name,
       student.class_level,
-      student.gender === 'male' ? 'Lelaki' : 'Perempuan',
+      student.gender === 'male' ? 'Laki-laki' : 'Perempuan',
       student.birth_place,
       student.birth_date,
       student.address || '',
@@ -430,7 +430,7 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   }))
   allStudentsSheet['!cols'] = allColWidths
   
-  XLSX.utils.book_append_sheet(workbook, allStudentsSheet, 'Semua Pelajar')
+  XLSX.utils.book_append_sheet(workbook, allStudentsSheet, 'Semua Siswa')
   
   // Generate and download the file
   const fileName = `laporan-hifz-${format(new Date(), 'yyyy-MM-dd')}.xlsx`

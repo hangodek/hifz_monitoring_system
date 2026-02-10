@@ -120,7 +120,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                 <DialogHeader>
                   <DialogTitle>Semua Aktivitas Terkini</DialogTitle>
                   <DialogDescription>
-                    Sejarah lengkap aktivitas hafalan dan muraja'ah siswa
+                    Riwayat lengkap aktivitas hafalan dan muraja'ah siswa
                   </DialogDescription>
                 </DialogHeader>
                 
