@@ -172,7 +172,7 @@ class DashboardController < ApplicationController
   def format_activity_description(activity)
     type_text = activity.activity_type == "memorization" ? "Menghafal" : "Murajaah"
     if activity.surah_from == activity.surah_to
-      "#{type_text} #{activity.surah_from} muka surat #{activity.page_from}-#{activity.page_to}"
+      "#{type_text} #{activity.surah_from} halaman #{activity.page_from}-#{activity.page_to}"
     else
       "#{type_text} dari #{activity.surah_from} hingga #{activity.surah_to}"
     end

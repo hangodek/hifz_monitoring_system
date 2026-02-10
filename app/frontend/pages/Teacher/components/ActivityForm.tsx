@@ -181,7 +181,7 @@ export function ActivityForm({
           </div>
           Tambah Aktivitas
         </CardTitle>
-        <CardDescription>Rekod aktivitas siswa</CardDescription>
+        <CardDescription>Catat aktivitas siswa</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">

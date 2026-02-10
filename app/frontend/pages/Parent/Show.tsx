@@ -215,6 +215,16 @@ export default function ParentShow({
     return gender === "male" ? "Laki-laki" : "Perempuan"
   }
 
+  const translateGrade = (grade: string): string => {
+    const gradeMap: Record<string, string> = {
+      'Cemerlang': 'Sangat Baik',
+      'Baik': 'Baik',
+      'Sederhana': 'Cukup',
+      'Lemah': 'Kurang'
+    }
+    return gradeMap[grade] || grade
+  }
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return format(date, "dd MMMM yyyy", { locale: id })
@@ -307,7 +317,7 @@ export default function ParentShow({
                 <TrendingUp className="h-5 w-5 text-purple-600" />
                 Kemajuan Bulanan (Juz)
               </CardTitle>
-              <CardDescription>Perkembangan hafalan dalam 7 bulan (3 bulan lepas, bulan ini, 3 bulan akan datang)</CardDescription>
+              <CardDescription>Perkembangan hafalan dalam 7 bulan (3 bulan lalu, bulan ini, 3 bulan mendatang)</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -463,7 +473,7 @@ export default function ParentShow({
                   <BookOpen className="h-5 w-5 text-orange-600" />
                   Jenis Aktivitas
                 </CardTitle>
-                <CardDescription>Pembahagian hafalan vs murajaah</CardDescription>
+                <CardDescription>Pembagian hafalan vs murajaah</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -613,7 +623,7 @@ export default function ParentShow({
                         <Badge variant={activity.grade === "Cemerlang" ? "default" : 
                                       activity.grade === "Baik" ? "secondary" : 
                                       activity.grade === "Sederhana" ? "outline" : "destructive"}>
-                          {activity.grade}
+                          {translateGrade(activity.grade)}
                         </Badge>
                       )}
                     </div>
@@ -629,10 +639,10 @@ export default function ParentShow({
                         <span className="font-medium">Juz:</span>{' '}
                         {activity.type === 'revision' && activity.juz_from && activity.juz_to 
                           ? `${activity.juz_from}${activity.juz_from !== activity.juz_to ? `-${activity.juz_to}` : ''}`
-                          : activity.juz || 'T/A'}
-                      </div>
-                      <div>
-                        <span className="font-medium">Masa:</span> {activity.time}
+                          : activity.juz || 'N/A'}
+                        </div>
+                        <div>
+                          <span className="font-medium">Waktu:</span> {activity.time}
                       </div>
                     </div>
                     {activity.notes && (

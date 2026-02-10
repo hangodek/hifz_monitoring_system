@@ -55,6 +55,17 @@ interface RecentActivitiesProps {
   totalActivitiesCount: number
 }
 
+// Helper function to translate grade from Malay to Indonesian
+const translateGrade = (grade: string): string => {
+  const gradeMap: Record<string, string> = {
+    'Cemerlang': 'Sangat Baik',
+    'Baik': 'Baik',
+    'Sederhana': 'Cukup',
+    'Lemah': 'Kurang'
+  }
+  return gradeMap[grade] || grade
+}
+
 export function RecentActivities({ activities, totalActivitiesCount }: RecentActivitiesProps) {
   const [allActivities, setAllActivities] = useState<DetailedActivity[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -163,7 +174,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                           <Badge variant={activity.grade === "Cemerlang" ? "default" : 
                                         activity.grade === "Baik" ? "secondary" : 
                                         activity.grade === "Sederhana" ? "outline" : "destructive"}>
-                            {activity.grade}
+                            {translateGrade(activity.grade)}
                           </Badge>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
@@ -178,7 +189,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             <span className="font-medium">Juz:</span>{' '}
                             {activity.type === 'revision' && activity.juz_from && activity.juz_to 
                               ? `${activity.juz_from}${activity.juz_from !== activity.juz_to ? `-${activity.juz_to}` : ''}`
-                              : activity.juz || 'T/A'}
+                              : activity.juz || 'N/A'}
                           </div>
                           <div>
                             <span className="font-medium">Waktu:</span> {activity.time}

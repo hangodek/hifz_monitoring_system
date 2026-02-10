@@ -26,7 +26,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <div className="text-2xl font-bold text-blue-600">
             {stats.today_submissions} <span className="text-lg font-normal text-blue-500">Penyerahan</span>
           </div>
-          <p className="text-xs text-blue-700/70 mt-1">Aktivitas siswa yang direkodkan oleh guru</p>
+          <p className="text-xs text-blue-700/70 mt-1">Aktivitas siswa yang dicatat oleh guru</p>
         </CardContent>
       </Card>
 

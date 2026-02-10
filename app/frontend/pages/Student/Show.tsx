@@ -166,6 +166,17 @@ const getStudentData = (student: Student, all_activities: Activity[], startDate:
   }
 }
 
+// Helper function to translate grade from Malay to Indonesian
+const translateGrade = (grade: string): string => {
+  const gradeMap: Record<string, string> = {
+    'Cemerlang': 'Sangat Baik',
+    'Baik': 'Baik',
+    'Sederhana': 'Cukup',
+    'Lemah': 'Kurang'
+  }
+  return gradeMap[grade] || grade
+}
+
 interface StudentShowProps {
   student: Student // The actual student data object from Rails controller
   recent_activities: Activity[] // Recent activities from backend (limited to 5)
@@ -853,7 +864,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                 <Badge variant={activity.grade === "Cemerlang" ? "default" : 
                                               activity.grade === "Baik" ? "secondary" : 
                                               activity.grade === "Sederhana" ? "outline" : "destructive"}>
-                                  {activity.grade}
+                                  {translateGrade(activity.grade)}
                                 </Badge>
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
@@ -868,10 +879,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                   <span className="font-medium">Juz:</span>{' '}
                                   {activity.type === 'revision' && activity.juz_from && activity.juz_to 
                                     ? `${activity.juz_from}${activity.juz_from !== activity.juz_to ? `-${activity.juz_to}` : ''}`
-                                    : activity.juz || 'T/A'}
+                                    : activity.juz || 'N/A'}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Masa:</span> {activity.time}
+                                  <span className="font-medium">Waktu:</span> {activity.time}
                                 </div>
                               </div>
                               {activity.notes && (

@@ -142,11 +142,11 @@ class ParentsController < ApplicationController
 
     case activity.activity_type
     when "memorization"
-      "Menghafal #{surah_display} muka surat #{activity.page_from}-#{activity.page_to}"
+      "Menghafal #{surah_display} halaman #{activity.page_from}-#{activity.page_to}"
     when "revision"
-      "Murajaah #{surah_display} muka surat #{activity.page_from}-#{activity.page_to}"
+      "Murajaah #{surah_display} halaman #{activity.page_from}-#{activity.page_to}"
     else
-      "#{activity.activity_type.humanize} #{surah_display} muka surat #{activity.page_from}-#{activity.page_to}"
+      "#{activity.activity_type.humanize} #{surah_display} halaman #{activity.page_from}-#{activity.page_to}"
     end
   end
 
