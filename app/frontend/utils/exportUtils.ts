@@ -2,7 +2,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { format } from 'date-fns'
 import * as XLSX from 'xlsx'
-import matanLogo from '@/assets/matan_logo.png'
+// import matanLogo from '@/assets/matan_logo.png'
 
 interface Student {
   id: string
@@ -22,7 +22,7 @@ interface Student {
   mother_name: string
   father_phone?: string
   mother_phone?: string
-  date_joined: string
+  date_joined?: string
   created_at: string
   updated_at: string
 }
@@ -42,15 +42,33 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
   }, {} as Record<string, Student[]>)
 
   // Sort classes alphabetically
-  const sortedClasses = Object.keys(studentsByClass).sort()
+  const sortedClasses = Object.keys(studentsByClass).sort((a, b) => {
+    // Extract number and letter from class name (e.g., "7A" -> [7, "A"])
+    const aMatch = a.match(/(\d+)([A-Z]?)/)
+    const bMatch = b.match(/(\d+)([A-Z]?)/)
+    
+    // If no match, fallback to string comparison
+    if (!aMatch || !bMatch) return a.localeCompare(b)
+    
+    const aNum = parseInt(aMatch[1])
+    const bNum = parseInt(bMatch[1])
+    const aLetter = aMatch[2] || ''
+    const bLetter = bMatch[2] || ''
+    
+    // Compare by number first
+    if (aNum !== bNum) return aNum - bNum
+    
+    // Then compare by letter
+    return aLetter.localeCompare(bLetter)
+  })
   
   // Title page with logo
   // Add logo at the top center
-  const logoWidth = 30
-  const logoHeight = 30
+  // const logoWidth = 30
+  // const logoHeight = 30
   const pageWidth = doc.internal.pageSize.width
-  const logoX = (pageWidth - logoWidth) / 2
-  doc.addImage(matanLogo, 'JPEG', logoX, 15, logoWidth, logoHeight)
+  // const logoX = (pageWidth - logoWidth) / 2
+  // doc.addImage(matanLogo, 'PNG', logoX, 15, logoWidth, logoHeight)
   
   doc.setFontSize(24)
   doc.setTextColor(40, 40, 40)
@@ -105,7 +123,7 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     doc.addPage()
     
     // Add logo at the top
-    doc.addImage(matanLogo, 'JPEG', pageWidth - 35, 10, 25, 25)
+    // doc.addImage(matanLogo, 'PNG', pageWidth - 35, 10, 25, 25)
     
     // Class header
     doc.setFontSize(18)
@@ -121,14 +139,25 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
     doc.text(`${students.length} siswa`, 14, 47)
     
     // Prepare table data
-    const tableData = students.map((student, index) => [
-      index + 1,
-      student.name,
-      student.gender === 'male' ? 'L' : 'P',
-      `Juz ${student.current_hifz_in_juz}`,
-      `${student.current_hifz_in_pages} halaman`,
-      format(new Date(student.date_joined), 'dd/MM/yyyy')
-    ])
+    const tableData = students.map((student, index) => {
+      let dateJoined = 'N/A'
+      if (student.date_joined) {
+        try {
+          dateJoined = format(new Date(student.date_joined), 'dd/MM/yyyy')
+        } catch (e) {
+          dateJoined = 'N/A'
+        }
+      }
+      
+      return [
+        index + 1,
+        student.name,
+        student.gender === 'male' ? 'L' : 'P',
+        `Juz ${student.current_hifz_in_juz}`,
+        `${student.current_hifz_in_pages} halaman`,
+        dateJoined
+      ]
+    })
     
     // Create table
     autoTable(doc, {
@@ -267,7 +296,7 @@ export const exportStudentsToCSV = (students: Student[], filteredStudents?: Stud
     student.mother_phone || '',
     student.email || '',
     student.phone || '',
-    student.date_joined
+    student.date_joined || 'N/A'
   ])
   
   // Convert to CSV format
@@ -306,7 +335,25 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   }, {} as Record<string, Student[]>)
 
   // Sort classes alphabetically
-  const sortedClasses = Object.keys(studentsByClass).sort()
+  const sortedClasses = Object.keys(studentsByClass).sort((a, b) => {
+    // Extract number and letter from class name (e.g., "7A" -> [7, "A"])
+    const aMatch = a.match(/(\d+)([A-Z]?)/)
+    const bMatch = b.match(/(\d+)([A-Z]?)/)
+    
+    // If no match, fallback to string comparison
+    if (!aMatch || !bMatch) return a.localeCompare(b)
+    
+    const aNum = parseInt(aMatch[1])
+    const bNum = parseInt(bMatch[1])
+    const aLetter = aMatch[2] || ''
+    const bLetter = bMatch[2] || ''
+    
+    // Compare by number first
+    if (aNum !== bNum) return aNum - bNum
+    
+    // Then compare by letter
+    return aLetter.localeCompare(bLetter)
+  })
   
   // Create a new workbook
   const workbook = XLSX.utils.book_new()
@@ -375,7 +422,7 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
         student.mother_phone || '',
         student.email || '',
         student.phone || '',
-        student.date_joined
+        student.date_joined || 'N/A'
       ])
     ]
     
