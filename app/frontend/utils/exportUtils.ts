@@ -431,11 +431,13 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
     // Auto-size columns
     const colWidths = classData[0].map((_, colIndex) => ({
       wch: Math.max(
-        classData[0][colIndex].toString().length,
+        (classData[0][colIndex] || '').toString().length,
         ...classData.slice(1).map(row => (row[colIndex] || '').toString().length)
       ) + 2
     }))
-    classSheet['!cols'] = colWidths
+    if (classSheet) {
+      classSheet['!cols'] = colWidths
+    }
     
     // Clean class name for sheet name (Excel has restrictions)
     const cleanClassName = className.replace(/[\\\/\?\*\[\]]/g, '_').substring(0, 31)
@@ -471,11 +473,13 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   // Auto-size columns for all students sheet
   const allColWidths = allStudentsData[0].map((_, colIndex) => ({
     wch: Math.max(
-      allStudentsData[0][colIndex].toString().length,
+      (allStudentsData[0][colIndex] || '').toString().length,
       ...allStudentsData.slice(1).map(row => (row[colIndex] || '').toString().length)
     ) + 2
   }))
-  allStudentsSheet['!cols'] = allColWidths
+  if (allStudentsSheet) {
+    allStudentsSheet['!cols'] = allColWidths
+  }
   
   XLSX.utils.book_append_sheet(workbook, allStudentsSheet, 'Semua Siswa')
   

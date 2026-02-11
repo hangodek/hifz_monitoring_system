@@ -4,18 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import { format } from "date-fns"
-import { id } from "date-fns/locale"
 import {
   BarChart,
   Bar,
@@ -33,13 +28,11 @@ import {
 } from "recharts"
 import {
   BookOpen,
-  CalendarIcon,
   TrendingUp,
   Award,
   Clock,
   Target,
   Star,
-  ChevronDown,
   BarChart3,
   Loader2,
 } from "lucide-react"
@@ -144,7 +137,6 @@ export default function ParentShow({
   type_distribution,
   monthly_activities,
 }: ParentShowProps) {
-  const [selectedActivity, setSelectedActivity] = useState<DetailedActivity | null>(null)
   const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false)
   const [allActivities, setAllActivities] = useState<DetailedActivity[]>([])
   const [isLoadingActivities, setIsLoadingActivities] = useState(false)
@@ -223,11 +215,6 @@ export default function ParentShow({
       'Lemah': 'Kurang'
     }
     return gradeMap[grade] || grade
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return format(date, "dd MMMM yyyy", { locale: id })
   }
 
   return (

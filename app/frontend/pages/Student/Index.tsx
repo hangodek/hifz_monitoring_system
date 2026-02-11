@@ -70,7 +70,6 @@ interface StudentsIndexProps {
 
 export default function StudentsIndex({ students: initialStudents, parent_credentials, statistics, pagination }: StudentsIndexProps) {
   const [students, setStudents] = useState<Student[]>(initialStudents)
-  const [allStudentsForStats] = useState<Student[]>(initialStudents) // Keep original for stats if needed
   const [searchInput, setSearchInput] = useState("") // For debouncing
   const [classFilter, setClassFilter] = useState("all")
   const [juzFilter, setJuzFilter] = useState("all")
