@@ -24,6 +24,15 @@ class AppSetting < ApplicationRecord
     end
   end
 
+  # Get favicon URL - returns logo if available, otherwise default favicon
+  def favicon_url
+    if logo.attached?
+      Rails.application.routes.url_helpers.rails_blob_path(logo, only_path: true)
+    else
+      "/favicon.jpeg"
+    end
+  end
+
   private
 
   def logo_validation
