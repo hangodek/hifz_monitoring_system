@@ -76,7 +76,6 @@ export default function SettingsEdit({ setting: initialSetting, errors }: Settin
     <div className="container mx-auto py-6 px-4 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Settings className="h-8 w-8" />
           Pengaturan Aplikasi
         </h1>
         <p className="text-muted-foreground mt-1">

@@ -27,7 +27,7 @@ export function DashboardHeader() {
               <span className="hidden sm:inline">Manajemen Pengguna</span>
               <span className="sm:hidden">Pengguna</span>
             </Button>
-            <Button variant="outline" className="border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300 cursor-pointer w-full" onClick={() => router.visit("/settings/edit")}>
+            <Button variant="outline" className="border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300 cursor-pointer w-full col-span-full" onClick={() => router.visit("/settings/edit")}>
               <Settings className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Pengaturan</span>
               <span className="sm:hidden">Settings</span>
