@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Settings, Upload, Image as ImageIcon, Type, CheckCircle2 } from "lucide-react"
+import { Upload, Image as ImageIcon, Type, CheckCircle2 } from "lucide-react"
 import { router, usePage } from "@inertiajs/react"
 
 interface AppSetting {
@@ -107,7 +107,7 @@ export default function SettingsEdit({ setting: initialSetting, errors }: Settin
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Logo Section */}
-          <Card>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30 hover:shadow-xl transition-shadow duration-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ImageIcon className="h-5 w-5" />
@@ -157,7 +157,7 @@ export default function SettingsEdit({ setting: initialSetting, errors }: Settin
           </Card>
 
           {/* Application Info Section */}
-          <Card>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-green-50/30 hover:shadow-xl transition-shadow duration-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Type className="h-5 w-5" />

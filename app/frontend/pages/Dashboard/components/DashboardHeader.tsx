@@ -30,7 +30,7 @@ export function DashboardHeader() {
             <Button variant="outline" className="border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300 cursor-pointer w-full col-span-full" onClick={() => router.visit("/settings/edit")}>
               <Settings className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Pengaturan</span>
-              <span className="sm:hidden">Settings</span>
+              <span className="sm:hidden">Pengaturan</span>
             </Button>
           </>
         )}
@@ -38,7 +38,7 @@ export function DashboardHeader() {
         {(userRole === "admin" || userRole === "teacher") && (
           <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 cursor-pointer w-full col-span-full" onClick={() => router.visit("/teachers")}>
             <Mic className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Mod Guru</span>
+            <span className="hidden sm:inline">Mode Guru</span>
             <span className="sm:hidden">Guru</span>
           </Button>
         )}
