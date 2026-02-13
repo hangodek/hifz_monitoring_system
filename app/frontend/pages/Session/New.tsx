@@ -14,24 +14,10 @@ import React from "react"
 import { useForm, usePage } from "@inertiajs/react"
 import { AlertCircle } from "lucide-react"
 import matanLogo from "@/assets/matan_logo.png"
+import { PageProps } from "@/types/auth"
 
-interface AppSettings {
-  app_name: string
-  app_subtitle: string
-  logo_url: string
-}
-
-interface SessionProps {
-  app_settings?: AppSettings
-}
-
-export default function Session({ app_settings }: SessionProps) {
-  const { flash } = usePage().props as {
-    flash?: {
-      alert?: string
-      notice?: string
-    }
-  }
+export default function Session() {
+  const { flash, app_settings } = usePage<PageProps>().props
 
   const { data, setData, post, processing } = useForm({
     username: '',

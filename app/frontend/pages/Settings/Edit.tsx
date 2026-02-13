@@ -210,13 +210,14 @@ export default function SettingsEdit({ setting: initialSetting, errors }: Settin
               type="button"
               variant="outline"
               onClick={() => router.visit('/dashboard')}
+              className="cursor-pointer"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
             >
               {isSubmitting ? (
                 <>

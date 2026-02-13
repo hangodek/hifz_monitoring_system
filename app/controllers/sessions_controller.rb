@@ -3,14 +3,7 @@ class SessionsController < ApplicationController
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_session_url, alert: "Try again later." }
 
   def new
-    settings = AppSetting.instance
-    render inertia: "Session/New", props: {
-      app_settings: {
-        app_name: settings.app_name,
-        app_subtitle: settings.app_subtitle,
-        logo_url: settings.logo_url
-      }
-    }
+    render inertia: "Session/New"
   end
 
   def create
@@ -19,14 +12,7 @@ class SessionsController < ApplicationController
       redirect_to redirect_path_for_role(user)
     else
       flash.now[:alert] = "Invalid username or password. Please try again."
-      settings = AppSetting.instance
-      render inertia: "Session/New", props: {
-        app_settings: {
-          app_name: settings.app_name,
-          app_subtitle: settings.app_subtitle,
-          logo_url: settings.logo_url
-        }
-      }, status: :unprocessable_entity
+      render inertia: "Session/New", status: :unprocessable_entity
     end
   end
 

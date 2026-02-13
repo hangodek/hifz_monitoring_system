@@ -4,6 +4,9 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
 
   inertia_share do
+    # Get app settings for dynamic branding
+    app_setting = AppSetting.instance
+    
     if Current.user
       {
         flash: {
@@ -17,6 +20,12 @@ class ApplicationController < ActionController::Base
             username: Current.user.username,
             role: Current.user.role
           }
+        },
+        app_settings: {
+          app_name: app_setting.app_name,
+          app_subtitle: app_setting.app_subtitle,
+          institution_name: app_setting.institution_name,
+          logo_url: app_setting.logo_url
         }
       }
     else
@@ -24,6 +33,12 @@ class ApplicationController < ActionController::Base
         flash: {
           alert: flash[:alert],
           notice: flash[:notice]
+        },
+        app_settings: {
+          app_name: app_setting.app_name,
+          app_subtitle: app_setting.app_subtitle,
+          institution_name: app_setting.institution_name,
+          logo_url: app_setting.logo_url
         }
       }
     end

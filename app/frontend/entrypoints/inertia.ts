@@ -1,6 +1,7 @@
 import { createInertiaApp } from '@inertiajs/react'
 import { createElement, ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
+import type { AppSettings } from '@/types/auth'
 
 // Temporary type definition, until @inertiajs/react provides one
 type ResolvedComponent = {
@@ -8,11 +9,26 @@ type ResolvedComponent = {
   layout?: (page: ReactNode) => ReactNode
 }
 
+// Type for Inertia props
+interface InertiaAppProps {
+  initialPage: {
+    props: {
+      app_settings?: AppSettings
+      [key: string]: any
+    }
+  }
+  [key: string]: any
+}
+
 createInertiaApp({
   // Set default page title
   // see https://inertia-rails.dev/guide/title-and-meta
   //
-  title: title => title ? `${title} - App` : 'MATAN Monitoring System',
+  title: title => {
+    // Get app name from shared props if available
+    const appName = (window as any).appName || 'Sistem Manajemen Hifz'
+    return title ? `${title} - ${appName}` : appName
+  },
 
   // Disable progress bar
   //
@@ -37,7 +53,12 @@ createInertiaApp({
     return page
   },
 
-  setup({ el, App, props }) {
+  setup({ el, App, props }: { el: HTMLElement | null; App: any; props: InertiaAppProps }) {
+    // Set app name globally from shared props for dynamic title
+    if (props.initialPage?.props?.app_settings) {
+      (window as any).appName = props.initialPage.props.app_settings.app_name
+    }
+    
     if (el) {
       createRoot(el).render(createElement(App, props))
     } else {
