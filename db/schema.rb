@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_28_073132) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_13_044725) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -65,6 +65,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_28_073132) do
     t.integer "juz_to"
     t.integer "total_pages"
     t.index ["student_id"], name: "index_activities_on_student_id"
+  end
+
+  create_table "app_settings", force: :cascade do |t|
+    t.string "app_name", default: "Sistem Manajemen Hifz"
+    t.string "app_subtitle", default: "Sistem Monitoring Hafalan"
+    t.string "institution_name"
+    t.string "primary_color", default: "#3B82F6"
+    t.string "secondary_color", default: "#8B5CF6"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_app_settings_on_id", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|

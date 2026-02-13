@@ -29,6 +29,9 @@ Rails.application.routes.draw do
     end
   end
   
+  # App Settings (admin only)
+  resource :settings, only: [ :edit, :update ]
+  
   # Parent dashboard - orang tua can only view their child's progress
   resource :parent, only: [ :show ], controller: 'parents' do
     get :activities_list, on: :member

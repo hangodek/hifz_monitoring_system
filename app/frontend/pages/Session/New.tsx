@@ -15,7 +15,17 @@ import { useForm, usePage } from "@inertiajs/react"
 import { AlertCircle } from "lucide-react"
 import matanLogo from "@/assets/matan_logo.png"
 
-export default function Session() {
+interface AppSettings {
+  app_name: string
+  app_subtitle: string
+  logo_url: string
+}
+
+interface SessionProps {
+  app_settings?: AppSettings
+}
+
+export default function Session({ app_settings }: SessionProps) {
   const { flash } = usePage().props as {
     flash?: {
       alert?: string
@@ -33,6 +43,11 @@ export default function Session() {
     post('/session')
   }
 
+  // Use dynamic logo if available, fallback to default
+  const logoUrl = app_settings?.logo_url || matanLogo
+  const appName = app_settings?.app_name || "Sistem Manajemen Hifz"
+  const appSubtitle = app_settings?.app_subtitle || "Sistem Manajemen Hifz MATAN"
+
   return (
     <>
       <SessionLayout>
@@ -40,8 +55,8 @@ export default function Session() {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-2xl opacity-20"></div>
             <img 
-              src={matanLogo} 
-              alt="MATAN Logo" 
+              src={logoUrl} 
+              alt={`${appName} Logo`}
               className="relative w-32 h-32 object-contain"
             />
           </div>
@@ -50,7 +65,7 @@ export default function Session() {
               <CardTitle className="text-center text-2xl font-bold">
                 Masuk ke Dasbor
               </CardTitle>
-              <p className="text-center text-sm text-muted-foreground">Sistem Manajemen Hifz MATAN</p>
+              <p className="text-center text-sm text-muted-foreground">{appSubtitle}</p>
             </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>

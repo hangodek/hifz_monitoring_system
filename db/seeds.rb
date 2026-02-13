@@ -16,6 +16,16 @@ Activity.destroy_all
 
 puts "Seeding initial data..."
 
+# Initialize App Settings (singleton pattern)
+puts "Initializing app settings..."
+AppSetting.find_or_create_by!(id: 1) do |setting|
+  setting.app_name = "Sistem Manajemen Hifz"
+  setting.app_subtitle = "Sistem Monitoring Hafalan"
+  setting.institution_name = "MATAN"
+  setting.primary_color = "#3B82F6"
+  setting.secondary_color = "#8B5CF6"
+end
+
 # Create default users with different roles
 User.find_or_create_by!(username: "admin") do |user|
   user.password = "admin"
