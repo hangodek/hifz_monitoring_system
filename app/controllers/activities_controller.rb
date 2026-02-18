@@ -9,8 +9,9 @@ class ActivitiesController < ApplicationController
   def create
     @activity = @student.activities.build(create_activity_params)
 
-    if @activity.save
-      # Update student's hifz progress if it's a memorization activity and new progress is provided
+    if @activity.save      # Invalidate cache untuk teacher mode
+      Rails.cache.delete("teacher_active_students")
+            # Update student's hifz progress if it's a memorization activity and new progress is provided
       if @activity.memorization? && params.dig(:activity, :new_hifz_juz).present? && params.dig(:activity, :new_hifz_pages).present?
         new_juz = params.dig(:activity, :new_hifz_juz).to_i
         new_pages = params.dig(:activity, :new_hifz_pages).to_i
@@ -40,6 +41,10 @@ class ActivitiesController < ApplicationController
 
   def destroy
     @activity.destroy
+    
+    # Invalidate cache untuk teacher mode
+    Rails.cache.delete("teacher_active_students")
+    
     redirect_to teachers_path, notice: "Activity was successfully deleted."
   end
 

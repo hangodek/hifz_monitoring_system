@@ -289,6 +289,9 @@ class StudentsController < ApplicationController
     @student = Student.new(student_params)
 
     if @student.save
+      # Invalidate cache untuk teacher mode
+      Rails.cache.delete("teacher_active_students")
+      
       # Auto-generate parent account
       parent_username = generate_parent_username(@student.name)
       parent_password = parent_username # Same as username for simplicity
@@ -334,6 +337,9 @@ class StudentsController < ApplicationController
     @student = Student.find(params[:id])
 
     if @student.update(student_params)
+      # Invalidate cache untuk teacher mode
+      Rails.cache.delete("teacher_active_students")
+      
       redirect_to student_path(@student), notice: "Student updated successfully!"
     else
       render inertia: "Student/Edit", props: {

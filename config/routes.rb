@@ -20,7 +20,12 @@ Rails.application.routes.draw do
       get :activities_list
     end
   end
-  resources :teachers, only: [ :index ]
+  resources :teachers, only: [ :index ] do
+    collection do
+      get :search_students
+      get :load_more_activities
+    end
+  end
   
   # Users management (pengurus only)
   resources :users, only: [ :index ] do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_13_044725) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_18_075706) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -64,6 +64,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_13_044725) do
     t.integer "juz_from"
     t.integer "juz_to"
     t.integer "total_pages"
+    t.index ["created_at"], name: "index_activities_on_created_at"
+    t.index ["student_id", "created_at"], name: "index_activities_on_student_and_created_at"
     t.index ["student_id"], name: "index_activities_on_student_id"
   end
 
@@ -107,6 +109,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_13_044725) do
     t.string "current_hifz_in_surah", default: "Al-Fatihah", null: false
     t.string "nisn"
     t.string "student_number"
+    t.index ["class_level"], name: "index_students_on_class_level"
+    t.index ["name"], name: "index_students_on_name"
+    t.index ["status", "name"], name: "index_students_on_status_and_name"
   end
 
   create_table "users", force: :cascade do |t|

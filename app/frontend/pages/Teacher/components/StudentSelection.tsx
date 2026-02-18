@@ -3,8 +3,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Check, ChevronsUpDown, Search, Users, ExternalLink } from "lucide-react"
-import { useState } from "react"
+import { Check, ChevronsUpDown, Search, Users, ExternalLink, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Link } from "@inertiajs/react"
 
@@ -25,18 +25,57 @@ interface StudentSelectionProps {
 export function StudentSelection({ students, selectedStudent, setSelectedStudent, currentStudent }: StudentSelectionProps) {
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<Student[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [showAllStudents, setShowAllStudents] = useState(true)
 
-  // Filter students based on search query
-  const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.class_level.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.current_hifz_in_juz.includes(searchQuery)
-  )
+  // Debounced search function with native fetch
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([])
+      setShowAllStudents(true)
+      setIsSearching(false)
+      return
+    }
 
-  const handleSelectStudent = (studentId: string) => {
+    setIsSearching(true)
+    setShowAllStudents(false)
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+        const response = await fetch(`/teachers/search_students?q=${encodeURIComponent(searchQuery)}`, {
+          headers: {
+            'X-CSRF-Token': csrfToken || '',
+            'Accept': 'application/json'
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error('Search failed')
+        }
+        
+        const data = await response.json()
+        setSearchResults(data)
+      } catch (error) {
+        console.error('Error searching students:', error)
+        setSearchResults([])
+      } finally {
+        setIsSearching(false)
+      }
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
+
+  // Display students based on search state
+  const displayStudents = showAllStudents ? students.slice(0, 20) : searchResults
+
+  const handleSelectStudent = (studentId: string, studentData?: Student) => {
     setSelectedStudent(studentId)
     setOpen(false)
     setSearchQuery("")
+    setShowAllStudents(true)
   }
 
   return (
@@ -69,19 +108,27 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
             <div className="flex items-center border-b px-3">
               <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
               <Input
-                placeholder="Cari siswa..."
+                placeholder="Ketik untuk mencari siswa..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-10 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
+              {isSearching && (
+                <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground" />
+              )}
             </div>
             <div className="max-h-[300px] overflow-y-auto p-1">
-              {filteredStudents.length === 0 && (
-                <div className="py-6 text-center text-sm text-muted-foreground">
-                  Tidak ada siswa ditemukan.
+              {showAllStudents && displayStudents.length === 20 && (
+                <div className="px-2 py-2 text-xs text-muted-foreground bg-blue-50 border-b">
+                  Menampilkan 20 siswa pertama. Ketik untuk mencari lebih banyak.
                 </div>
               )}
-              {filteredStudents.map((student) => (
+              {!isSearching && displayStudents.length === 0 && (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  {searchQuery ? "Tidak ada siswa ditemukan." : "Ketik untuk mencari siswa."}
+                </div>
+              )}
+              {displayStudents.map((student) => (
                 <div
                   key={student.id}
                   onClick={() => handleSelectStudent(student.id)}
