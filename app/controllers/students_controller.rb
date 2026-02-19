@@ -291,6 +291,7 @@ class StudentsController < ApplicationController
     if @student.save
       # Invalidate cache untuk teacher mode
       Rails.cache.delete("teacher_active_students")
+      Rails.cache.delete("student_activities_#{@student.id}")
       
       # Auto-generate parent account
       parent_username = generate_parent_username(@student.name)
@@ -339,6 +340,7 @@ class StudentsController < ApplicationController
     if @student.update(student_params)
       # Invalidate cache untuk teacher mode
       Rails.cache.delete("teacher_active_students")
+      Rails.cache.delete("student_activities_#{@student.id}")
       
       redirect_to student_path(@student), notice: "Student updated successfully!"
     else

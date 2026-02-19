@@ -12,12 +12,26 @@ class TeachersController < ApplicationController
 
     render inertia: "Teacher/Index", props: {
       students: students,
-      recent_activities: Activity.joins(:student)
-                                .where(students: { status: "active" })
-                                .includes(:student)
-                                .order(created_at: :desc)
-                                .limit(10)
-                                .map do |activity|
+      recent_activities: [] # Activities loaded per-student via API
+    }
+  end
+
+  # Get activities for a specific student
+  def student_activities
+    student_id = params[:student_id]
+    
+    if student_id.blank?
+      render json: { activities: [] }
+      return
+    end
+
+    # Cache activities per student (2 minutes)
+    activities = Rails.cache.fetch("student_activities_#{student_id}", expires_in: 2.minutes) do
+      Activity.joins(:student)
+              .where(student_id: student_id, students: { status: "active" })
+              .order(created_at: :desc)
+              .limit(20)
+              .map do |activity|
         {
           id: activity.id.to_s,
           activity_type: activity.activity_type,
@@ -38,7 +52,9 @@ class TeachersController < ApplicationController
           }
         }
       end
-    }
+    end
+
+    render json: { activities: activities }
   end
 
   # Search students endpoint for autocomplete

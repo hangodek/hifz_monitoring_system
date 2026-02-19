@@ -270,7 +270,6 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
             <RecentActivities
               currentStudent={currentStudent}
               activityTypes={activityTypes}
-              recentActivities={recent_activities}
             />
           </div>
         </div>

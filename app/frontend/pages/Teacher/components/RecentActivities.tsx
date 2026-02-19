@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen } from "lucide-react"
+import { BookOpen, Loader2 } from "lucide-react"
 import { AudioPlayer } from "@/components/AudioPlayer"
+import { useEffect, useState } from "react"
 
 interface Student {
   id: string
@@ -39,7 +40,6 @@ interface Activity {
 interface RecentActivitiesProps {
   currentStudent: Student | undefined
   activityTypes: ActivityType[]
-  recentActivities: Activity[]
 }
 
 const gradeLabels = {
@@ -54,15 +54,40 @@ const activityLabels = {
   revision: "Murajaah"
 }
 
-export function RecentActivities({ currentStudent, activityTypes, recentActivities }: RecentActivitiesProps) {
+export function RecentActivities({ currentStudent, activityTypes }: RecentActivitiesProps) {
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!currentStudent) {
+      setActivities([])
+      return
+    }
+
+    // Fetch activities for the selected student
+    const fetchActivities = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch(`/teachers/student_activities?student_id=${currentStudent.id}`)
+        const data = await response.json()
+        setActivities(data.activities || [])
+      } catch (error) {
+        console.error('Failed to fetch activities:', error)
+        setActivities([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchActivities()
+  }, [currentStudent])
+
   if (!currentStudent) {
     return null
   }
 
-  // Filter activities for the current student and get the most recent 5
-  const studentActivities = recentActivities
-    .filter(activity => String(activity.student.id) === String(currentStudent.id))
-    .slice(0, 5)
+  // Show the most recent 5 activities
+  const studentActivities = activities.slice(0, 5)
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString)
@@ -85,7 +110,11 @@ export function RecentActivities({ currentStudent, activityTypes, recentActiviti
         <CardDescription>{currentStudent.name}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        {studentActivities.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : studentActivities.length === 0 ? (
           <p className="text-sm text-muted-foreground">Tidak ada aktivitas terkini ditemukan.</p>
         ) : (
           studentActivities.map((activity) => {

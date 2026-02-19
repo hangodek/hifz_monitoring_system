@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   resources :teachers, only: [ :index ] do
     collection do
       get :search_students
+      get :student_activities
       get :load_more_activities
     end
   end
