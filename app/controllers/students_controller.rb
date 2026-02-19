@@ -701,9 +701,9 @@ class StudentsController < ApplicationController
 
   def translate_grade(grade)
     translations = {
-      'excellent' => 'Cemerlang',
+      'excellent' => 'Sangat Baik',
       'good' => 'Baik',
-      'fair' => 'Sederhana',
+      'fair' => 'Cukup',
       'needs_improvement' => 'Perlu Diperbaiki'
     }
     translations[grade] || grade.humanize

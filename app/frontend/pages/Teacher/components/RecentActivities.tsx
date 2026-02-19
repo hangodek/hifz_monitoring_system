@@ -43,9 +43,9 @@ interface RecentActivitiesProps {
 }
 
 const gradeLabels = {
-  excellent: "Cemerlang",
+  excellent: "Sangat Baik",
   good: "Baik", 
-  fair: "Sederhana",
+  fair: "Cukup",
   needs_improvement: "Perlu Diperbaiki"
 }
 

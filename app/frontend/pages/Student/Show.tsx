@@ -166,17 +166,6 @@ const getStudentData = (student: Student, all_activities: Activity[], startDate:
   }
 }
 
-// Helper function to translate grade from Malay to Indonesian
-const translateGrade = (grade: string): string => {
-  const gradeMap: Record<string, string> = {
-    'Cemerlang': 'Sangat Baik',
-    'Baik': 'Baik',
-    'Sederhana': 'Cukup',
-    'Lemah': 'Kurang'
-  }
-  return gradeMap[grade] || grade
-}
-
 interface StudentShowProps {
   student: Student // The actual student data object from Rails controller
   recent_activities: Activity[] // Recent activities from backend (limited to 5)
@@ -861,10 +850,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
                             <div className="flex-1 space-y-2">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium">{activity.activity}</p>
-                                <Badge variant={activity.grade === "Cemerlang" ? "default" : 
+                                <Badge variant={activity.grade === "Sangat Baik" ? "default" : 
                                               activity.grade === "Baik" ? "secondary" : 
-                                              activity.grade === "Sederhana" ? "outline" : "destructive"}>
-                                  {translateGrade(activity.grade)}
+                                              activity.grade === "Cukup" ? "outline" : "destructive"}>
+                                  {activity.grade}
                                 </Badge>
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">

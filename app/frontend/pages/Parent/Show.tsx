@@ -207,16 +207,6 @@ export default function ParentShow({
     return gender === "male" ? "Laki-laki" : "Perempuan"
   }
 
-  const translateGrade = (grade: string): string => {
-    const gradeMap: Record<string, string> = {
-      'Cemerlang': 'Sangat Baik',
-      'Baik': 'Baik',
-      'Sederhana': 'Cukup',
-      'Lemah': 'Kurang'
-    }
-    return gradeMap[grade] || grade
-  }
-
   return (
     <div className="min-h-screen bg-gray-50/50">
       <div className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -607,10 +597,10 @@ export default function ParentShow({
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">{activity.activity}</p>
                       {activity.grade && (
-                        <Badge variant={activity.grade === "Cemerlang" ? "default" : 
+                        <Badge variant={activity.grade === "Sangat Baik" ? "default" : 
                                       activity.grade === "Baik" ? "secondary" : 
-                                      activity.grade === "Sederhana" ? "outline" : "destructive"}>
-                          {translateGrade(activity.grade)}
+                                      activity.grade === "Cukup" ? "outline" : "destructive"}>
+                          {activity.grade}
                         </Badge>
                       )}
                     </div>

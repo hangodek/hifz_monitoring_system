@@ -85,7 +85,7 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
       <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 cursor-pointer md:w-full" onClick={() => router.visit("/teachers")}>
           <Mic className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Mod Guru</span>
+          <span className="hidden sm:inline">Mode Guru</span>
           <span className="sm:hidden">Guru</span>
         </Button>
         <Button

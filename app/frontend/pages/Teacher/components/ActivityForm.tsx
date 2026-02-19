@@ -364,9 +364,9 @@ export function ActivityForm({
                   <SelectValue placeholder="Pilih penilaian..." />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
-                  <SelectItem value="excellent" className="cursor-pointer">Cemerlang</SelectItem>
+                  <SelectItem value="excellent" className="cursor-pointer">Sangat Baik</SelectItem>
                   <SelectItem value="good" className="cursor-pointer">Baik</SelectItem>
-                  <SelectItem value="fair" className="cursor-pointer">Sederhana</SelectItem>
+                  <SelectItem value="fair" className="cursor-pointer">Cukup</SelectItem>
                   <SelectItem value="needs_improvement" className="cursor-pointer">Perlu Diperbaiki</SelectItem>
                 </SelectContent>
               </Select>

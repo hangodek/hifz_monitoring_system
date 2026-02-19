@@ -55,17 +55,6 @@ interface RecentActivitiesProps {
   totalActivitiesCount: number
 }
 
-// Helper function to translate grade from Malay to Indonesian
-const translateGrade = (grade: string): string => {
-  const gradeMap: Record<string, string> = {
-    'Cemerlang': 'Sangat Baik',
-    'Baik': 'Baik',
-    'Sederhana': 'Cukup',
-    'Lemah': 'Kurang'
-  }
-  return gradeMap[grade] || grade
-}
-
 export function RecentActivities({ activities, totalActivitiesCount }: RecentActivitiesProps) {
   const [allActivities, setAllActivities] = useState<DetailedActivity[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -171,10 +160,10 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             </Link>
                             <p className="text-xs text-muted-foreground">{activity.activity}</p>
                           </div>
-                          <Badge variant={activity.grade === "Cemerlang" ? "default" : 
+                          <Badge variant={activity.grade === "Sangat Baik" ? "default" : 
                                         activity.grade === "Baik" ? "secondary" : 
-                                        activity.grade === "Sederhana" ? "outline" : "destructive"}>
-                            {translateGrade(activity.grade)}
+                                        activity.grade === "Cukup" ? "outline" : "destructive"}>
+                            {activity.grade}
                           </Badge>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
