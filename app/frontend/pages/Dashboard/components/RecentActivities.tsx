@@ -12,7 +12,6 @@ import {
 import {
   BookOpen,
   Clock,
-  Target,
   Star,
   Loader2,
 } from "lucide-react"
@@ -20,6 +19,12 @@ import { AudioPlayer } from "@/components/AudioPlayer"
 import { useState } from "react"
 import axios from "axios"
 import { Link } from "@inertiajs/react"
+
+// Activity types - konsisten dengan Teacher mode
+const activityTypes = [
+  { value: "memorization", label: "Hafalan", icon: BookOpen, color: "bg-blue-500" },
+  { value: "revision", label: "Murajaah", icon: Star, color: "bg-green-500" },
+]
 
 interface RecentActivity {
   id: number
@@ -133,12 +138,8 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                     {allActivities.map((activity) => (
                     <div key={activity.id} className="flex items-start space-x-3 p-4 border-0 bg-gradient-to-r from-white to-slate-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
-                          activity.type === "memorization"
-                            ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
-                            : activity.type === "revision"
-                              ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
-                              : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
+                        className={`flex h-8 w-8 items-center justify-center rounded-full text-white flex-shrink-0 ${
+                          activityTypes.find(t => t.value === activity.type)?.color || 'bg-gray-500'
                         }`}
                       >
                         {activity.type === "memorization" ? (
@@ -146,7 +147,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                         ) : activity.type === "revision" ? (
                           <Star className="h-4 w-4" />
                         ) : (
-                          <Target className="h-4 w-4" />
+                          <BookOpen className="h-4 w-4" />
                         )}
                       </div>
                       <div className="flex-1 space-y-2">
@@ -232,12 +233,8 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-colors duration-200">
             <div
-              className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
-                activity.type === "memorization"
-                  ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
-                  : activity.type === "revision"
-                    ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
-                    : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
+              className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white flex-shrink-0 ${
+                activityTypes.find(t => t.value === activity.type)?.color || 'bg-gray-500'
               }`}
             >
               {activity.type === "memorization" ? (
@@ -245,7 +242,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
               ) : activity.type === "revision" ? (
                 <Star className="h-3 w-3 sm:h-4 sm:w-4" />
               ) : (
-                <Target className="h-3 w-3 sm:h-4 sm:w-4" />
+                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
               )}
             </div>
             <div className="flex-1 space-y-1 min-w-0">
