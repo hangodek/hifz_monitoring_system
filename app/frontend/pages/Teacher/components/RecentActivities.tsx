@@ -54,6 +54,37 @@ const activityLabels = {
   revision: "Murajaah"
 }
 
+type Juz30Summary = {
+  completed: number
+  incomplete: number
+  average_score: number
+}
+
+const parseJuz30Summary = (notes: string | null): Juz30Summary | null => {
+  if (!notes) return null
+
+  try {
+    const parsed = JSON.parse(notes)
+    if (parsed?.format !== "juz30_status_v1") return null
+
+    const completed = Number(parsed?.summary?.completed)
+    const incomplete = Number(parsed?.summary?.incomplete)
+    const averageScore = Number(parsed?.summary?.average_score)
+
+    if (Number.isNaN(completed) || Number.isNaN(incomplete) || Number.isNaN(averageScore)) {
+      return null
+    }
+
+    return {
+      completed,
+      incomplete,
+      average_score: averageScore,
+    }
+  } catch {
+    return null
+  }
+}
+
 export function RecentActivities({ currentStudent, activityTypes }: RecentActivitiesProps) {
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(false)
@@ -119,6 +150,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
         ) : (
           studentActivities.map((activity) => {
             const activityType = activityTypes.find((t) => t.value === activity.activity_type)
+            const juz30Summary = parseJuz30Summary(activity.notes)
             
             // Build activity description
             let activityDescription = `${activityLabels[activity.activity_type as keyof typeof activityLabels]} ${activity.surah_from}${activity.surah_from !== activity.surah_to ? ` - ${activity.surah_to}` : ''}`
@@ -130,7 +162,11 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
               activityDescription += `, Juz ${activity.juz}`
             }
             
-            activityDescription += `, halaman ${activity.page_from}-${activity.page_to}`
+            if (juz30Summary) {
+              activityDescription += ", status surah Juz 30"
+            } else {
+              activityDescription += `, halaman ${activity.page_from}-${activity.page_to}`
+            }
             
             return (
               <div key={activity.id} className="flex items-start space-x-2 sm:space-x-3">
@@ -150,11 +186,15 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
                   <p className="text-xs text-muted-foreground">
                     {gradeLabels[activity.activity_grade as keyof typeof gradeLabels]} • {formatTimeAgo(activity.created_at)}
                   </p>
-                  {activity.notes && (
+                  {juz30Summary ? (
+                    <p className="text-xs text-muted-foreground italic line-clamp-2">
+                      Tuntas {juz30Summary.completed} surah • Tidak tuntas {juz30Summary.incomplete} surah • Rata-rata nilai {juz30Summary.average_score}
+                    </p>
+                  ) : activity.notes ? (
                     <p className="text-xs text-muted-foreground italic line-clamp-2" title={activity.notes}>
                       {activity.notes}
                     </p>
-                  )}
+                  ) : null}
                   {activity.audio_url && (
                     <div className="mt-1">
                       <AudioPlayer 

@@ -1,13 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Plus, Save } from "lucide-react"
 import { router } from "@inertiajs/react"
-import { AudioRecorder } from "./AudioRecorder"
-import { useState } from "react"
+import { memo, useMemo, useState } from "react"
+import { Badge } from "@/components/ui/badge"
 
 interface ActivityType {
   value: string
@@ -15,162 +13,254 @@ interface ActivityType {
   color: string
 }
 
-interface ActivityDetails {
-  surahFrom: string
-  surahTo: string
-  pageFrom: string
-  pageTo: string
-  juz: string
-  juzFrom: string
-  juzTo: string
-  notes: string
-  evaluation: string
+interface Juz30Entry {
+  surah: string
+  status: "completed" | "incomplete"
+  k: number
+  t: number
+  f: number
 }
 
 interface ActivityFormProps {
   activityType: string
   setActivityType: (value: string) => void
   activityTypes: ActivityType[]
-  surahList: string[]
-  activityDetails: ActivityDetails
-  setActivityDetails: (details: ActivityDetails | ((prev: ActivityDetails) => ActivityDetails)) => void
-  handleSaveActivity: () => void
   selectedStudent: string
-  currentStudent?: {
-    id: string
-    name: string
-    class_level: string
-    current_hifz_in_juz: string
-    current_hifz_in_pages: string
-    current_hifz_in_surah: string
-  }
 }
 
-// Map frontend evaluation values to backend enum values
-const evaluationMapping = {
-  excellent: 'excellent',
-  good: 'good', 
-  fair: 'fair',
-  needs_improvement: 'needs_improvement'
+const JUZ_30_SURAHS = [
+  "An-Naba",
+  "An-Nazi'at",
+  "Abasa",
+  "At-Takwir",
+  "Al-Infitar",
+  "Al-Mutaffifin",
+  "Al-Inshiqaq",
+  "Al-Buruj",
+  "At-Tariq",
+  "Al-A'la",
+  "Al-Ghashiyah",
+  "Al-Fajr",
+  "Al-Balad",
+  "Ash-Shams",
+  "Al-Layl",
+  "Ad-Duha",
+  "Ash-Sharh",
+  "At-Tin",
+  "Al-Alaq",
+  "Al-Qadr",
+  "Al-Bayyinah",
+  "Az-Zalzalah",
+  "Al-Adiyat",
+  "Al-Qari'ah",
+  "At-Takathur",
+  "Al-Asr",
+  "Al-Humazah",
+  "Al-Fil",
+  "Quraysh",
+  "Al-Ma'un",
+  "Al-Kawthar",
+  "Al-Kafirun",
+  "An-Nasr",
+  "Al-Masad",
+  "Al-Ikhlas",
+] as const
+
+const defaultEntry = (surah: string): Juz30Entry => ({
+  surah,
+  status: "incomplete",
+  k: 1,
+  t: 1,
+  f: 1,
+})
+
+const K_OPTIONS = Array.from({ length: 50 }, (_, i) => i + 1)
+const T_OPTIONS = Array.from({ length: 25 }, (_, i) => i + 1)
+const F_OPTIONS = Array.from({ length: 15 }, (_, i) => i + 1)
+
+const getGradeFromAverage = (average: number) => {
+  if (average >= 85) return "excellent"
+  if (average >= 70) return "good"
+  if (average >= 55) return "fair"
+  return "needs_improvement"
 }
+
+type EntryRowProps = {
+  entry: Juz30Entry
+  index: number
+  onUpdate: (index: number, updates: Partial<Juz30Entry>) => void
+}
+
+const SelectedSurahEditor = memo(function SelectedSurahEditor({ entry, index, onUpdate }: EntryRowProps) {
+  const statusClass = entry.status === "completed" ? "border-emerald-200 bg-emerald-50/60" : "border-rose-200 bg-rose-50/60"
+
+  return (
+    <div className={`rounded-lg border p-3 ${statusClass}`}>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-gray-900">{entry.surah}</p>
+        <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-700">
+          {entry.status === "completed" ? "Tuntas" : "Belum"}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="col-span-2">
+          <Label className="text-xs">Status</Label>
+          <select
+            value={entry.status}
+            onChange={(e) => onUpdate(index, { status: e.target.value as "completed" | "incomplete" })}
+            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
+          >
+            <option value="completed">Tuntas</option>
+            <option value="incomplete">Tidak Tuntas</option>
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs">K (1-50)</Label>
+          <select
+            value={entry.k}
+            onChange={(e) => onUpdate(index, { k: Number(e.target.value) })}
+            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
+          >
+            {K_OPTIONS.map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs">T (1-25)</Label>
+          <select
+            value={entry.t}
+            onChange={(e) => onUpdate(index, { t: Number(e.target.value) })}
+            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
+          >
+            {T_OPTIONS.map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs">F (1-15)</Label>
+          <select
+            value={entry.f}
+            onChange={(e) => onUpdate(index, { f: Number(e.target.value) })}
+            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
+          >
+            {F_OPTIONS.map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  )
+})
 
 export function ActivityForm({
   activityType,
   setActivityType,
   activityTypes,
-  surahList,
-  activityDetails,
-  setActivityDetails,
-  handleSaveActivity,
   selectedStudent,
-  currentStudent,
 }: ActivityFormProps) {
-  
-  // Audio recording state
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  
-  const calculateNewProgress = () => {
-    // For memorization, use juzTo and pageTo
-    if (activityType === 'memorization' && activityDetails.juzTo && activityDetails.pageTo) {
-      const juzTo = parseInt(activityDetails.juzTo);
-      const pageTo = parseInt(activityDetails.pageTo);
-      return { newJuz: juzTo, newPages: pageTo };
-    }
-    
-    return null;
-  };
+  const [juz30Entries, setJuz30Entries] = useState<Juz30Entry[]>(
+    JUZ_30_SURAHS.map((surah) => defaultEntry(surah))
+  )
+  const [selectedSurah, setSelectedSurah] = useState<string>(JUZ_30_SURAHS[0])
 
-  const validateMemorizationProgress = () => {
-    if (activityType !== 'memorization' || !currentStudent) return true;
-    
-    const newProgress = calculateNewProgress();
-    if (!newProgress) return true;
-    
-    const currentJuz = parseInt(currentStudent.current_hifz_in_juz) || 0;
-    const currentPages = parseInt(currentStudent.current_hifz_in_pages) || 0;
-    const { newJuz, newPages } = newProgress;
-    
-    // New progress must be greater than current progress
-    if (newJuz < currentJuz || (newJuz === currentJuz && newPages <= currentPages)) {
-      return false;
+  const updateEntry = (index: number, updates: Partial<Juz30Entry>) => {
+    setJuz30Entries((prev) =>
+      prev.map((entry, currentIndex) => (currentIndex === index ? { ...entry, ...updates } : entry))
+    )
+  }
+
+  const resetForm = () => {
+    setActivityType("")
+    setJuz30Entries(JUZ_30_SURAHS.map((surah) => defaultEntry(surah)))
+    setSelectedSurah(JUZ_30_SURAHS[0])
+  }
+
+  const totals = useMemo(
+    () =>
+      juz30Entries.reduce(
+        (acc, entry) => {
+          const totalScore = entry.k + entry.t + entry.f
+          const percentage = Math.round((totalScore / 90) * 100)
+
+          return {
+            completedCount: acc.completedCount + (entry.status === "completed" ? 1 : 0),
+            incompleteCount: acc.incompleteCount + (entry.status === "incomplete" ? 1 : 0),
+            totalPercentage: acc.totalPercentage + percentage,
+          }
+        },
+        {
+          completedCount: 0,
+          incompleteCount: 0,
+          totalPercentage: 0,
+        }
+      ),
+    [juz30Entries]
+  )
+
+  const averageScore = Math.round(totals.totalPercentage / juz30Entries.length)
+
+  const selectedEntry = useMemo(() => {
+    const index = juz30Entries.findIndex((entry) => entry.surah === selectedSurah)
+    if (index === -1) {
+      return null
     }
-    
-    return true;
-  };
+
+    return {
+      index,
+      entry: juz30Entries[index],
+    }
+  }, [juz30Entries, selectedSurah])
+
+  const incompleteCount = totals.incompleteCount
   
   const handleSubmit = () => {
-    if (!selectedStudent || !activityType || !activityDetails.surahFrom || !activityDetails.surahTo || !activityDetails.pageFrom || !activityDetails.pageTo) {
-      alert('Silakan lengkapi semua kolom yang diperlukan');
-      return;
+    if (!selectedStudent || !activityType) {
+      alert("Pilih siswa dan jenis aktivitas terlebih dahulu")
+      return
     }
 
-    if (!validateMemorizationProgress()) {
-      alert('Kemajuan hafalan baru harus lebih tinggi dari kemajuan saat ini');
-      return;
+    const detailedNotes = {
+      format: "juz30_status_v1",
+      entries: juz30Entries,
+      summary: {
+        completed: totals.completedCount,
+        incomplete: totals.incompleteCount,
+        average_score: averageScore,
+      },
     }
-
-    const newProgress = calculateNewProgress();
 
     const activityData = {
       activity_type: activityType,
-      activity_grade: evaluationMapping[activityDetails.evaluation as keyof typeof evaluationMapping] || 'excellent',
-      surah_from: activityDetails.surahFrom,
-      surah_to: activityDetails.surahTo,
-      page_from: parseInt(activityDetails.pageFrom),
-      page_to: parseInt(activityDetails.pageTo),
-      juz: null, // No longer used
-      juz_from: activityDetails.juzFrom ? parseInt(activityDetails.juzFrom) : null,
-      juz_to: activityDetails.juzTo ? parseInt(activityDetails.juzTo) : null,
-      notes: activityDetails.notes || '',
-      new_hifz_juz: activityType === 'memorization' && newProgress ? newProgress.newJuz : null,
-      new_hifz_pages: activityType === 'memorization' && newProgress ? newProgress.newPages : null,
-      new_hifz_surah: activityType === 'memorization' ? activityDetails.surahTo : null
-    };
-
-    // Create FormData if audio is present, otherwise use regular data
-    let submitData;
-    if (audioBlob) {
-      const formData = new FormData();
-      
-      // Add all activity fields
-      Object.entries(activityData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          formData.append(`activity[${key}]`, value.toString());
-        }
-      });
-      
-      // Add audio file
-      formData.append('activity[audio]', audioBlob, 'recording.webm');
-      submitData = formData;
-    } else {
-      submitData = { activity: activityData };
+      activity_grade: getGradeFromAverage(averageScore),
+      surah_from: "An-Naba",
+      surah_to: "Al-Ikhlas",
+      page_from: 582,
+      page_to: 604,
+      juz: 30,
+      juz_from: 30,
+      juz_to: 30,
+      notes: JSON.stringify(detailedNotes),
     }
 
-    router.post(`/students/${selectedStudent}/activities`, submitData, {
+    router.post(`/students/${selectedStudent}/activities`, { activity: activityData }, {
       onSuccess: () => {
-        // Reset form
-        setActivityDetails({
-          surahFrom: "",
-          surahTo: "",
-          pageFrom: "",
-          pageTo: "",
-          juz: "",
-          juzFrom: "",
-          juzTo: "",
-          notes: "",
-          evaluation: "",
-        });
-        setActivityType("");
-        setAudioBlob(null);
-        // Also call the original handler for any additional local actions
-        handleSaveActivity();
+        resetForm()
       },
       onError: (errors) => {
-        console.error('Failed to save activity:', errors);
-        alert('Gagal menyimpan aktivitas. Silakan coba lagi.');
+        console.error("Failed to save activity:", errors)
+        alert("Gagal menyimpan aktivitas. Silakan coba lagi.")
       }
-    });
-  };
+    })
+  }
 
   return (
     <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-indigo-50/30 hover:shadow-xl transition-shadow duration-200">
@@ -185,10 +275,10 @@ export function ActivityForm({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Jenis Aktivitas</Label>
+          <Label>Jenis Setoran</Label>
           <Select value={activityType} onValueChange={setActivityType}>
             <SelectTrigger className="border-indigo-200 hover:border-indigo-300 cursor-pointer">
-              <SelectValue placeholder="Pilih jenis aktivitas..." />
+              <SelectValue placeholder="Pilih Hafalan / Murajaah" />
             </SelectTrigger>
             <SelectContent className="border-gray-200/60">
               {activityTypes.map((type) => (
@@ -203,196 +293,57 @@ export function ActivityForm({
           </Select>
         </div>
 
-        {activityType && (
-          <>
-            {(activityType === "memorization" ||
-              activityType === "revision" ||
-              activityType === "evaluation") && (
-              <>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Surah Dari <span className="text-red-500">*</span></Label>
-                    <Select
-                      value={activityDetails.surahFrom}
-                      onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surahFrom: value }))}
-                    >
-                      <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                        <SelectValue placeholder="Pilih surah..." />
-                      </SelectTrigger>
-                      <SelectContent className="border-gray-200/60">
-                        {surahList.map((surah, index) => (
-                          <SelectItem key={index} value={surah} className="cursor-pointer">
-                            {index + 1}. {surah}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Surah Hingga <span className="text-red-500">*</span></Label>
-                    <Select
-                      value={activityDetails.surahTo}
-                      onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surahTo: value }))}
-                    >
-                      <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                        <SelectValue placeholder="Pilih surah..." />
-                      </SelectTrigger>
-                      <SelectContent className="border-gray-200/60">
-                        {surahList.map((surah, index) => (
-                          <SelectItem key={index} value={surah} className="cursor-pointer">
-                            {index + 1}. {surah}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+        <div className={activityType ? "space-y-4" : "hidden"}>
+            <div className="flex flex-wrap items-center gap-2 rounded-md bg-indigo-50 p-3">
+              <Badge variant="secondary">Juz 30</Badge>
+              <Badge className="bg-emerald-600">Tuntas: {totals.completedCount}</Badge>
+              <Badge variant="outline" className={incompleteCount > 0 ? "border-rose-300 text-rose-700" : ""}>
+                Belum Tuntas: {totals.incompleteCount}
+              </Badge>
+              <Badge variant="outline">Rata-rata: {averageScore}</Badge>
+            </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Halaman Dari <span className="text-red-500">*</span></Label>
-                    <Input
-                      type="number"
-                      placeholder="1"
-                      value={activityDetails.pageFrom}
-                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, pageFrom: e.target.value }))}
-                      className="border-gray-200/60 text-sm"
-                      min="1"
-                      max="604"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Halaman Hingga <span className="text-red-500">*</span></Label>
-                    <Input
-                      type="number"
-                      placeholder="20"
-                      value={activityDetails.pageTo}
-                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, pageTo: e.target.value }))}
-                      className="border-gray-200/60 text-sm"
-                      min="1"
-                      max="604"
-                    />
-                  </div>
-                </div>
+            <div className="space-y-3 rounded-md border border-gray-200 bg-white p-3">
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Pilih Surah Yang Mau Dinilai</Label>
+                <select
+                  value={selectedSurah}
+                  onChange={(e) => setSelectedSurah(e.target.value)}
+                  className="h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
+                >
+                  {JUZ_30_SURAHS.map((surah) => (
+                    <option key={surah} value={surah}>
+                      {surah}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                {(activityType === "memorization" || activityType === "revision") && (
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label className="text-xs sm:text-sm">
-                        Juz Dari {activityType === "memorization" && <span className="text-red-500">*</span>}
-                      </Label>
-                      <Select
-                        value={activityDetails.juzFrom}
-                        onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, juzFrom: value }))}
-                      >
-                        <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                          <SelectValue placeholder="Pilih juz..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 30 }, (_, i) => (
-                            <SelectItem key={i + 1} value={(i + 1).toString()} className="cursor-pointer">
-                              Juz {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs sm:text-sm">
-                        Juz Hingga {activityType === "memorization" && <span className="text-red-500">*</span>}
-                      </Label>
-                      <Select
-                        value={activityDetails.juzTo}
-                        onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, juzTo: value }))}
-                      >
-                        <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                          <SelectValue placeholder="Pilih juz..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 30 }, (_, i) => (
-                            <SelectItem key={i + 1} value={(i + 1).toString()} className="cursor-pointer">
-                              Juz {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )}
+              <p className="text-xs text-muted-foreground">Yang ditampilkan hanya 1 surah agar ringan dan cepat.</p>
+            </div>
 
-                {activityType === "memorization" && currentStudent && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      Kemajuan Saat Ini: {currentStudent.current_hifz_in_surah}, Juz {currentStudent.current_hifz_in_juz}, {currentStudent.current_hifz_in_pages} halaman
-                    </Label>
-                    {activityDetails.juzTo && activityDetails.pageTo && (() => {
-                      const newProgress = calculateNewProgress();
-                      return newProgress ? (
-                        <div className="text-sm text-muted-foreground">
-                          Kemajuan baru: {activityDetails.surahTo}, Juz {newProgress.newJuz}, {newProgress.newPages} halaman
-                        </div>
-                      ) : null;
-                    })()}
-                  </div>
-                )}
-              </>
+            {selectedEntry ? (
+              <SelectedSurahEditor
+                entry={selectedEntry.entry}
+                index={selectedEntry.index}
+                onUpdate={updateEntry}
+              />
+            ) : (
+              <div className="rounded-md border border-dashed border-gray-300 p-4 text-center text-sm text-muted-foreground">
+                Surah tidak ditemukan. Pilih dari daftar surah Juz 30.
+              </div>
             )}
 
-            <div className="space-y-2">
-              <Label>Catatan</Label>
-              <Textarea
-                placeholder="Tambah catatan mengenai aktivitas ini..."
-                value={activityDetails.notes}
-                onChange={(e) => setActivityDetails((prev) => ({ ...prev, notes: e.target.value }))}
-                className="border-gray-200/60"
-              />
-            </div>
-
-            {/* Audio Recording Component */}
-            <AudioRecorder
-              onAudioRecorded={setAudioBlob}
-              disabled={!selectedStudent || !activityType}
-            />
-
-            <div className="space-y-2">
-              <Label>Penilaian <span className="text-red-500">*</span></Label>
-              <Select
-                value={activityDetails.evaluation}
-                onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, evaluation: value }))}
-              >
-                <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                  <SelectValue placeholder="Pilih penilaian..." />
-                </SelectTrigger>
-                <SelectContent className="border-gray-200/60">
-                  <SelectItem value="excellent" className="cursor-pointer">Sangat Baik</SelectItem>
-                  <SelectItem value="good" className="cursor-pointer">Baik</SelectItem>
-                  <SelectItem value="fair" className="cursor-pointer">Cukup</SelectItem>
-                  <SelectItem value="needs_improvement" className="cursor-pointer">Perlu Diperbaiki</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button 
-              onClick={handleSubmit} 
+            <Button
+              onClick={handleSubmit}
               className="w-full cursor-pointer text-sm sm:text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-              disabled={
-                !selectedStudent || 
-                !activityType || 
-                !activityDetails.surahFrom || 
-                !activityDetails.surahTo || 
-                !activityDetails.pageFrom || 
-                !activityDetails.pageTo || 
-                !activityDetails.evaluation ||
-                (activityType === 'memorization' && (!activityDetails.juzFrom || !activityDetails.juzTo)) ||
-                !validateMemorizationProgress()
-              }
+              disabled={!selectedStudent || !activityType}
             >
               <Save className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Simpan Aktivitas</span>
               <span className="sm:hidden">Simpan</span>
             </Button>
-          </>
-        )}
+        </div>
       </CardContent>
     </Card>
   )
