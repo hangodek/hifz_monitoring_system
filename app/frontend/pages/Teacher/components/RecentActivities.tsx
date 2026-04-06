@@ -60,26 +60,65 @@ type Juz30Summary = {
   average_score: number
 }
 
-const parseJuz30Summary = (notes: string | null): Juz30Summary | null => {
+type JuzBasedEntry = {
+  juz: number
+  surah: string
+  status: "completed" | "incomplete"
+  k: number
+  t: number
+  f: number
+  ayat: number
+}
+
+type ParsedActivityNotes =
+  | { format: "juz30_status_v1"; summary: Juz30Summary }
+  | { format: "juz_based_status_v1"; entry: JuzBasedEntry; summary: { score: number } }
+
+const parseActivityNotes = (notes: string | null): ParsedActivityNotes | null => {
   if (!notes) return null
 
   try {
     const parsed = JSON.parse(notes)
-    if (parsed?.format !== "juz30_status_v1") return null
 
-    const completed = Number(parsed?.summary?.completed)
-    const incomplete = Number(parsed?.summary?.incomplete)
-    const averageScore = Number(parsed?.summary?.average_score)
+    if (parsed?.format === "juz30_status_v1") {
+      const completed = Number(parsed?.summary?.completed)
+      const incomplete = Number(parsed?.summary?.incomplete)
+      const averageScore = Number(parsed?.summary?.average_score)
 
-    if (Number.isNaN(completed) || Number.isNaN(incomplete) || Number.isNaN(averageScore)) {
-      return null
+      if (Number.isNaN(completed) || Number.isNaN(incomplete) || Number.isNaN(averageScore)) {
+        return null
+      }
+
+      return {
+        format: "juz30_status_v1",
+        summary: {
+          completed,
+          incomplete,
+          average_score: averageScore,
+        },
+      }
     }
 
-    return {
-      completed,
-      incomplete,
-      average_score: averageScore,
+    if (parsed?.format === "juz_based_status_v1" && parsed?.entry) {
+      const entry = parsed.entry
+      return {
+        format: "juz_based_status_v1",
+        entry: {
+          juz: Number(entry.juz),
+          surah: String(entry.surah),
+          status: entry.status === "completed" ? "completed" : "incomplete",
+          k: Number(entry.k),
+          t: Number(entry.t),
+          f: Number(entry.f),
+          ayat: Number(entry.ayat),
+        },
+        summary: {
+          score: Number(parsed?.summary?.score ?? 0),
+        },
+      }
     }
+
+    return null
   } catch {
     return null
   }
@@ -150,7 +189,8 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
         ) : (
           studentActivities.map((activity) => {
             const activityType = activityTypes.find((t) => t.value === activity.activity_type)
-            const juz30Summary = parseJuz30Summary(activity.notes)
+            const parsedNotes = parseActivityNotes(activity.notes)
+            const juz30Summary = parsedNotes?.format === "juz30_status_v1" ? parsedNotes.summary : null
             
             // Build activity description
             let activityDescription = `${activityLabels[activity.activity_type as keyof typeof activityLabels]} ${activity.surah_from}${activity.surah_from !== activity.surah_to ? ` - ${activity.surah_to}` : ''}`
@@ -162,8 +202,8 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
               activityDescription += `, Juz ${activity.juz}`
             }
             
-            if (juz30Summary) {
-              activityDescription += ", status surah Juz 30"
+            if (parsedNotes?.format === "juz_based_status_v1") {
+              activityDescription = `${activityLabels[activity.activity_type as keyof typeof activityLabels]} Juz ${parsedNotes.entry.juz} - ${parsedNotes.entry.surah}`
             } else {
               activityDescription += `, halaman ${activity.page_from}-${activity.page_to}`
             }
@@ -186,7 +226,11 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
                   <p className="text-xs text-muted-foreground">
                     {gradeLabels[activity.activity_grade as keyof typeof gradeLabels]} • {formatTimeAgo(activity.created_at)}
                   </p>
-                  {juz30Summary ? (
+                  {parsedNotes?.format === "juz_based_status_v1" ? (
+                    <p className="text-xs text-muted-foreground italic line-clamp-2">
+                      Status {parsedNotes.entry.status === "completed" ? "Tuntas" : "Belum tuntas"} • Ayat {parsedNotes.entry.ayat} • K {parsedNotes.entry.k} • T {parsedNotes.entry.t} • F {parsedNotes.entry.f}
+                    </p>
+                  ) : juz30Summary ? (
                     <p className="text-xs text-muted-foreground italic line-clamp-2">
                       Tuntas {juz30Summary.completed} surah • Tidak tuntas {juz30Summary.incomplete} surah • Rata-rata nilai {juz30Summary.average_score}
                     </p>

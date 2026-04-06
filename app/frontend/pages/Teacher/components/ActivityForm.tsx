@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Plus, Save } from "lucide-react"
 import { router } from "@inertiajs/react"
-import { memo, useMemo, useState } from "react"
+import { useMemo, useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 
 interface ActivityType {
@@ -14,11 +14,13 @@ interface ActivityType {
 }
 
 interface Juz30Entry {
+  juz: number
   surah: string
   status: "completed" | "incomplete"
   k: number
   t: number
   f: number
+  ayat: number
 }
 
 interface ActivityFormProps {
@@ -28,50 +30,47 @@ interface ActivityFormProps {
   selectedStudent: string
 }
 
-const JUZ_30_SURAHS = [
-  "An-Naba",
-  "An-Nazi'at",
-  "Abasa",
-  "At-Takwir",
-  "Al-Infitar",
-  "Al-Mutaffifin",
-  "Al-Inshiqaq",
-  "Al-Buruj",
-  "At-Tariq",
-  "Al-A'la",
-  "Al-Ghashiyah",
-  "Al-Fajr",
-  "Al-Balad",
-  "Ash-Shams",
-  "Al-Layl",
-  "Ad-Duha",
-  "Ash-Sharh",
-  "At-Tin",
-  "Al-Alaq",
-  "Al-Qadr",
-  "Al-Bayyinah",
-  "Az-Zalzalah",
-  "Al-Adiyat",
-  "Al-Qari'ah",
-  "At-Takathur",
-  "Al-Asr",
-  "Al-Humazah",
-  "Al-Fil",
-  "Quraysh",
-  "Al-Ma'un",
-  "Al-Kawthar",
-  "Al-Kafirun",
-  "An-Nasr",
-  "Al-Masad",
-  "Al-Ikhlas",
-] as const
+const JUZ_SURAH_OPTIONS: Record<number, string[]> = {
+  1: ["Al-Fatihah", "Al-Baqarah"],
+  2: ["Al-Baqarah"],
+  3: ["Al-Baqarah", "Ali Imran"],
+  4: ["Ali Imran", "An-Nisa"],
+  5: ["An-Nisa"],
+  6: ["An-Nisa", "Al-Ma'idah"],
+  7: ["Al-Ma'idah", "Al-An'am"],
+  8: ["Al-An'am", "Al-A'raf", "Al-Anfal"],
+  9: ["Al-A'raf", "Al-Anfal", "At-Taubah"],
+  10: ["Al-Anfal", "At-Taubah"],
+  11: ["At-Taubah", "Yunus", "Hud"],
+  12: ["Hud", "Yusuf"],
+  13: ["Yusuf", "Ar-Ra'd", "Ibrahim"],
+  14: ["Al-Hijr", "An-Nahl"],
+  15: ["Al-Isra", "Al-Kahf"],
+  16: ["Al-Kahf", "Maryam", "Ta-Ha"],
+  17: ["Al-Anbiya", "Al-Hajj"],
+  18: ["Al-Mu'minun", "An-Nur", "Al-Furqan"],
+  19: ["Al-Furqan", "Ash-Shu'ara", "An-Naml", "Al-Qasas"],
+  20: ["Al-Qasas", "Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajdah"],
+  21: ["Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajdah", "Al-Ahzab"],
+  22: ["Al-Ahzab", "Saba", "Fatir", "Ya-Sin"],
+  23: ["Ya-Sin", "As-Saffat", "Sad", "Az-Zumar"],
+  24: ["Az-Zumar", "Ghafir", "Fussilat"],
+  25: ["Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah", "Al-Ahqaf"],
+  26: ["Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat"],
+  27: ["Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"],
+  28: ["Al-Mujadila", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq"],
+  29: ["At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat"],
+  30: ["An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"],
+}
 
-const defaultEntry = (surah: string): Juz30Entry => ({
+const defaultEntry = (juz: number, surah: string): Juz30Entry => ({
+  juz,
   surah,
   status: "incomplete",
   k: 1,
   t: 1,
   f: 1,
+  ayat: 1,
 })
 
 const K_OPTIONS = Array.from({ length: 50 }, (_, i) => i + 1)
@@ -85,81 +84,105 @@ const getGradeFromAverage = (average: number) => {
   return "needs_improvement"
 }
 
-type EntryRowProps = {
-  entry: Juz30Entry
-  index: number
-  onUpdate: (index: number, updates: Partial<Juz30Entry>) => void
-}
+const getSurahOptionsForJuz = (juz: number) => JUZ_SURAH_OPTIONS[juz] ?? []
 
-const SelectedSurahEditor = memo(function SelectedSurahEditor({ entry, index, onUpdate }: EntryRowProps) {
+const SelectedSurahEditor = ({
+  entry,
+  onUpdate,
+}: {
+  entry: Juz30Entry
+  onUpdate: (updates: Partial<Juz30Entry>) => void
+}) => {
   const statusClass = entry.status === "completed" ? "border-emerald-200 bg-emerald-50/60" : "border-rose-200 bg-rose-50/60"
 
   return (
     <div className={`rounded-lg border p-3 ${statusClass}`}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-gray-900">{entry.surah}</p>
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-wide text-gray-500">Juz {entry.juz}</p>
+          <p className="truncate text-sm font-semibold text-gray-900">{entry.surah}</p>
+        </div>
         <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-700">
           {entry.status === "completed" ? "Tuntas" : "Belum"}
         </span>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <div className="col-span-2">
+        <div>
           <Label className="text-xs">Status</Label>
-          <select
+          <Select
             value={entry.status}
-            onChange={(e) => onUpdate(index, { status: e.target.value as "completed" | "incomplete" })}
-            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
+            onValueChange={(value: "completed" | "incomplete") => onUpdate({ status: value })}
           >
-            <option value="completed">Tuntas</option>
-            <option value="incomplete">Tidak Tuntas</option>
-          </select>
+            <SelectTrigger className="mt-1 h-9 w-full border-gray-200 bg-white text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="completed">Tuntas</SelectItem>
+              <SelectItem value="incomplete">Tidak Tuntas</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label className="text-xs">K (1-50)</Label>
-          <select
-            value={entry.k}
-            onChange={(e) => onUpdate(index, { k: Number(e.target.value) })}
-            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
-          >
-            {K_OPTIONS.map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
+          <Select value={entry.k.toString()} onValueChange={(value) => onUpdate({ k: Number(value) })}>
+            <SelectTrigger className="mt-1 h-9 w-full border-gray-200 bg-white text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {K_OPTIONS.map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label className="text-xs">T (1-25)</Label>
-          <select
-            value={entry.t}
-            onChange={(e) => onUpdate(index, { t: Number(e.target.value) })}
-            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
-          >
-            {T_OPTIONS.map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
+          <Select value={entry.t.toString()} onValueChange={(value) => onUpdate({ t: Number(value) })}>
+            <SelectTrigger className="mt-1 h-9 w-full border-gray-200 bg-white text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {T_OPTIONS.map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label className="text-xs">F (1-15)</Label>
-          <select
-            value={entry.f}
-            onChange={(e) => onUpdate(index, { f: Number(e.target.value) })}
+          <Select value={entry.f.toString()} onValueChange={(value) => onUpdate({ f: Number(value) })}>
+            <SelectTrigger className="mt-1 h-9 w-full border-gray-200 bg-white text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {F_OPTIONS.map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="col-span-2">
+          <Label className="text-xs">Ayat</Label>
+          <input
+            type="number"
+            min={1}
+            step={1}
+            value={entry.ayat}
+            onChange={(e) => onUpdate({ ayat: Math.max(1, Number(e.target.value) || 1) })}
             className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
-          >
-            {F_OPTIONS.map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
+            placeholder="8"
+          />
         </div>
       </div>
     </div>
   )
-})
+}
 
 export function ActivityForm({
   activityType,
@@ -167,60 +190,28 @@ export function ActivityForm({
   activityTypes,
   selectedStudent,
 }: ActivityFormProps) {
-  const [juz30Entries, setJuz30Entries] = useState<Juz30Entry[]>(
-    JUZ_30_SURAHS.map((surah) => defaultEntry(surah))
-  )
-  const [selectedSurah, setSelectedSurah] = useState<string>(JUZ_30_SURAHS[0])
+  const [selectedJuz, setSelectedJuz] = useState<number>(30)
+  const [entry, setEntry] = useState<Juz30Entry>(defaultEntry(30, getSurahOptionsForJuz(30)[0] ?? ""))
 
-  const updateEntry = (index: number, updates: Partial<Juz30Entry>) => {
-    setJuz30Entries((prev) =>
-      prev.map((entry, currentIndex) => (currentIndex === index ? { ...entry, ...updates } : entry))
-    )
+  const juzSurahOptions = useMemo(() => getSurahOptionsForJuz(selectedJuz), [selectedJuz])
+
+  useEffect(() => {
+    const firstSurah = getSurahOptionsForJuz(selectedJuz)[0] ?? ""
+    setEntry(defaultEntry(selectedJuz, firstSurah))
+  }, [selectedJuz])
+
+  const updateEntry = (updates: Partial<Juz30Entry>) => {
+    setEntry((prev) => ({ ...prev, ...updates }))
   }
 
   const resetForm = () => {
     setActivityType("")
-    setJuz30Entries(JUZ_30_SURAHS.map((surah) => defaultEntry(surah)))
-    setSelectedSurah(JUZ_30_SURAHS[0])
+    setSelectedJuz(30)
+    setEntry(defaultEntry(30, getSurahOptionsForJuz(30)[0] ?? ""))
   }
 
-  const totals = useMemo(
-    () =>
-      juz30Entries.reduce(
-        (acc, entry) => {
-          const totalScore = entry.k + entry.t + entry.f
-          const percentage = Math.round((totalScore / 90) * 100)
-
-          return {
-            completedCount: acc.completedCount + (entry.status === "completed" ? 1 : 0),
-            incompleteCount: acc.incompleteCount + (entry.status === "incomplete" ? 1 : 0),
-            totalPercentage: acc.totalPercentage + percentage,
-          }
-        },
-        {
-          completedCount: 0,
-          incompleteCount: 0,
-          totalPercentage: 0,
-        }
-      ),
-    [juz30Entries]
-  )
-
-  const averageScore = Math.round(totals.totalPercentage / juz30Entries.length)
-
-  const selectedEntry = useMemo(() => {
-    const index = juz30Entries.findIndex((entry) => entry.surah === selectedSurah)
-    if (index === -1) {
-      return null
-    }
-
-    return {
-      index,
-      entry: juz30Entries[index],
-    }
-  }, [juz30Entries, selectedSurah])
-
-  const incompleteCount = totals.incompleteCount
+  const totalScore = entry.k + entry.t + entry.f
+  const averageScore = Math.round((totalScore / 90) * 100)
   
   const handleSubmit = () => {
     if (!selectedStudent || !activityType) {
@@ -229,25 +220,23 @@ export function ActivityForm({
     }
 
     const detailedNotes = {
-      format: "juz30_status_v1",
-      entries: juz30Entries,
+      format: "juz_based_status_v1",
+      entry,
       summary: {
-        completed: totals.completedCount,
-        incomplete: totals.incompleteCount,
-        average_score: averageScore,
+        score: averageScore,
       },
     }
 
     const activityData = {
       activity_type: activityType,
       activity_grade: getGradeFromAverage(averageScore),
-      surah_from: "An-Naba",
-      surah_to: "Al-Ikhlas",
-      page_from: 582,
-      page_to: 604,
-      juz: 30,
-      juz_from: 30,
-      juz_to: 30,
+      surah_from: entry.surah,
+      surah_to: entry.surah,
+      page_from: 0,
+      page_to: 0,
+      juz: entry.juz,
+      juz_from: entry.juz,
+      juz_to: entry.juz,
       notes: JSON.stringify(detailedNotes),
     }
 
@@ -294,55 +283,58 @@ export function ActivityForm({
         </div>
 
         <div className={activityType ? "space-y-4" : "hidden"}>
-            <div className="flex flex-wrap items-center gap-2 rounded-md bg-indigo-50 p-3">
-              <Badge variant="secondary">Juz 30</Badge>
-              <Badge className="bg-emerald-600">Tuntas: {totals.completedCount}</Badge>
-              <Badge variant="outline" className={incompleteCount > 0 ? "border-rose-300 text-rose-700" : ""}>
-                Belum Tuntas: {totals.incompleteCount}
-              </Badge>
-              <Badge variant="outline">Rata-rata: {averageScore}</Badge>
-            </div>
-
-            <div className="space-y-3 rounded-md border border-gray-200 bg-white p-3">
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Pilih Surah Yang Mau Dinilai</Label>
-                <select
-                  value={selectedSurah}
-                  onChange={(e) => setSelectedSurah(e.target.value)}
-                  className="h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
-                >
-                  {JUZ_30_SURAHS.map((surah) => (
-                    <option key={surah} value={surah}>
-                      {surah}
-                    </option>
+          <div className="grid gap-3 rounded-md border border-gray-200 bg-white p-3 sm:grid-cols-2">
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Pilih Juz</Label>
+              <Select value={selectedJuz.toString()} onValueChange={(value) => setSelectedJuz(Number(value))}>
+                <SelectTrigger className="h-9 w-full border-gray-200 bg-white text-sm">
+                  <SelectValue placeholder="Pilih juz" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 30 }, (_, i) => 30 - i).map((juz) => (
+                    <SelectItem key={juz} value={juz.toString()}>
+                      Juz {juz}
+                    </SelectItem>
                   ))}
-                </select>
-              </div>
-
-              <p className="text-xs text-muted-foreground">Yang ditampilkan hanya 1 surah agar ringan dan cepat.</p>
+                </SelectContent>
+              </Select>
             </div>
 
-            {selectedEntry ? (
-              <SelectedSurahEditor
-                entry={selectedEntry.entry}
-                index={selectedEntry.index}
-                onUpdate={updateEntry}
-              />
-            ) : (
-              <div className="rounded-md border border-dashed border-gray-300 p-4 text-center text-sm text-muted-foreground">
-                Surah tidak ditemukan. Pilih dari daftar surah Juz 30.
-              </div>
-            )}
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Pilih Surah</Label>
+              <Select value={entry.surah} onValueChange={(value) => updateEntry({ surah: value })}>
+                <SelectTrigger className="h-9 w-full border-gray-200 bg-white text-sm">
+                  <SelectValue placeholder="Pilih surah" />
+                </SelectTrigger>
+                <SelectContent>
+                  {juzSurahOptions.map((surah) => (
+                    <SelectItem key={surah} value={surah}>
+                      {surah}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-            <Button
-              onClick={handleSubmit}
-              className="w-full cursor-pointer text-sm sm:text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-              disabled={!selectedStudent || !activityType}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Simpan Aktivitas</span>
-              <span className="sm:hidden">Simpan</span>
-            </Button>
+          <p className="text-xs text-muted-foreground">
+            Dropdown surah akan berubah sesuai juz yang dipilih.
+          </p>
+
+          <SelectedSurahEditor
+            entry={entry}
+            onUpdate={updateEntry}
+          />
+
+          <Button
+            onClick={handleSubmit}
+            className="w-full cursor-pointer text-sm sm:text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            disabled={!selectedStudent || !activityType || !entry.surah}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Simpan Aktivitas</span>
+            <span className="sm:hidden">Simpan</span>
+          </Button>
         </div>
       </CardContent>
     </Card>
