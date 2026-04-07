@@ -723,10 +723,7 @@ class StudentsController < ApplicationController
   end
 
   def calculate_monthly_progress(student, activities)
-    current_juz = student.current_hifz_in_juz.to_i
-    join_date = Date.parse(student.date_joined) rescue Date.current
-
-    # Get memorization activities ordered by date
+    # NEW LOGIC: Calculate total juz memorized per month (cumulative unique juz completed)
     memorization_activities = activities.where(activity_type: "memorization").order(:created_at)
 
     # Always show 3 months back and 3 months forward
@@ -734,7 +731,7 @@ class StudentsController < ApplicationController
     start_date = current_month - 3.months
     end_date = current_month + 3.months
     
-    # If no activities, show flat line at current juz for all months
+    # If no activities, show flat line at 0 for all months
     if memorization_activities.empty?
       monthly_data = []
       month_iterator = start_date
@@ -742,7 +739,7 @@ class StudentsController < ApplicationController
       while month_iterator <= end_date
         monthly_data << {
           month: month_iterator.strftime("%b"),
-          completed: current_juz,
+          completed: 0,
           is_projected: month_iterator > current_month
         }
         month_iterator = month_iterator.next_month
@@ -751,76 +748,85 @@ class StudentsController < ApplicationController
       return monthly_data
     end
 
-    # Get the date of first activity
-    first_activity_date = memorization_activities.first.created_at.to_date.beginning_of_month
-
     monthly_data = []
     month_iterator = start_date
 
-    # Calculate progress for each month based on actual activities
+    # Calculate cumulative total juz for each month
     while month_iterator <= end_date
       month_name = month_iterator.strftime("%b")
       month_range = month_iterator.beginning_of_month..month_iterator.end_of_month
 
       if month_iterator == current_month
-        # Current month: use actual current progress
-        completed = current_juz
+        # Current month: use actual current total juz memorized
+        completed = student.total_juz_memorized || 0
         is_projected = false
       elsif month_iterator < current_month
-        # Historical months
-        if month_iterator < first_activity_date
-          # Before first activity: student was at juz 1 (or their initial state)
-          completed = 1
-        else
-          # After first activity: calculate based on activities up to that month
-          activities_up_to_month = memorization_activities.where(
-            "created_at <= ?", month_iterator.end_of_month
-          )
-          
-          if activities_up_to_month.empty?
-            # No activities yet in this month - use initial juz (1)
-            completed = 1
-          else
-            # Get the maximum juz reached up to this point
-            max_juz_reached = activities_up_to_month.maximum(:juz) || 1
-            completed = max_juz_reached
+        # Historical months: calculate based on activities up to that month with completed status
+        activities_up_to_month = memorization_activities.where(
+          "created_at <= ?", month_iterator.end_of_month
+        ).select { |a| 
+          notes = begin
+            JSON.parse(a.notes) if a.notes.present?
+          rescue
+            nil
           end
-        end
+          notes&.dig("entry", "status") == "completed"
+        }
         
+        # Count unique juz that were completed
+        completed_juz_set = activities_up_to_month.map { |a| a.juz }.compact.uniq
+        completed = completed_juz_set.count
         is_projected = false
       else
         # Future months: project based on recent activity rate
         recent_activities = memorization_activities.where(
           created_at: (current_month - 3.months)..current_month
-        )
+        ).select { |a| 
+          notes = begin
+            JSON.parse(a.notes) if a.notes.present?
+          rescue
+            nil
+          end
+          notes&.dig("entry", "status") == "completed"
+        }
         
         if recent_activities.count > 0
-          # Calculate average growth rate from recent activities
-          months_with_recent_activities = ((current_month.year - (current_month - 3.months).year) * 12 + 
-                                           current_month.month - (current_month - 3.months).month)
-          months_with_recent_activities = [ months_with_recent_activities, 1 ].max
+          # Calculate average growth rate from recent completed activities
+          months_span = 3 # Last 3 months
+          current_total = student.total_juz_memorized || 0
           
-          # Calculate juz growth in recent period
-          earliest_recent_juz = recent_activities.minimum(:juz) || current_juz
-          juz_growth = current_juz - earliest_recent_juz
-          monthly_growth_rate = juz_growth.to_f / months_with_recent_activities
-          monthly_growth_rate = [ monthly_growth_rate, 0.5 ].max # Minimum 0.5 juz per month
-          monthly_growth_rate = [ monthly_growth_rate, 2.0 ].min # Maximum 2 juz per month
+          # Get earliest total in recent period
+          earliest_activities = memorization_activities.where(
+            created_at: (current_month - 3.months)...(current_month - 2.months)
+          ).select { |a| 
+            notes = begin
+              JSON.parse(a.notes) if a.notes.present?
+            rescue
+              nil
+            end
+            notes&.dig("entry", "status") == "completed"
+          }
+          earliest_total = earliest_activities.map { |a| a.juz }.compact.uniq.count
+          
+          juz_growth = current_total - earliest_total
+          monthly_growth_rate = juz_growth.to_f / months_span
+          monthly_growth_rate = [monthly_growth_rate, 0.1].max # Minimum 0.1 juz per month
+          monthly_growth_rate = [monthly_growth_rate, 2.0].min # Maximum 2 juz per month
           
           months_forward = ((month_iterator.year - current_month.year) * 12 + 
                            month_iterator.month - current_month.month)
-          projected_progress = current_juz + (months_forward * monthly_growth_rate)
-          completed = [ projected_progress.round, 30 ].min
+          projected_progress = current_total + (months_forward * monthly_growth_rate)
+          completed = [projected_progress.round, 30].min
         else
-          # No recent activity - stay at current level
-          completed = current_juz
+          # No recent completed activity - stay at current level
+          completed = student.total_juz_memorized || 0
         end
         
         is_projected = true
       end
 
-      # Ensure we never go above 30 or below 1
-      completed = completed.clamp(1, 30)
+      # Ensure we never go above 30 or below 0
+      completed = completed.clamp(0, 30)
 
       monthly_data << {
         month: month_name,

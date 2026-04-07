@@ -13,6 +13,7 @@ interface Student {
   name: string
   class_level: string
   current_hifz_in_juz: string
+  total_juz_memorized?: number | 0
 }
 
 interface StudentSelectionProps {
@@ -184,6 +185,9 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
                     {currentStudent.name}
                   </Link>
                   <p className="text-xs sm:text-sm text-muted-foreground">{currentStudent.class_level}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Juz {currentStudent.current_hifz_in_juz} • Total Hafal: {currentStudent.total_juz_memorized || 0}/30 Juz
+                  </p>
                 </div>
               </div>
               <Link 

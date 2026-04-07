@@ -131,6 +131,7 @@ JUZ_TO_SURAHS = {
   # Set current surah based on the juz they're in
   current_surah = JUZ_TO_SURAHS[current_juz]&.sample || "Al-Fatihah"
 
+  # Initialize total_juz_memorized to 0 (will be calculated after activities are created)
   Student.create!(
     nisn: "#{rand(1000000000..9999999999)}", # NISN 10 digit
     student_number: "#{Date.today.year}#{sprintf('%03d', i + 1)}", # Format: 2026001, 2026002, dst
@@ -138,6 +139,7 @@ JUZ_TO_SURAHS = {
     current_hifz_in_juz: current_juz.to_s,
     current_hifz_in_pages: current_pages.to_s,
     current_hifz_in_surah: current_surah,
+    total_juz_memorized: 0,
     class_level: CLASSES.sample,
     phone: "081#{rand(100..999)}#{rand(1000..9999)}",
     email: "#{first_name.downcase}.#{last_name.downcase}#{i}@example.com",
@@ -209,10 +211,6 @@ Student.all.each do |student|
     # Random time during school hours (8 AM to 6 PM)
     created_time = activity_date.to_time + rand(8..18).hours + rand(0..59).minutes
 
-    # Generate random page numbers
-    page_from = rand(1..15)
-    page_to = page_from + rand(1..5)
-
     # Generate juz and surah based on when the activity happened
     current_juz = student.current_hifz_in_juz.to_i
     days_since_activity = (Date.current - activity_date).to_i
@@ -241,16 +239,54 @@ Student.all.each do |student|
     # Ensure surah is not nil
     surah = "Al-Fatihah" if surah.nil? || surah.empty?
 
+    # Generate K, T, F values and calculate score
+    k = rand(1..50)
+    t = rand(1..25)
+    f = rand(1..15)
+    total_score = k + t + f
+    average_score = (total_score.to_f / 90 * 100).round
+
+    # Determine status - 60% chance completed for recent activities, lower for older ones
+    completion_chance = if days_since_activity > 180
+                          rand(100) < 30 ? "completed" : "incomplete"
+                        elsif days_since_activity > 90
+                          rand(100) < 50 ? "completed" : "incomplete"
+                        else
+                          rand(100) < 70 ? "completed" : "incomplete"
+                        end
+
+    # Generate ayat (surah ayat count is simplified to random 50-286)
+    ayat = rand(50..286)
+
+    # Create detailed notes in new format
+    detailed_notes = {
+      format: "juz_based_status_v1",
+      entry: {
+        juz: activity_juz,
+        surah: surah,
+        status: completion_chance,
+        k: k,
+        t: t,
+        f: f,
+        ayat: ayat
+      },
+      summary: {
+        score: average_score
+      }
+    }
+
     Activity.create!(
       student: student,
       activity_type: activity_type,
       activity_grade: activity_grade,
       surah_from: surah,
       surah_to: surah,
-      page_from: page_from,
-      page_to: page_to,
+      page_from: 0,
+      page_to: 0,
       juz: activity_juz,
-      notes: "#{activity_type.humanize} session for #{surah} - Grade: #{activity_grade.humanize}",
+      juz_from: activity_juz,
+      juz_to: activity_juz,
+      notes: detailed_notes.to_json,
       created_at: created_time,
       updated_at: created_time
     )
@@ -258,6 +294,43 @@ Student.all.each do |student|
 end
 
 puts "Created #{Activity.count} activities."
+
+puts "Calculating total_juz_memorized for each student..."
+
+# Recalculate total juz memorized based on completed activities
+Student.all.each do |student|
+  completed_activities = student.activities
+    .where(activity_type: :memorization)
+    .select { |a| 
+      notes = begin
+        JSON.parse(a.notes) if a.notes.present?
+      rescue
+        nil
+      end
+      notes&.dig("entry", "status") == "completed"
+    }
+
+  if completed_activities.any?
+    # Calculate total unique juz that have been completed
+    completed_juz_set = completed_activities.map { |a| a.juz }.compact.uniq
+    total_juz_memorized = completed_juz_set.count
+
+    # Find the latest completed activity
+    latest_completed = completed_activities.max_by { |a| a.created_at }
+    
+    # Update student record
+    student.update(
+      total_juz_memorized: total_juz_memorized,
+      current_hifz_in_juz: latest_completed.juz.to_s,
+      current_hifz_in_surah: latest_completed.surah_from
+    )
+  else
+    # No completed activities, keep at 0
+    student.update(total_juz_memorized: 0)
+  end
+end
+
+puts "Completed total_juz_memorized calculation."
 
 puts "Creating parent users..."
 

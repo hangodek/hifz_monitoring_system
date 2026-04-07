@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_18_075706) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_07_092920) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_075706) do
     t.string "current_hifz_in_surah", default: "Al-Fatihah", null: false
     t.string "nisn"
     t.string "student_number"
+    t.integer "total_juz_memorized", default: 0, null: false
     t.index ["class_level"], name: "index_students_on_class_level"
     t.index ["name"], name: "index_students_on_name"
     t.index ["status", "name"], name: "index_students_on_status_and_name"

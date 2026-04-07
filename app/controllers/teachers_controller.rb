@@ -7,7 +7,7 @@ class TeachersController < ApplicationController
   def index
     # Use caching for student list (5 minutes)
     students = Rails.cache.fetch("teacher_active_students", expires_in: 5.minutes) do
-      Student.active.order(name: :asc).as_json(only: [ :id, :name, :class_level, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah ])
+      Student.active.order(name: :asc).as_json(only: [ :id, :name, :class_level, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :total_juz_memorized ])
     end
 
     render inertia: "Teacher/Index", props: {

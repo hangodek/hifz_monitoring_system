@@ -26,6 +26,7 @@ type TeacherIndexProps = {
     current_hifz_in_juz: string
     current_hifz_in_pages: string
     current_hifz_in_surah: string
+    total_juz_memorized?: number | 0
   }>
   recent_activities: Array<{
     id: string

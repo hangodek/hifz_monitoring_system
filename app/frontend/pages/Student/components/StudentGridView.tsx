@@ -19,6 +19,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz_memorized?: number | 0
   avatar?: string
   class_level: string
   phone?: string
@@ -103,10 +104,10 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
 
             <div className="space-y-2">
               <div className="flex justify-between text-xs sm:text-sm">
-                <span>Kemajuan Keseluruhan</span>
-                <span>{Math.round((parseInt(student.current_hifz_in_juz) || 0) / 30 * 100)}%</span>
+                <span>Total Juz Dihafal</span>
+                <span>{student.total_juz_memorized || 0} / 30</span>
               </div>
-              <Progress value={Math.round((parseInt(student.current_hifz_in_juz) || 0) / 30 * 100)} className="h-1.5 sm:h-2" />
+              <Progress value={Math.round(((student.total_juz_memorized || 0) / 30) * 100)} className="h-1.5 sm:h-2" />
             </div>
 
             <div className="flex gap-2 pt-2">

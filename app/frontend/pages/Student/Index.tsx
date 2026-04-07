@@ -29,6 +29,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz_memorized?: number | 0
   avatar?: string
   class_level: string
   phone?: string

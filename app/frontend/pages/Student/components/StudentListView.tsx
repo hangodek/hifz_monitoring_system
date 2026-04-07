@@ -12,6 +12,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz_memorized?: number | 0
   avatar?: string
   class_level: string
   phone?: string
@@ -68,8 +69,8 @@ export function StudentListView({ filteredStudents, getStatusBadge, handleSelect
                     <div className="text-xs text-muted-foreground">Juz {student.current_hifz_in_juz}</div>
                   </div>
                   <div className="text-center w-16">
-                    <div className="text-sm font-medium">{Math.round((parseInt(student.current_hifz_in_juz) || 0) / 30 * 100)}%</div>
-                    <div className="text-xs text-muted-foreground">Progress</div>
+                    <div className="text-sm font-medium">{student.total_juz_memorized || 0}</div>
+                    <div className="text-xs text-muted-foreground">Juz Hafal</div>
                   </div>
                   <div className="text-center hidden md:block w-24">
                     <div className="text-xs font-medium">{student.birth_place}</div>

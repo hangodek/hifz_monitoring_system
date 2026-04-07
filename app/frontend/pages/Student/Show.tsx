@@ -59,6 +59,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz_memorized?: number | 0
   avatar?: string
   class_level: string
   phone?: string
@@ -325,9 +326,16 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold">{student.name}</h2>
                 <p className="text-muted-foreground">Sedang menghafal: {student.current_hifz_in_surah}</p>
-                <p className="text-muted-foreground">Juz {student.current_hifz_in_juz} daripada 30 Juz</p>
-                <div className="mt-2">
-                  <div className="text-sm text-muted-foreground">{student.current_hifz_in_pages} halaman dihafal</div>
+                <p className="text-muted-foreground">Juz {student.current_hifz_in_juz} (dari 30 Juz)</p>
+                <div className="mt-2 flex flex-wrap gap-3 justify-center sm:justify-start">
+                  <div className="flex items-center gap-2 bg-white/50 rounded-lg px-3 py-1">
+                    <span className="text-xs font-semibold text-blue-600">Total Juz Dihafal:</span>
+                    <Badge className="bg-blue-500 text-white">{student.total_juz_memorized || 0} / 30</Badge>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/50 rounded-lg px-3 py-1">
+                    <span className="text-xs font-semibold text-emerald-600">Sedang di Juz:</span>
+                    <Badge className="bg-emerald-500 text-white">{student.current_hifz_in_juz}</Badge>
+                  </div>
                 </div>
               </div>
             </div>
@@ -529,10 +537,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
               </div>
-              Monthly Progress & Projection
+              Progres Hafalan (Total Juz Berhasil)
             </CardTitle>
             <CardDescription>
-              {student?.name}'s Quran memorization progress (3 months history + 3 months projection)
+              {student?.name}'s total juz yang berhasil dihafal (3 bulan riwayat + 3 bulan proyeksi)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -544,9 +552,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <Tooltip 
                   formatter={(value, name, props) => {
                     const isProjected = props?.payload?.is_projected
-                    return [`${value} Juz${isProjected ? ' (projected)' : ''}`, name]
+                    return [`${value} Juz${isProjected ? ' (proyeksi)' : ''}`, name]
                   }}
-                  labelFormatter={(label) => `Month: ${label}`}
+                  labelFormatter={(label) => `Bulan: ${label}`}
                 />
                 <Legend />
                 {/* Actual Progress Line */}
@@ -555,7 +563,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   dataKey={(entry) => !entry.is_projected ? entry.completed : null}
                   stroke="#10b981" 
                   strokeWidth={3} 
-                  name="Actual Progress"
+                  name="Progres Aktual"
                   dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
                   connectNulls={true}
@@ -567,7 +575,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   stroke="#3b82f6" 
                   strokeWidth={3} 
                   strokeDasharray="8 4"
-                  name="Projected Progress"
+                  name="Proyeksi Progres"
                   dot={{ fill: '#60a5fa', strokeWidth: 2, r: 4, stroke: '#3b82f6' }}
                   activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
                   connectNulls={true}
@@ -588,11 +596,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-green-500"></div>
-                <span>Progress Aktual</span>
+                <span>Progres Aktual</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
-                <span>Proyeksi Progress</span>
+                <span>Proyeksi Progres</span>
               </div>
             </div>
           </CardContent>
