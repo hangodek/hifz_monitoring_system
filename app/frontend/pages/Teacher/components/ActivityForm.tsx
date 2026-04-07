@@ -21,6 +21,7 @@ interface Juz30Entry {
   t: number
   f: number
   ayat: number
+  grade: "excellent" | "good" | "fair" | "needs_improvement"
 }
 
 interface PreviousActivity {
@@ -80,7 +81,8 @@ const defaultEntry = (juz: number, surah: string): Juz30Entry => ({
   k: 1,
   t: 1,
   f: 1,
-  ayat: 1,
+  ayat: 0,
+  grade: "good",
 })
 
 const K_OPTIONS = Array.from({ length: 50 }, (_, i) => i + 1)
@@ -196,13 +198,31 @@ const SelectedSurahEditor = ({
           <Label className="text-xs">Ayat</Label>
           <input
             type="number"
-            min={1}
+            min={0}
             step={1}
-            value={entry.ayat}
-            onChange={(e) => onUpdate({ ayat: Math.max(1, Number(e.target.value) || 1) })}
-            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm"
-            placeholder="8"
+            value={entry.ayat || ""}
+            onChange={(e) => onUpdate({ ayat: Number(e.target.value) || 0 })}
+            className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-2 text-sm placeholder-gray-400"
+            placeholder="0"
+            required
           />
+        </div>
+        <div className="col-span-2">
+          <Label className="text-xs">Predikat</Label>
+          <Select
+            value={entry.grade}
+            onValueChange={(value: "excellent" | "good" | "fair" | "needs_improvement") => onUpdate({ grade: value })}
+          >
+            <SelectTrigger className="mt-1 h-9 w-full border-gray-200 bg-white text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="excellent">Sangat Baik</SelectItem>
+              <SelectItem value="good">Baik</SelectItem>
+              <SelectItem value="fair">Cukup</SelectItem>
+              <SelectItem value="needs_improvement">Perlu Diperbaiki</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
@@ -247,6 +267,7 @@ export function ActivityForm({
             t: data.activity.t,
             f: data.activity.f,
             ayat: data.activity.ayat,
+            grade: data.activity.activity_grade as "excellent" | "good" | "fair" | "needs_improvement",
           })
         } else {
           setPreviousActivity(null)
@@ -294,6 +315,11 @@ export function ActivityForm({
       return
     }
 
+    if (entry.ayat === 0 || entry.ayat < 0) {
+      alert("Jumlah ayat harus diisi (lebih dari 0)")
+      return
+    }
+
     const detailedNotes = {
       format: "juz_based_status_v1",
       entry,
@@ -304,7 +330,7 @@ export function ActivityForm({
 
     const activityData = {
       activity_type: activityType,
-      activity_grade: getGradeFromAverage(averageScore),
+      activity_grade: entry.grade,
       surah_from: entry.surah,
       surah_to: entry.surah,
       page_from: 0,
