@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       get :search_students
       get :student_activities
       get :load_more_activities
+      get :get_previous_activity
     end
   end
   

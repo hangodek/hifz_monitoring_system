@@ -23,6 +23,16 @@ interface Juz30Entry {
   ayat: number
 }
 
+interface PreviousActivity {
+  status: "completed" | "incomplete"
+  k: number
+  t: number
+  f: number
+  ayat: number
+  activity_grade: string
+  created_at: string
+}
+
 interface ActivityFormProps {
   activityType: string
   setActivityType: (value: string) => void
@@ -89,11 +99,19 @@ const getSurahOptionsForJuz = (juz: number) => JUZ_SURAH_OPTIONS[juz] ?? []
 const SelectedSurahEditor = ({
   entry,
   onUpdate,
+  previousActivity,
 }: {
   entry: Juz30Entry
   onUpdate: (updates: Partial<Juz30Entry>) => void
+  previousActivity?: PreviousActivity | null
 }) => {
   const statusClass = entry.status === "completed" ? "border-emerald-200 bg-emerald-50/60" : "border-rose-200 bg-rose-50/60"
+  const gradeLabels: Record<string, string> = {
+    excellent: "Sangat Baik",
+    good: "Baik",
+    fair: "Cukup",
+    needs_improvement: "Perlu Diperbaiki",
+  }
 
   return (
     <div className={`rounded-lg border p-3 ${statusClass}`}>
@@ -102,9 +120,16 @@ const SelectedSurahEditor = ({
           <p className="text-xs uppercase tracking-wide text-gray-500">Juz {entry.juz}</p>
           <p className="truncate text-sm font-semibold text-gray-900">{entry.surah}</p>
         </div>
-        <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-700">
-          {entry.status === "completed" ? "Tuntas" : "Belum"}
-        </span>
+        <div className="flex flex-col items-end gap-1">
+          <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-700">
+            {entry.status === "completed" ? "Tuntas" : "Belum"}
+          </span>
+          {previousActivity?.activity_grade && (
+            <span className="rounded-full px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700">
+              {gradeLabels[previousActivity.activity_grade] || previousActivity.activity_grade}
+            </span>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
@@ -191,23 +216,73 @@ export function ActivityForm({
   selectedStudent,
 }: ActivityFormProps) {
   const [selectedJuz, setSelectedJuz] = useState<number>(30)
+  const [selectedSurah, setSelectedSurah] = useState<string>(getSurahOptionsForJuz(30)[0] ?? "")
   const [entry, setEntry] = useState<Juz30Entry>(defaultEntry(30, getSurahOptionsForJuz(30)[0] ?? ""))
+  const [previousActivity, setPreviousActivity] = useState<PreviousActivity | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const juzSurahOptions = useMemo(() => getSurahOptionsForJuz(selectedJuz), [selectedJuz])
 
+  // Fetch previous activity when juz or surah changes
+  useEffect(() => {
+    if (!selectedStudent || !selectedSurah) {
+      setPreviousActivity(null)
+      return
+    }
+
+    setLoading(true)
+    fetch(
+      `/teachers/get_previous_activity?student_id=${selectedStudent}&juz=${selectedJuz}&surah=${encodeURIComponent(selectedSurah)}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.activity) {
+          setPreviousActivity(data.activity)
+          // Update entry with previous activity data
+          setEntry({
+            juz: selectedJuz,
+            surah: selectedSurah,
+            status: data.activity.status,
+            k: data.activity.k,
+            t: data.activity.t,
+            f: data.activity.f,
+            ayat: data.activity.ayat,
+          })
+        } else {
+          setPreviousActivity(null)
+          // Reset to default incomplete status
+          setEntry(defaultEntry(selectedJuz, selectedSurah))
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching previous activity:", error)
+        setPreviousActivity(null)
+        setEntry(defaultEntry(selectedJuz, selectedSurah))
+      })
+      .finally(() => setLoading(false))
+  }, [selectedStudent, selectedJuz, selectedSurah])
+
+  // Update juz and reset surah
   useEffect(() => {
     const firstSurah = getSurahOptionsForJuz(selectedJuz)[0] ?? ""
-    setEntry(defaultEntry(selectedJuz, firstSurah))
+    setSelectedSurah(firstSurah)
   }, [selectedJuz])
 
   const updateEntry = (updates: Partial<Juz30Entry>) => {
     setEntry((prev) => ({ ...prev, ...updates }))
+    // If surah is being changed, update selectedSurah
+    if (updates.surah) {
+      setSelectedSurah(updates.surah)
+    }
   }
 
   const resetForm = () => {
     setActivityType("")
     setSelectedJuz(30)
-    setEntry(defaultEntry(30, getSurahOptionsForJuz(30)[0] ?? ""))
+    const firstSurah = getSurahOptionsForJuz(30)[0] ?? ""
+    setSelectedSurah(firstSurah)
+    setEntry(defaultEntry(30, firstSurah))
+    setPreviousActivity(null)
   }
 
   const totalScore = entry.k + entry.t + entry.f
@@ -302,7 +377,13 @@ export function ActivityForm({
 
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Pilih Surah</Label>
-              <Select value={entry.surah} onValueChange={(value) => updateEntry({ surah: value })}>
+              <Select 
+                value={selectedSurah} 
+                onValueChange={(value) => {
+                  setSelectedSurah(value)
+                  updateEntry({ surah: value })
+                }}
+              >
                 <SelectTrigger className="h-9 w-full border-gray-200 bg-white text-sm">
                   <SelectValue placeholder="Pilih surah" />
                 </SelectTrigger>
@@ -324,6 +405,7 @@ export function ActivityForm({
           <SelectedSurahEditor
             entry={entry}
             onUpdate={updateEntry}
+            previousActivity={previousActivity}
           />
 
           <Button

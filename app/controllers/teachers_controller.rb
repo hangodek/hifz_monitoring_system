@@ -112,4 +112,46 @@ class TeachersController < ApplicationController
 
     render json: { activities: activities }
   end
+
+  # Get previous activity for a specific student/juz/surah
+  def get_previous_activity
+    student_id = params[:student_id]
+    juz = params[:juz].to_i
+    surah = params[:surah]
+
+    if student_id.blank? || juz.blank? || surah.blank?
+      render json: { activity: nil }
+      return
+    end
+
+    activity = Activity.where(
+      student_id: student_id,
+      juz: juz,
+      surah_from: surah
+    )
+    .order(created_at: :desc)
+    .first
+
+    if activity
+      parsed_notes = begin
+        JSON.parse(activity.notes) if activity.notes.present?
+      rescue
+        nil
+      end
+
+      render json: {
+        activity: {
+          status: parsed_notes&.dig("entry", "status") || "incomplete",
+          k: parsed_notes&.dig("entry", "k") || 1,
+          t: parsed_notes&.dig("entry", "t") || 1,
+          f: parsed_notes&.dig("entry", "f") || 1,
+          ayat: parsed_notes&.dig("entry", "ayat") || 1,
+          activity_grade: activity.activity_grade,
+          created_at: activity.created_at.iso8601
+        }
+      }
+    else
+      render json: { activity: nil }
+    end
+  end
 end
