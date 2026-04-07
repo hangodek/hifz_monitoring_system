@@ -1,10 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Check, ChevronsUpDown, Search, Users, ExternalLink, Loader2 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { Check, Search, Users, ExternalLink, Loader2 } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Link } from "@inertiajs/react"
 
@@ -28,6 +28,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
   const [searchResults, setSearchResults] = useState<Student[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showAllStudents, setShowAllStudents] = useState(true)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Debounced search function with native fetch
   useEffect(() => {
@@ -63,19 +64,36 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
       } finally {
         setIsSearching(false)
       }
-    }, 300) // 300ms debounce
+    }, 500) // 500ms debounce to reduce server calls
 
     return () => clearTimeout(timeoutId)
   }, [searchQuery])
 
+  // Auto-focus search input when dialog opens
+  useEffect(() => {
+    if (open && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current?.focus()
+      }, 0)
+    }
+  }, [open])
+
   // Display students based on search state
   const displayStudents = showAllStudents ? students.slice(0, 20) : searchResults
 
-  const handleSelectStudent = (studentId: string, studentData?: Student) => {
+  const handleSelectStudent = (studentId: string) => {
     setSelectedStudent(studentId)
     setOpen(false)
     setSearchQuery("")
     setShowAllStudents(true)
+  }
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen)
+    if (!newOpen) {
+      setSearchQuery("")
+      setShowAllStudents(true)
+    }
   }
 
   return (
@@ -90,78 +108,82 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
         <CardDescription>Pilih siswa untuk sesi hafalan</CardDescription>
       </CardHeader>
       <CardContent>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between border-violet-200 hover:bg-violet-50 hover:border-violet-300 cursor-pointer"
-            >
-              {selectedStudent
-                ? students.find((student) => student.id === selectedStudent)?.name
-                : "Pilih siswa..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0" align="start">
-            <div className="flex items-center border-b px-3">
-              <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-              <Input
-                placeholder="Ketik untuk mencari siswa..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              {isSearching && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground" />
-              )}
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+          <Button
+            onClick={() => setOpen(true)}
+            variant="outline"
+            className="w-full justify-between border-violet-200 hover:bg-violet-50 hover:border-violet-300 cursor-pointer"
+          >
+            {selectedStudent
+              ? students.find((student) => student.id === selectedStudent)?.name
+              : "Cari siswa..."}
+            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+
+          <DialogContent className="max-w-sm m-0 gap-0 p-0 rounded-t-2xl rounded-b-none max-h-[80vh] flex flex-col">
+            <DialogHeader className="border-b px-4 pt-4">
+              <DialogTitle className="text-lg font-semibold text-violet-900">Cari Siswa</DialogTitle>
+            </DialogHeader>
+
+            <div className="flex-shrink-0 border-b px-4 py-3">
+              <div className="flex items-center border border-violet-200 rounded-lg px-3 py-2 bg-white">
+                <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <Input
+                  ref={searchInputRef}
+                  placeholder="Ketik nama siswa..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="ml-2 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-base"
+                />
+                {isSearching && (
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
+                )}
+              </div>
             </div>
-            <div className="max-h-[300px] overflow-y-auto p-1">
-              {showAllStudents && displayStudents.length === 20 && (
-                <div className="px-2 py-2 text-xs text-muted-foreground bg-blue-50 border-b">
-                  Menampilkan 20 siswa pertama. Ketik untuk mencari lebih banyak.
-                </div>
-              )}
+
+            <div className="flex-1 overflow-y-auto">
               {!isSearching && displayStudents.length === 0 && (
-                <div className="py-6 text-center text-sm text-muted-foreground">
-                  {searchQuery ? "Tidak ada siswa ditemukan." : "Ketik untuk mencari siswa."}
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  {searchQuery ? "Tidak ada siswa ditemukan." : "Mulai ketik untuk mencari siswa."}
                 </div>
               )}
-              {displayStudents.map((student) => (
-                <div
-                  key={student.id}
-                  onClick={() => handleSelectStudent(student.id)}
-                  className={cn(
-                    "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
-                    selectedStudent === student.id && "bg-accent"
-                  )}
-                >
-                  <div className="flex gap-2 items-center flex-1">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback className="text-xs">
-                        {student.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{student.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {student.class_level} - Juz {student.current_hifz_in_juz}
-                      </span>
+              <div className="p-2">
+                {displayStudents.map((student) => (
+                  <div
+                    key={student.id}
+                    onClick={() => handleSelectStudent(student.id)}
+                    className={cn(
+                      "relative flex cursor-pointer select-none items-center rounded-lg px-3 py-3 text-sm outline-none transition-colors",
+                      "hover:bg-violet-50 hover:text-accent-foreground",
+                      selectedStudent === student.id && "bg-violet-100"
+                    )}
+                  >
+                    <div className="flex gap-3 items-center flex-1">
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarFallback className="text-xs">
+                          {student.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="font-medium text-gray-900">{student.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {student.class_level} - Juz {student.current_hifz_in_juz}
+                        </span>
+                      </div>
                     </div>
+                    {selectedStudent === student.id && (
+                      <Check className="h-5 w-5 ml-2 text-violet-600 flex-shrink-0" />
+                    )}
                   </div>
-                  {selectedStudent === student.id && (
-                    <Check className="h-4 w-4 ml-2" />
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </PopoverContent>
-        </Popover>
+          </DialogContent>
+        </Dialog>
 
         {currentStudent && (
           <div className="mt-4 p-3 sm:p-4 bg-blue-50 rounded-lg">
