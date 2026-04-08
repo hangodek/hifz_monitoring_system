@@ -7,36 +7,14 @@ class ActivitiesController < ApplicationController
   before_action :set_activity, only: [ :destroy ]
 
   def create
-    @activity = @student.activities.build(create_activity_params)
+    @activity = @student.activities.build(activity_params)
 
     if @activity.save
-      # Invalidate cache untuk teacher mode
+      # Invalidate cache for teacher mode
       Rails.cache.delete("teacher_active_students")
       Rails.cache.delete("student_activities_#{@student.id}")
       
-      # Update student's hifz progress if it's a memorization activity and new progress is provided
-      if @activity.memorization? && params.dig(:activity, :new_hifz_juz).present? && params.dig(:activity, :new_hifz_pages).present?
-        new_juz = params.dig(:activity, :new_hifz_juz).to_i
-        new_pages = params.dig(:activity, :new_hifz_pages).to_i
-        new_surah = params.dig(:activity, :new_hifz_surah)
-        current_juz = @student.current_hifz_in_juz.to_i
-        current_pages = @student.current_hifz_in_pages.to_i
-
-        # Only update if new progress is greater than current
-        if new_juz > current_juz || (new_juz == current_juz && new_pages > current_pages)
-          update_data = {
-            current_hifz_in_juz: new_juz.to_s,
-            current_hifz_in_pages: new_pages.to_s
-          }
-
-          # Update current surah if provided
-          update_data[:current_hifz_in_surah] = new_surah if new_surah.present?
-
-          @student.update!(update_data)
-        end
-      end
-
-      redirect_to teachers_path, notice: "Activity was successfully created."
+      redirect_to teachers_path, notice: "Aktivitas berhasil dibuat."
     else
       redirect_to teachers_path, alert: @activity.errors.full_messages.join(", ")
     end
@@ -62,7 +40,17 @@ class ActivitiesController < ApplicationController
     @activity = @student.activities.find(params[:id])
   end
 
-  def create_activity_params
-    params.expect(activity: [ :activity_type, :activity_grade, :surah_from, :surah_to, :page_from, :page_to, :juz, :juz_from, :juz_to, :notes, :audio ])
+  def activity_params
+    params.require(:activity).permit(
+      :activity_type, 
+      :surah, 
+      :ayat_from, 
+      :ayat_to, 
+      :notes, 
+      :kelancaran, 
+      :fashohah, 
+      :tajwid, 
+      :audio
+    )
   end
 end

@@ -16,15 +16,13 @@ interface ActivityType {
 }
 
 interface ActivityDetails {
-  surahFrom: string
-  surahTo: string
-  pageFrom: string
-  pageTo: string
-  juz: string
-  juzFrom: string
-  juzTo: string
+  surah: string
+  ayatFrom: string
+  ayatTo: string
   notes: string
-  evaluation: string
+  kelancaran: string // K (1-50)
+  fashohah: string  // F (1-15)
+  tajwid: string    // T (1-5)
 }
 
 interface ActivityFormProps {
@@ -99,32 +97,20 @@ export function ActivityForm({
   };
   
   const handleSubmit = () => {
-    if (!selectedStudent || !activityType || !activityDetails.surahFrom || !activityDetails.surahTo || !activityDetails.pageFrom || !activityDetails.pageTo) {
+    if (!selectedStudent || !activityType || !activityDetails.surah || !activityDetails.ayatFrom || !activityDetails.ayatTo) {
       alert('Silakan lengkapi semua kolom yang diperlukan');
       return;
     }
 
-    if (!validateMemorizationProgress()) {
-      alert('Kemajuan hafalan baru harus lebih tinggi dari kemajuan saat ini');
-      return;
-    }
-
-    const newProgress = calculateNewProgress();
-
     const activityData = {
       activity_type: activityType,
-      activity_grade: evaluationMapping[activityDetails.evaluation as keyof typeof evaluationMapping] || 'excellent',
-      surah_from: activityDetails.surahFrom,
-      surah_to: activityDetails.surahTo,
-      page_from: parseInt(activityDetails.pageFrom),
-      page_to: parseInt(activityDetails.pageTo),
-      juz: null, // No longer used
-      juz_from: activityDetails.juzFrom ? parseInt(activityDetails.juzFrom) : null,
-      juz_to: activityDetails.juzTo ? parseInt(activityDetails.juzTo) : null,
+      surah: activityDetails.surah,
+      ayat_from: parseInt(activityDetails.ayatFrom),
+      ayat_to: parseInt(activityDetails.ayatTo),
       notes: activityDetails.notes || '',
-      new_hifz_juz: activityType === 'memorization' && newProgress ? newProgress.newJuz : null,
-      new_hifz_pages: activityType === 'memorization' && newProgress ? newProgress.newPages : null,
-      new_hifz_surah: activityType === 'memorization' ? activityDetails.surahTo : null
+      kelancaran: parseInt(activityDetails.kelancaran) || null,
+      fashohah: parseInt(activityDetails.fashohah) || null,
+      tajwid: parseInt(activityDetails.tajwid) || null,
     };
 
     // Create FormData if audio is present, otherwise use regular data
@@ -150,15 +136,13 @@ export function ActivityForm({
       onSuccess: () => {
         // Reset form
         setActivityDetails({
-          surahFrom: "",
-          surahTo: "",
-          pageFrom: "",
-          pageTo: "",
-          juz: "",
-          juzFrom: "",
-          juzTo: "",
+          surah: "",
+          ayatFrom: "",
+          ayatTo: "",
           notes: "",
-          evaluation: "",
+          kelancaran: "",
+          fashohah: "",
+          tajwid: "",
         });
         setActivityType("");
         setAudioBlob(null);
@@ -209,132 +193,49 @@ export function ActivityForm({
               activityType === "revision" ||
               activityType === "evaluation") && (
               <>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Surah Dari <span className="text-red-500">*</span></Label>
-                    <Select
-                      value={activityDetails.surahFrom}
-                      onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surahFrom: value }))}
-                    >
-                      <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                        <SelectValue placeholder="Pilih surah..." />
-                      </SelectTrigger>
-                      <SelectContent className="border-gray-200/60">
-                        {surahList.map((surah, index) => (
-                          <SelectItem key={index} value={surah} className="cursor-pointer">
-                            {index + 1}. {surah}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Surah Hingga <span className="text-red-500">*</span></Label>
-                    <Select
-                      value={activityDetails.surahTo}
-                      onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surahTo: value }))}
-                    >
-                      <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                        <SelectValue placeholder="Pilih surah..." />
-                      </SelectTrigger>
-                      <SelectContent className="border-gray-200/60">
-                        {surahList.map((surah, index) => (
-                          <SelectItem key={index} value={surah} className="cursor-pointer">
-                            {index + 1}. {surah}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-xs sm:text-sm">Surah <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={activityDetails.surah}
+                    onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surah: value }))}
+                  >
+                    <SelectTrigger className="border-gray-200/60 cursor-pointer">
+                      <SelectValue placeholder="Pilih surah..." />
+                    </SelectTrigger>
+                    <SelectContent className="border-gray-200/60">
+                      {surahList.map((surah, index) => (
+                        <SelectItem key={index} value={surah} className="cursor-pointer">
+                          {index + 1}. {surah}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Halaman Dari <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Ayat Dari <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
                       placeholder="1"
-                      value={activityDetails.pageFrom}
-                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, pageFrom: e.target.value }))}
+                      value={activityDetails.ayatFrom}
+                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, ayatFrom: e.target.value }))}
                       className="border-gray-200/60 text-sm"
                       min="1"
-                      max="604"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Halaman Hingga <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs sm:text-sm">Ayat Hingga <span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
-                      placeholder="20"
-                      value={activityDetails.pageTo}
-                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, pageTo: e.target.value }))}
+                      placeholder="7"
+                      value={activityDetails.ayatTo}
+                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, ayatTo: e.target.value }))}
                       className="border-gray-200/60 text-sm"
                       min="1"
-                      max="604"
                     />
                   </div>
                 </div>
-
-                {(activityType === "memorization" || activityType === "revision") && (
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label className="text-xs sm:text-sm">
-                        Juz Dari {activityType === "memorization" && <span className="text-red-500">*</span>}
-                      </Label>
-                      <Select
-                        value={activityDetails.juzFrom}
-                        onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, juzFrom: value }))}
-                      >
-                        <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                          <SelectValue placeholder="Pilih juz..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 30 }, (_, i) => (
-                            <SelectItem key={i + 1} value={(i + 1).toString()} className="cursor-pointer">
-                              Juz {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs sm:text-sm">
-                        Juz Hingga {activityType === "memorization" && <span className="text-red-500">*</span>}
-                      </Label>
-                      <Select
-                        value={activityDetails.juzTo}
-                        onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, juzTo: value }))}
-                      >
-                        <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                          <SelectValue placeholder="Pilih juz..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 30 }, (_, i) => (
-                            <SelectItem key={i + 1} value={(i + 1).toString()} className="cursor-pointer">
-                              Juz {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )}
-
-                {activityType === "memorization" && currentStudent && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      Kemajuan Saat Ini: {currentStudent.current_hifz_in_surah}, Juz {currentStudent.current_hifz_in_juz}, {currentStudent.current_hifz_in_pages} halaman
-                    </Label>
-                    {activityDetails.juzTo && activityDetails.pageTo && (() => {
-                      const newProgress = calculateNewProgress();
-                      return newProgress ? (
-                        <div className="text-sm text-muted-foreground">
-                          Kemajuan baru: {activityDetails.surahTo}, Juz {newProgress.newJuz}, {newProgress.newPages} halaman
-                        </div>
-                      ) : null;
-                    })()}
-                  </div>
-                )}
               </>
             )}
 
@@ -355,21 +256,45 @@ export function ActivityForm({
             />
 
             <div className="space-y-2">
-              <Label>Penilaian <span className="text-red-500">*</span></Label>
-              <Select
-                value={activityDetails.evaluation}
-                onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, evaluation: value }))}
-              >
-                <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                  <SelectValue placeholder="Pilih penilaian..." />
-                </SelectTrigger>
-                <SelectContent className="border-gray-200/60">
-                  <SelectItem value="excellent" className="cursor-pointer">Sangat Baik</SelectItem>
-                  <SelectItem value="good" className="cursor-pointer">Baik</SelectItem>
-                  <SelectItem value="fair" className="cursor-pointer">Cukup</SelectItem>
-                  <SelectItem value="needs_improvement" className="cursor-pointer">Perlu Diperbaiki</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Penilaian</Label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="kelancaran" className="text-xs font-medium">K (1-50)</Label>
+                  <Input
+                    id="kelancaran"
+                    type="number"
+                    placeholder="1-50"
+                    value={activityDetails.kelancaran}
+                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, kelancaran: e.target.value }))}
+                    className="border-gray-200/60 text-sm"
+                    min="1" max="50"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="fashohah" className="text-xs font-medium">F (1-15)</Label>
+                  <Input
+                    id="fashohah"
+                    type="number"
+                    placeholder="1-15"
+                    value={activityDetails.fashohah}
+                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: e.target.value }))}
+                    className="border-gray-200/60 text-sm"
+                    min="1" max="15"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="tajwid" className="text-xs font-medium">T (1-5)</Label>
+                  <Input
+                    id="tajwid"
+                    type="number"
+                    placeholder="1-5"
+                    value={activityDetails.tajwid}
+                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, tajwid: e.target.value }))}
+                    className="border-gray-200/60 text-sm"
+                    min="1" max="5"
+                  />
+                </div>
+              </div>
             </div>
 
             <Button 
@@ -378,13 +303,9 @@ export function ActivityForm({
               disabled={
                 !selectedStudent || 
                 !activityType || 
-                !activityDetails.surahFrom || 
-                !activityDetails.surahTo || 
-                !activityDetails.pageFrom || 
-                !activityDetails.pageTo || 
-                !activityDetails.evaluation ||
-                (activityType === 'memorization' && (!activityDetails.juzFrom || !activityDetails.juzTo)) ||
-                !validateMemorizationProgress()
+                !activityDetails.surah || 
+                !activityDetails.ayatFrom || 
+                !activityDetails.ayatTo
               }
             >
               <Save className="h-4 w-4 mr-2" />
