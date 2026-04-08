@@ -30,14 +30,14 @@ class ParentsController < ApplicationController
     # Calculate monthly progress (cumulative juz progress)
     monthly_progress = calculate_monthly_progress(student, activities)
 
-    # Calculate activity grade distribution
-    grade_distribution = activities.group(:activity_grade).count.map do |grade, count|
-      {
-        name: grade.humanize,
-        value: count,
-        color: grade_color(grade)
-      }
-    end
+    # Calculate activity score distribution (based on K score)
+    score_ranges = activities.pluck(:kelancaran).compact.map(&:to_i)
+    grade_distribution = [
+      { name: "Sangat Baik (40-50)", value: score_ranges.count { |s| s >= 40 }, color: "#10b981" },
+      { name: "Baik (30-39)", value: score_ranges.count { |s| s >= 30 && s < 40 }, color: "#3b82f6" },
+      { name: "Cukup (20-29)", value: score_ranges.count { |s| s >= 20 && s < 30 }, color: "#f59e0b" },
+      { name: "Perlu Diperbaiki (<20)", value: score_ranges.count { |s| s < 20 }, color: "#ef4444" }
+    ]
 
     # Calculate activity type distribution
     type_distribution = activities.group(:activity_type).count.map do |type, count|
@@ -97,14 +97,17 @@ class ParentsController < ApplicationController
                                     activity: format_activity_description(activity),
                                     time: time_ago_in_words(activity.created_at) + " ago",
                                     type: activity.activity_type,
-                                    grade: translate_grade(activity.activity_grade),
-                                    surah_from: activity.surah_from,
-                                    surah_to: activity.surah_to,
-                                    page_from: activity.page_from,
-                                    page_to: activity.page_to,
-                                    juz: activity.juz,
-                                    juz_from: activity.juz_from,
-                                    juz_to: activity.juz_to,
+                                    grade: nil,
+                                    surah_from: activity.surah,
+                                    surah_to: activity.surah,
+                                    page_from: activity.ayat_from,
+                                    page_to: activity.ayat_to,
+                                    juz: nil,
+                                    juz_from: nil,
+                                    juz_to: nil,
+                                    kelancaran: activity.kelancaran,
+                                    fashohah: activity.fashohah,
+                                    tajwid: activity.tajwid,
                                     notes: activity.notes,
                                     audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
                                   }
@@ -127,33 +130,18 @@ class ParentsController < ApplicationController
     end
   end
 
-  def translate_grade(grade)
-    translations = {
-      'excellent' => 'Sangat Baik',
-      'good' => 'Baik',
-      'fair' => 'Cukup',
-      'needs_improvement' => 'Perlu Diperbaiki'
-    }
-    translations[grade] || grade.humanize
-  end
-
   def format_activity_description(activity)
-    surah_display = activity.surah_from == activity.surah_to ? activity.surah_from : "#{activity.surah_from} - #{activity.surah_to}"
-
     case activity.activity_type
     when "memorization"
-      "Menghafal #{surah_display} halaman #{activity.page_from}-#{activity.page_to}"
+      "Menghafal Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
     when "revision"
-      "Murajaah #{surah_display} halaman #{activity.page_from}-#{activity.page_to}"
+      "Murajaah Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
     else
-      "#{activity.activity_type.humanize} #{surah_display} halaman #{activity.page_from}-#{activity.page_to}"
+      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
     end
   end
 
   def calculate_monthly_progress(student, activities)
-    current_juz = student.current_hifz_in_juz.to_i
-    join_date = Date.parse(student.date_joined) rescue Date.current
-
     # Get memorization activities ordered by date
     memorization_activities = activities.where(activity_type: "memorization").order(:created_at)
 
@@ -162,97 +150,23 @@ class ParentsController < ApplicationController
     start_date = current_month - 3.months
     end_date = current_month + 3.months
     
-    # If no activities, show flat line at current juz for all months
-    if memorization_activities.empty?
-      monthly_data = []
-      month_iterator = start_date
-      
-      while month_iterator <= end_date
-        monthly_data << {
-          month: month_iterator.strftime("%b"),
-          completed: current_juz,
-          is_projected: month_iterator > current_month
-        }
-        month_iterator = month_iterator.next_month
-      end
-      
-      return monthly_data
-    end
-
-    # Get the date of first activity
-    first_activity_date = memorization_activities.first.created_at.to_date.beginning_of_month
-
     monthly_data = []
     month_iterator = start_date
 
-    # Calculate progress for each month based on actual activities
+    # Calculate progress for each month based on activity count
     while month_iterator <= end_date
       month_name = month_iterator.strftime("%b")
       month_range = month_iterator.beginning_of_month..month_iterator.end_of_month
 
-      if month_iterator == current_month
-        # Current month: use actual current progress
-        completed = current_juz
-        is_projected = false
-      elsif month_iterator < current_month
-        # Historical months
-        if month_iterator < first_activity_date
-          # Before first activity: student was at juz 1 (or their initial state)
-          completed = 1
-        else
-          # After first activity: calculate based on activities up to that month
-          activities_up_to_month = memorization_activities.where(
-            "created_at <= ?", month_iterator.end_of_month
-          )
-          
-          if activities_up_to_month.empty?
-            # No activities yet in this month - use initial juz (1)
-            completed = 1
-          else
-            # Get the maximum juz reached up to this point
-            max_juz_reached = activities_up_to_month.maximum(:juz) || 1
-            completed = max_juz_reached
-          end
-        end
-        
-        is_projected = false
-      else
-        # Future months: project based on recent activity rate
-        recent_activities = memorization_activities.where(
-          created_at: (current_month - 3.months)..current_month
-        )
-        
-        if recent_activities.count > 0
-          # Calculate average growth rate from recent activities
-          months_with_recent_activities = ((current_month.year - (current_month - 3.months).year) * 12 + 
-                                           current_month.month - (current_month - 3.months).month)
-          months_with_recent_activities = [ months_with_recent_activities, 1 ].max
-          
-          # Calculate juz growth in recent period
-          earliest_recent_juz = recent_activities.minimum(:juz) || current_juz
-          juz_growth = current_juz - earliest_recent_juz
-          monthly_growth_rate = juz_growth.to_f / months_with_recent_activities
-          monthly_growth_rate = [ monthly_growth_rate, 0.5 ].max # Minimum 0.5 juz per month
-          monthly_growth_rate = [ monthly_growth_rate, 2.0 ].min # Maximum 2 juz per month
-          
-          months_forward = ((month_iterator.year - current_month.year) * 12 + 
-                           month_iterator.month - current_month.month)
-          projected_progress = current_juz + (months_forward * monthly_growth_rate)
-          completed = [ projected_progress.round, 30 ].min
-        else
-          # No recent activity - stay at current level
-          completed = current_juz
-        end
-        
-        is_projected = true
-      end
+      activities_up_to_month = memorization_activities.where(
+        "created_at <= ?", month_iterator.end_of_month
+      ).count
 
-      # Ensure we never go above 30 or below 1
-      completed = completed.clamp(1, 30)
+      is_projected = month_iterator > current_month
 
       monthly_data << {
         month: month_name,
-        completed: completed,
+        completed: activities_up_to_month,
         is_projected: is_projected
       }
 
@@ -260,21 +174,6 @@ class ParentsController < ApplicationController
     end
 
     monthly_data
-  end
-
-  def grade_color(grade)
-    case grade
-    when "excellent"
-      "#10b981" # green
-    when "good"
-      "#3b82f6" # blue
-    when "fair"
-      "#f59e0b" # yellow/orange
-    when "needs_improvement"
-      "#ef4444" # red
-    else
-      "#6b7280" # gray
-    end
   end
 
   def type_color(type)

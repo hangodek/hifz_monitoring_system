@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_18_075706) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_08_140329) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -52,18 +52,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_075706) do
   create_table "activities", force: :cascade do |t|
     t.integer "student_id", null: false
     t.integer "activity_type", default: 0, null: false
-    t.integer "activity_grade", default: 0, null: false
-    t.string "surah_from", null: false
-    t.string "surah_to", null: false
-    t.integer "page_from", null: false
-    t.integer "page_to", null: false
-    t.integer "juz"
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "juz_from"
-    t.integer "juz_to"
     t.integer "total_pages"
+    t.string "surah"
+    t.integer "ayat_from"
+    t.integer "ayat_to"
+    t.integer "kelancaran"
+    t.integer "fashohah"
+    t.integer "tajwid"
     t.index ["created_at"], name: "index_activities_on_created_at"
     t.index ["student_id", "created_at"], name: "index_activities_on_student_and_created_at"
     t.index ["student_id"], name: "index_activities_on_student_id"
@@ -109,6 +107,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_075706) do
     t.string "current_hifz_in_surah", default: "Al-Fatihah", null: false
     t.string "nisn"
     t.string "student_number"
+    t.integer "total_juz_memorized", default: 0, null: false
     t.index ["class_level"], name: "index_students_on_class_level"
     t.index ["name"], name: "index_students_on_name"
     t.index ["status", "name"], name: "index_students_on_status_and_name"

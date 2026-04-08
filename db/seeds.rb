@@ -69,7 +69,6 @@ CITIES = [ "Jakarta", "Surabaya", "Bandung", "Medan", "Semarang", "Makassar", "P
 
 # Activity related data
 ACTIVITY_TYPES = [ "memorization", "revision" ]
-ACTIVITY_GRADES = [ "excellent", "good", "fair", "needs_improvement" ]
 
 # Mapping of Juz to their corresponding Surahs
 JUZ_TO_SURAHS = {
@@ -204,14 +203,13 @@ Student.all.each do |student|
   # Sort dates and process them
   activity_dates.sort.each do |activity_date|
     activity_type = ACTIVITY_TYPES.sample
-    activity_grade = ACTIVITY_GRADES.sample
 
     # Random time during school hours (8 AM to 6 PM)
     created_time = activity_date.to_time + rand(8..18).hours + rand(0..59).minutes
 
-    # Generate random page numbers
-    page_from = rand(1..15)
-    page_to = page_from + rand(1..5)
+    # Generate random ayat range
+    ayat_from = rand(1..250)
+    ayat_to = ayat_from + rand(0..10)
 
     # Generate juz and surah based on when the activity happened
     current_juz = student.current_hifz_in_juz.to_i
@@ -244,13 +242,13 @@ Student.all.each do |student|
     Activity.create!(
       student: student,
       activity_type: activity_type,
-      activity_grade: activity_grade,
-      surah_from: surah,
-      surah_to: surah,
-      page_from: page_from,
-      page_to: page_to,
-      juz: activity_juz,
-      notes: "#{activity_type.humanize} session for #{surah} - Grade: #{activity_grade.humanize}",
+      surah: surah,
+      ayat_from: ayat_from,
+      ayat_to: ayat_to,
+      kelancaran: rand(1..50),
+      fashohah: rand(1..15),
+      tajwid: rand(1..5),
+      notes: "#{activity_type.humanize} session for #{surah}",
       created_at: created_time,
       updated_at: created_time
     )

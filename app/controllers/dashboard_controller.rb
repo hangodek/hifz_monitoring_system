@@ -130,14 +130,17 @@ class DashboardController < ApplicationController
                                     activity: format_activity_description(activity),
                                     time: time_ago_in_words(activity.created_at) + " ago",
                                     type: activity.activity_type,
-                                    grade: translate_grade(activity.activity_grade),
-                                    surah_from: activity.surah_from,
-                                    surah_to: activity.surah_to,
-                                    page_from: activity.page_from,
-                                    page_to: activity.page_to,
-                                    juz: activity.juz,
-                                    juz_from: activity.juz_from,
-                                    juz_to: activity.juz_to,
+                                    grade: nil,
+                                    surah_from: activity.surah,
+                                    surah_to: activity.surah,
+                                    page_from: activity.ayat_from,
+                                    page_to: activity.ayat_to,
+                                    juz: nil,
+                                    juz_from: nil,
+                                    juz_to: nil,
+                                    kelancaran: activity.kelancaran,
+                                    fashohah: activity.fashohah,
+                                    tajwid: activity.tajwid,
                                     notes: activity.notes,
                                     audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
                                   }
@@ -159,22 +162,14 @@ class DashboardController < ApplicationController
     ((current_juz.to_f / 30) * 100).round
   end
 
-  def translate_grade(grade)
-    translations = {
-      'excellent' => 'Sangat Baik',
-      'good' => 'Baik',
-      'fair' => 'Cukup',
-      'needs_improvement' => 'Perlu Diperbaiki'
-    }
-    translations[grade] || grade.humanize
-  end
-
   def format_activity_description(activity)
-    type_text = activity.activity_type == "memorization" ? "Menghafal" : "Murajaah"
-    if activity.surah_from == activity.surah_to
-      "#{type_text} #{activity.surah_from} halaman #{activity.page_from}-#{activity.page_to}"
+    case activity.activity_type
+    when "memorization"
+      "Menghafal Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
+    when "revision"
+      "Murajaah Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
     else
-      "#{type_text} dari #{activity.surah_from} hingga #{activity.surah_to}"
+      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
     end
   end
 end
