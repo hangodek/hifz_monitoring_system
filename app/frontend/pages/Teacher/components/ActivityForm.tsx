@@ -81,6 +81,28 @@ export function ActivityForm({
     return completed
   }, [surahProgressions, selectedJuz])
 
+  const completedJuzs = useMemo(() => {
+    const completed = new Set<string>()
+
+    JUZ_OPTIONS.forEach((juz) => {
+      const surahsInJuz = JUZ_SURAH_MAP[juz] || []
+      if (surahsInJuz.length === 0) return
+
+      const progressionsForJuz = surahProgressions.filter((progression) => String(progression.juz) === juz)
+      const tuntasSurahs = new Set(
+        progressionsForJuz
+          .filter((progression) => progression.completion_status === "tuntas")
+          .map((progression) => progression.surah)
+      )
+
+      if (surahsInJuz.every((surah) => tuntasSurahs.has(surah))) {
+        completed.add(juz)
+      }
+    })
+
+    return completed
+  }, [surahProgressions])
+
   useEffect(() => {
     if (!currentStudent?.id) {
       setSurahProgressions([])
@@ -308,7 +330,10 @@ export function ActivityForm({
             <SelectContent className="border-gray-200/60 max-h-[280px]">
               {JUZ_OPTIONS.map((juz) => (
                 <SelectItem key={juz} value={juz} className="cursor-pointer">
-                  Juz {juz}
+                  <div className="flex items-center gap-2">
+                    <span>Juz {juz}</span>
+                    {completedJuzs.has(juz) && <Check className="h-4 w-4 text-emerald-600" />}
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

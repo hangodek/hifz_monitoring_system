@@ -317,10 +317,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold">{student.name}</h2>
                 <p className="text-muted-foreground">Sedang menghafal: {student.current_hifz_in_surah}</p>
-                <p className="text-muted-foreground">Total Juz {student.total_juz_memorized} dari 30 Juz</p>
-                <div className="mt-2">
-                  <div className="text-sm text-muted-foreground">Ayat berjalan: {student.current_hifz_in_pages}</div>
-                </div>
+                <p className="text-muted-foreground">Total juz tuntas: {student.total_juz_memorized} dari 30 Juz</p>
               </div>
             </div>
           </CardContent>
@@ -419,7 +416,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-purple-700/70">Total Juz {student?.total_juz_memorized} • Ayat berjalan {student?.current_hifz_in_pages || 0}</p>
+              <p className="text-xs text-purple-700/70">Total Juz {student?.total_juz_memorized} • Halaman hafalan {student?.current_hifz_in_pages || 0}</p>
             </CardContent>
           </Card>
         </div>
@@ -724,11 +721,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{student?.total_juz_memorized}</div>
-                  <div className="text-sm text-muted-foreground">Juz Saat Ini</div>
+                  <div className="text-sm text-muted-foreground">Juz Tuntas</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">{student?.current_hifz_in_pages}</div>
-                  <div className="text-sm text-muted-foreground">Ayat Saat Ini</div>
+                  <div className="text-sm text-muted-foreground">Halaman Hafalan</div>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">{total_activities}</div>
@@ -806,7 +803,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                   {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Ayat:</span> {activity.page_from}-{activity.page_to}
+                                  <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
                                 </div>
                                 <div>
                                   <span className="font-medium">Juz:</span>{' '}
