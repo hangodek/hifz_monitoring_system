@@ -67,6 +67,7 @@ class ParentsController < ApplicationController
       student: student.as_json.merge(
         avatar: avatar_url(student, size: :medium)
       ),
+      total_juz: total_juz_completed_for_student(student),
       recent_activities: recent_activities,
       total_activities_count: total_activities_count,
       total_activities: activities.count,

@@ -26,11 +26,11 @@ class TeachersController < ApplicationController
     end
 
     # Cache activities per student (2 minutes)
-    activities = Rails.cache.fetch("student_activities_#{student_id}", expires_in: 2.minutes) do
-      Activity.joins(:student)
-              .where(student_id: student_id, students: { status: "active" })
-              .order(created_at: :desc)
-              .map do |activity|
+    payload = Rails.cache.fetch("student_activities_#{student_id}", expires_in: 2.minutes) do
+      activities = Activity.joins(:student)
+                          .where(student_id: student_id, students: { status: "active" })
+                          .order(created_at: :desc)
+                          .map do |activity|
         {
           id: activity.id.to_s,
           activity_type: activity.activity_type,
@@ -55,9 +55,26 @@ class TeachersController < ApplicationController
           }
         }
       end
+
+      surah_progressions = StudentSurahProgression
+        .where(student_id: student_id)
+        .select(:juz, :surah, :completion_status, :last_activity_at)
+        .map do |progression|
+          {
+            juz: progression.juz,
+            surah: progression.surah,
+            completion_status: progression.completion_status,
+            last_activity_at: progression.last_activity_at&.iso8601
+          }
+        end
+
+      {
+        activities: activities,
+        surah_progressions: surah_progressions
+      }
     end
 
-    render json: { activities: activities }
+    render json: payload
   end
 
   # Search students endpoint for autocomplete

@@ -40,7 +40,6 @@ import { AudioPlayer } from "@/components/AudioPlayer"
 import { ParentHeader } from "./components"
 import axios from "axios"
 
-// Student type definition
 interface Student {
   id: string
   nisn?: string
@@ -49,6 +48,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz?: number
   avatar?: string
   class_level: string
   phone?: string
@@ -118,6 +118,7 @@ interface MonthlyActivities {
 
 interface ParentShowProps {
   student: Student
+  total_juz: number
   recent_activities: Activity[]
   total_activities_count: number
   total_activities: number
@@ -129,6 +130,7 @@ interface ParentShowProps {
 
 export default function ParentShow({
   student,
+  total_juz,
   recent_activities,
   total_activities_count,
   total_activities,
@@ -244,8 +246,8 @@ export default function ParentShow({
                   <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Juz Saat Ini</p>
-                  <p className="text-lg sm:text-2xl font-bold text-blue-600">{student.current_hifz_in_juz}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total Juz Hifal</p>
+                  <p className="text-lg sm:text-2xl font-bold text-blue-600">{total_juz}</p>
                 </div>
               </div>
 

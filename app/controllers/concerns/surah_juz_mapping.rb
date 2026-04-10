@@ -54,15 +54,24 @@ module SurahJuzMapping
     scope = activities.where(activity_type: "memorization").where.not(surah: [ nil, "" ])
     scope = scope.where("created_at <= ?", cutoff_time) if cutoff_time.present?
 
-    completed_surahs_by_juz = Hash.new { |hash, key| hash[key] = [] }
+    latest_status_by_surah = {}
+    tuntas_status = Activity.completion_statuses[:tuntas]
 
-    scope.where(completion_status: Activity.completion_statuses[:tuntas])
-         .pluck(:juz, :surah)
-         .each do |juz, surah|
+    scope.order(:created_at, :id)
+         .pluck(:juz, :surah, :completion_status)
+         .each do |juz, surah, completion_status|
       resolved_juz = juz || map_surah_to_juz(surah)
-      next if resolved_juz.blank? || surah.blank?
+      normalized_surah = normalize_surah_name(surah)
+      next if resolved_juz.blank? || normalized_surah.blank?
 
-      completed_surahs_by_juz[resolved_juz.to_i] << normalize_surah_name(surah)
+      latest_status_by_surah[[resolved_juz.to_i, normalized_surah]] = completion_status
+    end
+
+    completed_surahs_by_juz = Hash.new { |hash, key| hash[key] = [] }
+    latest_status_by_surah.each do |(juz, surah), status|
+      next unless status == tuntas_status
+
+      completed_surahs_by_juz[juz] << surah
     end
 
     completed_surahs_by_juz.count do |juz, completed_surahs|
@@ -73,5 +82,11 @@ module SurahJuzMapping
 
   def normalize_surah_name(surah_name)
     surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")
+  end
+
+  def total_juz_completed_for_student(student)
+    # Calculate total juz that student has completed (all surahs in juz marked tuntas)
+    activities = student.activities
+    completed_juz_count_up_to(activities, nil)
   end
 end

@@ -2,6 +2,7 @@ class DashboardController < ApplicationController
   include ActionView::Helpers::DateHelper
   include AvatarHelper
   include RoleAuthorization
+  include SurahJuzMapping
 
   skip_before_action :authorize_role
   before_action :require_admin!
@@ -23,21 +24,22 @@ class DashboardController < ApplicationController
                                       .count
     total_active_students = Student.active.count
 
-    # Top students by current Juz level (highest to lowest) - only active students
+    # Top students by total juz completed (non-linear) - only active students
     top_students = Student.active
-                         .where.not(current_hifz_in_juz: [ nil, "" ])
-                         .order(Arel.sql("CAST(current_hifz_in_juz AS INTEGER) DESC, CAST(current_hifz_in_pages AS INTEGER) DESC"))
-                         .limit(10)
+                         .to_a
                          .map do |student|
+                           total_juz = total_juz_completed_for_student(student)
                            {
                              id: student.id,
                              name: student.name,
-                             current_juz: student.current_hifz_in_juz,
+                             current_juz: total_juz,
                              activity_count: student.activities.count,
-                             progress: calculate_progress(student.current_hifz_in_juz.to_i),
+                             progress: calculate_progress(total_juz),
                              avatar: avatar_url(student, size: :thumb)
                            }
                          end
+                         .sort_by { |s| -s[:current_juz] }
+                         .first(10)
 
     # Recent activities (last 5 for display)
     recent_activities = Activity.includes(:student, audio_attachment: :blob)

@@ -45,13 +45,11 @@ interface ActivityFormProps {
   }
 }
 
-interface StudentActivity {
+interface StudentSurahProgression {
   surah: string
-  juz: number | null
-  ayat_from: number | null
-  ayat_to: number | null
-  completion_status?: string | null
-  created_at: string
+  juz: number
+  completion_status: string
+  last_activity_at?: string | null
 }
 
 export function ActivityForm({
@@ -68,7 +66,7 @@ export function ActivityForm({
   // Audio recording state
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [selectedJuz, setSelectedJuz] = useState<string>("");
-  const [studentActivities, setStudentActivities] = useState<StudentActivity[]>([])
+  const [surahProgressions, setSurahProgressions] = useState<StudentSurahProgression[]>([])
 
   const filteredSurahList = useMemo(() => {
     if (!selectedJuz) return []
@@ -77,16 +75,16 @@ export function ActivityForm({
 
   const completedSurahs = useMemo(() => {
     const completed = new Set<string>()
-    const activitiesForJuz = studentActivities.filter((activity) => String(activity.juz ?? "") === selectedJuz)
-    activitiesForJuz.forEach((activity) => {
-      if (activity.surah && activity.completion_status === "tuntas") completed.add(activity.surah)
+    const progressionsForJuz = surahProgressions.filter((progression) => String(progression.juz) === selectedJuz)
+    progressionsForJuz.forEach((progression) => {
+      if (progression.surah && progression.completion_status === "tuntas") completed.add(progression.surah)
     })
     return completed
-  }, [studentActivities, selectedJuz])
+  }, [surahProgressions, selectedJuz])
 
   useEffect(() => {
     if (!currentStudent?.id) {
-      setStudentActivities([])
+      setSurahProgressions([])
       return
     }
 
@@ -94,10 +92,10 @@ export function ActivityForm({
       try {
         const response = await fetch(`/teachers/student_activities?student_id=${currentStudent.id}`)
         const data = await response.json()
-        setStudentActivities(data.activities || [])
+        setSurahProgressions(data.surah_progressions || [])
       } catch (error) {
         console.error('Failed to load student activities:', error)
-        setStudentActivities([])
+        setSurahProgressions([])
       }
     }
 
@@ -218,6 +216,21 @@ export function ActivityForm({
       }
 
       console.log('Activity saved successfully:', data);
+
+      setSurahProgressions((prev) => {
+        const next = prev.filter(
+          (item) => !(item.juz === parseInt(selectedJuz) && item.surah === activityDetails.surah)
+        )
+
+        next.push({
+          juz: parseInt(selectedJuz),
+          surah: activityDetails.surah,
+          completion_status: activityDetails.completionStatus,
+          last_activity_at: new Date().toISOString(),
+        })
+
+        return next
+      })
       
       // Reset form
       setActivityDetails({

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_10_120500) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_10_130500) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -91,6 +91,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_10_120500) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "student_surah_progressions", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "juz", null: false
+    t.string "surah", null: false
+    t.integer "completion_status", default: 0, null: false
+    t.datetime "last_activity_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["completion_status"], name: "index_student_surah_progressions_on_completion_status"
+    t.index ["student_id", "juz", "surah"], name: "idx_student_surah_progressions_unique", unique: true
+    t.index ["student_id"], name: "index_student_surah_progressions_on_student_id"
+  end
+
   create_table "students", force: :cascade do |t|
     t.string "name", null: false
     t.string "current_hifz_in_juz", null: false
@@ -133,5 +146,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_10_120500) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "students"
   add_foreign_key "sessions", "users"
+  add_foreign_key "student_surah_progressions", "students"
   add_foreign_key "users", "students"
 end

@@ -168,6 +168,7 @@ const getStudentData = (student: Student, all_activities: Activity[], startDate:
 
 interface StudentShowProps {
   student: Student // The actual student data object from Rails controller
+  total_juz: number // Total juz completed (non-linear)
   recent_activities: Activity[] // Recent activities from backend (limited to 5)
   total_activities_count: number // Total count for "View All" button
   total_activities: number // Total count of activities
@@ -177,7 +178,7 @@ interface StudentShowProps {
   monthly_activities: MonthlyActivities[] // Monthly activities data
 }
 
-export default function StudentShow({ student, recent_activities, total_activities_count, total_activities, monthly_progress, grade_distribution, type_distribution, monthly_activities }: StudentShowProps) {
+export default function StudentShow({ student, total_juz, recent_activities, total_activities_count, total_activities, monthly_progress, grade_distribution, type_distribution, monthly_activities }: StudentShowProps) {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 7 days ago
     to: new Date(),
@@ -325,7 +326,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold">{student.name}</h2>
                 <p className="text-muted-foreground">Sedang menghafal: {student.current_hifz_in_surah}</p>
-                <p className="text-muted-foreground">Juz {student.current_hifz_in_juz} daripada 30 Juz</p>
+                <p className="text-muted-foreground">Total Juz {total_juz} daripada 30 Juz</p>
                 <div className="mt-2">
                   <div className="text-sm text-muted-foreground">Ayat berjalan: {student.current_hifz_in_pages}</div>
                 </div>
@@ -427,7 +428,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-purple-700/70">Juz {student?.current_hifz_in_juz || 0} • Ayat berjalan {student?.current_hifz_in_pages || 0}</p>
+              <p className="text-xs text-purple-700/70">Total Juz {total_juz} • Ayat berjalan {student?.current_hifz_in_pages || 0}</p>
             </CardContent>
           </Card>
         </div>
@@ -779,7 +780,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   <div className="text-sm text-muted-foreground">Surah Saat Ini</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{student?.current_hifz_in_juz}</div>
+                  <div className="text-2xl font-bold text-blue-600">{total_juz}</div>
                   <div className="text-sm text-muted-foreground">Juz Saat Ini</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">

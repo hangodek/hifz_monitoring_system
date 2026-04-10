@@ -19,6 +19,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz?: number
   avatar?: string
   class_level: string
   phone?: string
@@ -74,7 +75,7 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
                 <span className="text-xs sm:text-sm truncate">{student.current_hifz_in_surah}</span>
               </div>
               <div className="flex items-center gap-2 ml-5 sm:ml-6">
-                <span className="text-xs sm:text-sm text-muted-foreground">Juz {student.current_hifz_in_juz} • {student.current_hifz_in_pages} pages</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">Total Juz {student.total_juz ?? student.current_hifz_in_juz} • {student.current_hifz_in_pages} pages</span>
               </div>
             </div>
 
