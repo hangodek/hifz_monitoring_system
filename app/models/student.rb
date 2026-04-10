@@ -17,11 +17,17 @@ class Student < ApplicationRecord
   after_commit :process_avatar, on: [:create, :update]
 
   def recalculate_total_juz_memorized!
-    # This method calculates how many juz a student has fully memorized.
-    # A juz is considered memorized only if all of its surahs are 'tuntas'.
+    # A juz is memorized only if all expected surahs in that juz are marked 'tuntas'
+    # within the same juz (juz-aware check).
+    tuntas_by_juz = Hash.new { |hash, key| hash[key] = [] }
 
-    # Get all 'tuntas' progressions for the student
-    tuntas_surah_names = student_surah_progressions.where(completion_status: 'tuntas').pluck(:surah).map(&:downcase).uniq
+    student_surah_progressions.where(completion_status: :tuntas).find_each do |progression|
+      next if progression.juz.blank? || progression.surah.blank?
+
+      normalized_surah = progression.surah.to_s.downcase
+      juz_key = progression.juz.to_i
+      tuntas_by_juz[juz_key] << normalized_surah unless tuntas_by_juz[juz_key].include?(normalized_surah)
+    end
 
     completed_juz_count = 0
     (1..30).each do |juz_number|
@@ -31,9 +37,10 @@ class Student < ApplicationRecord
 
       # Normalize the names from the mapping
       normalized_surah_names_in_juz = surah_names_in_juz.map(&:downcase)
+      completed_surahs_in_juz = tuntas_by_juz[juz_number]
 
-      # Check if all surahs in the juz are present in the student's 'tuntas' list
-      if (normalized_surah_names_in_juz - tuntas_surah_names).empty?
+      # Check if all expected surahs in this juz are tuntas for this juz.
+      if normalized_surah_names_in_juz.all? { |surah| completed_surahs_in_juz.include?(surah) }
         completed_juz_count += 1
       end
     end

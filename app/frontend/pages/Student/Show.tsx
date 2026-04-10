@@ -128,15 +128,13 @@ interface MonthlyActivities {
 }
 
 // Generate daily submissions data for date range
-const generateDailySubmissions = (startDate: Date, endDate: Date, activities: Activity[]) => {
+const generateDailySubmissions = (startDate: Date, endDate: Date, dailySubmissionCounts: Record<string, number>) => {
   const data = []
   const currentDate = new Date(startDate)
 
   while (currentDate <= endDate) {
     const dateStr = format(currentDate, "yyyy-MM-dd")
-    const dayActivities = activities.filter(activity => 
-      activity.date === dateStr
-    ).length
+    const dayActivities = dailySubmissionCounts[dateStr] || 0
 
     data.push({
       date: format(currentDate, "dd/MM"),
@@ -149,27 +147,18 @@ const generateDailySubmissions = (startDate: Date, endDate: Date, activities: Ac
   return data
 }
 
-// Student specific data
-const getStudentData = (student: Student, all_activities: Activity[], startDate: Date, endDate: Date) => {
-  if (!student) return null
-
-  return {
-    dailySubmissions: generateDailySubmissions(startDate, endDate, all_activities),
-    recentActivities: all_activities,
-  }
-}
-
 interface StudentShowProps {
   student: Student // The actual student data object from Rails controller
   recent_activities: Activity[] // Recent activities from backend (limited to 5)
   total_activities_count: number // Total count for "View All" button
   total_activities: number // Total count of activities
+  daily_submission_counts: Record<string, number>
   monthly_progress: MonthlyProgress[] // Monthly progress data
   type_distribution: TypeDistribution[] // Activity type distribution data
   monthly_activities: MonthlyActivities[] // Monthly activities data
 }
 
-export default function StudentShow({ student, recent_activities, total_activities_count, total_activities, monthly_progress, type_distribution, monthly_activities }: StudentShowProps) {
+export default function StudentShow({ student, recent_activities, total_activities_count, total_activities, daily_submission_counts, monthly_progress, type_distribution, monthly_activities }: StudentShowProps) {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 7 days ago
     to: new Date(),
@@ -216,21 +205,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
     }
   }
 
-  // Convert recent_activities to the format expected by generateDailySubmissions
-  const formattedAllActivities = recent_activities.map(activity => ({
-    id: activity.id,
-    activity: activity.activity,
-    time: activity.time,
-    type: activity.type,
-    date: activity.date,
-    created_at: activity.created_at
-  }))
+  const dailySubmissions = generateDailySubmissions(dateRange.from, dateRange.to, daily_submission_counts)
 
-  const studentData = student ? getStudentData(student, formattedAllActivities, dateRange.from, dateRange.to) : null
-
-  // Calculate today's submissions using all activities, not just recent ones
+  // Calculate today's submissions using backend aggregate from all activities.
   const todayStr = format(new Date(), "yyyy-MM-dd")
-  const todaySubmissions = formattedAllActivities.filter(activity => activity.date === todayStr).length
+  const todaySubmissions = daily_submission_counts[todayStr] || 0
 
   // Helper function to get avatar URL
   const getAvatarUrl = (avatar?: string): string => {
@@ -416,7 +395,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-purple-700/70">Total Juz {student?.total_juz_memorized} • Halaman hafalan {student?.current_hifz_in_pages || 0}</p>
+              <p className="text-xs text-purple-700/70">Total Juz {student?.total_juz_memorized} dari 30 Juz</p>
             </CardContent>
           </Card>
         </div>
@@ -500,7 +479,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={studentData?.dailySubmissions}>
+              <BarChart data={dailySubmissions}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -724,8 +703,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   <div className="text-sm text-muted-foreground">Juz Tuntas</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{student?.current_hifz_in_pages}</div>
-                  <div className="text-sm text-muted-foreground">Halaman Hafalan</div>
+                  <div className="text-2xl font-bold text-green-600">30</div>
+                  <div className="text-sm text-muted-foreground">Target Total Juz</div>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">{total_activities}</div>
@@ -803,7 +782,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                   {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
+                                  <span className="font-medium">Ayat:</span> {activity.page_from === activity.page_to ? activity.page_from : `${activity.page_from}-${activity.page_to}`}
                                 </div>
                                 <div>
                                   <span className="font-medium">Juz:</span>{' '}

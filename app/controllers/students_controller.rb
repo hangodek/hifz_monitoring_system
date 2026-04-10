@@ -190,6 +190,12 @@ class StudentsController < ApplicationController
     # Get total count of all activities for the "View All" button
     total_activities_count = activities.count
 
+    # Daily submission counts from all activities (not limited to recent items).
+    daily_submission_counts = activities
+                  .group("DATE(created_at)")
+                  .count
+                  .transform_keys(&:to_s)
+
     # Calculate monthly progress (cumulative juz progress)
     monthly_progress = calculate_monthly_progress(student, activities)
 
@@ -218,11 +224,13 @@ class StudentsController < ApplicationController
 
     render inertia: "Student/Show", props: {
       student: student.as_json.merge(
-        avatar: avatar_url(student, size: :medium)
+        avatar: avatar_url(student, size: :medium),
+        total_juz_memorized: total_juz_completed_for_student(student)
       ),
       recent_activities: recent_activities,
       total_activities_count: total_activities_count,
       total_activities: activities.count,
+      daily_submission_counts: daily_submission_counts,
       monthly_progress: monthly_progress,
       type_distribution: type_distribution,
       monthly_activities: monthly_activities
@@ -698,13 +706,19 @@ class StudentsController < ApplicationController
   end
 
   def format_activity_description(activity)
+    ayat_display = if activity.ayat_from.present? && activity.ayat_to.present? && activity.ayat_from == activity.ayat_to
+      activity.ayat_from
+    else
+      "#{activity.ayat_from}-#{activity.ayat_to}"
+    end
+
     case activity.activity_type
     when "memorization"
-      "Menghafal Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
+      "Menghafal Surah #{activity.surah} ayat #{ayat_display}"
     when "revision"
-      "Murajaah Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
+      "Murajaah Surah #{activity.surah} ayat #{ayat_display}"
     else
-      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
+      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{ayat_display}"
     end
   end
 

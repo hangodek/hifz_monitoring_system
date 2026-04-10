@@ -27,11 +27,11 @@ module SurahJuzMapping
     23 => ["Al-Ahzab", "Saba", "Fatir", "Ya-Sin"],
     24 => ["As-Saffat", "Sad", "Az-Zumar"],
     25 => ["Az-Zumar", "Ghafir", "Fussilat"],
-    26 => ["Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah"],
-    27 => ["Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat"],
-    28 => ["At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"],
-    29 => ["Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim"],
-    30 => ["Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat", "An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"]
+    26 => ["Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat"],
+    27 => ["At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"],
+    28 => ["Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim"],
+    29 => ["Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat"],
+    30 => ["An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"]
   }.freeze
 
   SURAH_TO_JUZ = JUZ_TO_SURAHS.each_with_object({}) do |(juz, surahs), map|
@@ -85,8 +85,23 @@ module SurahJuzMapping
   end
 
   def total_juz_completed_for_student(student)
-    # Calculate total juz that student has completed (all surahs in juz marked tuntas)
-    activities = student.activities
-    completed_juz_count_up_to(activities, nil)
+    # Source of truth follows teacher mode: student_surah_progressions.
+    progressions = student.student_surah_progressions
+
+    completed_surahs_by_juz = Hash.new { |hash, key| hash[key] = [] }
+    progressions.each do |progression|
+      next unless progression.completion_status.to_s == "tuntas"
+
+      juz = progression.juz.to_i
+      surah = normalize_surah_name(progression.surah)
+      next if juz <= 0 || surah.blank?
+
+      completed_surahs_by_juz[juz] << surah unless completed_surahs_by_juz[juz].include?(surah)
+    end
+
+    (1..30).count do |juz|
+      expected_surahs = Array(JUZ_TO_SURAHS[juz]).map { |surah| normalize_surah_name(surah) }
+      expected_surahs.present? && expected_surahs.all? { |surah| completed_surahs_by_juz[juz].include?(surah) }
+    end
   end
 end

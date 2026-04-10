@@ -237,20 +237,22 @@ export function ActivityForm({
 
       console.log('Activity saved successfully:', data);
 
-      setSurahProgressions((prev) => {
-        const next = prev.filter(
-          (item) => !(item.juz === parseInt(selectedJuz) && item.surah === activityDetails.surah)
-        )
+      if (activityType === "memorization") {
+        setSurahProgressions((prev) => {
+          const next = prev.filter(
+            (item) => !(item.juz === parseInt(selectedJuz) && item.surah === activityDetails.surah)
+          )
 
-        next.push({
-          juz: parseInt(selectedJuz),
-          surah: activityDetails.surah,
-          completion_status: activityDetails.completionStatus,
-          last_activity_at: new Date().toISOString(),
+          next.push({
+            juz: parseInt(selectedJuz),
+            surah: activityDetails.surah,
+            completion_status: activityDetails.completionStatus,
+            last_activity_at: new Date().toISOString(),
+          })
+
+          return next
         })
-
-        return next
-      })
+      }
       
       // Reset form
       setActivityDetails({
