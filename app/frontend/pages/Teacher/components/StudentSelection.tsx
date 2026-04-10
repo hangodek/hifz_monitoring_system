@@ -139,7 +139,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
                   className="ml-2 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-base"
                 />
                 {isSearching && (
-                  <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
+          <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
                 )}
               </div>
             </div>
