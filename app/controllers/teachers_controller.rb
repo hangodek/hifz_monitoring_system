@@ -30,7 +30,6 @@ class TeachersController < ApplicationController
       Activity.joins(:student)
               .where(student_id: student_id, students: { status: "active" })
               .order(created_at: :desc)
-              .limit(20)
               .map do |activity|
         {
           id: activity.id.to_s,
@@ -40,9 +39,10 @@ class TeachersController < ApplicationController
           surah_to: activity.surah,
           page_from: activity.ayat_from,
           page_to: activity.ayat_to,
-          juz: nil,
+          juz: activity.juz,
           juz_from: nil,
           juz_to: nil,
+          completion_status: activity.completion_status,
           kelancaran: activity.kelancaran,
           fashohah: activity.fashohah,
           tajwid: activity.tajwid,
@@ -100,9 +100,10 @@ class TeachersController < ApplicationController
         surah_to: activity.surah,
         page_from: activity.ayat_from,
         page_to: activity.ayat_to,
-        juz: nil,
+        juz: activity.juz,
         juz_from: nil,
         juz_to: nil,
+        completion_status: activity.completion_status,
         kelancaran: activity.kelancaran,
         fashohah: activity.fashohah,
         tajwid: activity.tajwid,

@@ -7,6 +7,8 @@ class ActivitiesController < ApplicationController
   before_action :set_activity, only: [ :destroy ]
 
   def create
+    # Guard against stale schema metadata in long-lived processes after migrations.
+    Activity.reset_column_information
     @activity = @student.activities.build(activity_params)
 
     if @activity.save
@@ -14,9 +16,17 @@ class ActivitiesController < ApplicationController
       Rails.cache.delete("teacher_active_students")
       Rails.cache.delete("student_activities_#{@student.id}")
       
-      redirect_to teachers_path, notice: "Aktivitas berhasil dibuat."
+      render json: { 
+        success: true, 
+        message: "Aktivitas berhasil dibuat.",
+        activity: @activity.as_json
+      }, status: :created
     else
-      redirect_to teachers_path, alert: @activity.errors.full_messages.join(", ")
+      render json: { 
+        success: false, 
+        message: @activity.errors.full_messages.join(", "),
+        errors: @activity.errors
+      }, status: :unprocessable_entity
     end
   end
 
@@ -43,6 +53,7 @@ class ActivitiesController < ApplicationController
   def activity_params
     params.require(:activity).permit(
       :activity_type, 
+      :juz,
       :surah, 
       :ayat_from, 
       :ayat_to, 
@@ -50,6 +61,7 @@ class ActivitiesController < ApplicationController
       :kelancaran, 
       :fashohah, 
       :tajwid, 
+        :completion_status,
       :audio
     )
   end

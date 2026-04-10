@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_08_140329) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_10_120500) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -62,7 +62,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_140329) do
     t.integer "kelancaran"
     t.integer "fashohah"
     t.integer "tajwid"
+    t.integer "juz"
+    t.integer "completion_status", default: 0, null: false
+    t.index ["completion_status"], name: "index_activities_on_completion_status"
     t.index ["created_at"], name: "index_activities_on_created_at"
+    t.index ["juz"], name: "index_activities_on_juz"
     t.index ["student_id", "created_at"], name: "index_activities_on_student_and_created_at"
     t.index ["student_id"], name: "index_activities_on_student_id"
   end

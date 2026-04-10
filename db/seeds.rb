@@ -242,6 +242,7 @@ Student.all.each do |student|
     Activity.create!(
       student: student,
       activity_type: activity_type,
+      juz: activity_juz,
       surah: surah,
       ayat_from: ayat_from,
       ayat_to: ayat_to,

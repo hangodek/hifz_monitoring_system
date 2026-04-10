@@ -327,7 +327,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <p className="text-muted-foreground">Sedang menghafal: {student.current_hifz_in_surah}</p>
                 <p className="text-muted-foreground">Juz {student.current_hifz_in_juz} daripada 30 Juz</p>
                 <div className="mt-2">
-                  <div className="text-sm text-muted-foreground">{student.current_hifz_in_pages} halaman dihafal</div>
+                  <div className="text-sm text-muted-foreground">Ayat berjalan: {student.current_hifz_in_pages}</div>
                 </div>
               </div>
             </div>
@@ -427,7 +427,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-purple-700/70">Juz {student?.current_hifz_in_juz || 0} • {student?.current_hifz_in_pages || 0} halaman dihafal</p>
+              <p className="text-xs text-purple-700/70">Juz {student?.current_hifz_in_juz || 0} • Ayat berjalan {student?.current_hifz_in_pages || 0}</p>
             </CardContent>
           </Card>
         </div>
@@ -529,10 +529,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
               </div>
-              Monthly Progress & Projection
+              Total Juz Hafal (Kumulatif)
             </CardTitle>
             <CardDescription>
-              {student?.name}'s Quran memorization progress (3 months history + 3 months projection)
+              Jumlah juz unik yang sudah pernah disetorkan (tetap valid untuk urutan non-linear)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -544,7 +544,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <Tooltip 
                   formatter={(value, name, props) => {
                     const isProjected = props?.payload?.is_projected
-                    return [`${value} Juz${isProjected ? ' (projected)' : ''}`, name]
+                    return [`${value} juz${isProjected ? ' (proyeksi)' : ''}`, name]
                   }}
                   labelFormatter={(label) => `Month: ${label}`}
                 />
@@ -555,7 +555,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   dataKey={(entry) => !entry.is_projected ? entry.completed : null}
                   stroke="#10b981" 
                   strokeWidth={3} 
-                  name="Actual Progress"
+                  name="Data Aktual"
                   dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
                   connectNulls={true}
@@ -567,7 +567,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   stroke="#3b82f6" 
                   strokeWidth={3} 
                   strokeDasharray="8 4"
-                  name="Projected Progress"
+                  name="Proyeksi"
                   dot={{ fill: '#60a5fa', strokeWidth: 2, r: 4, stroke: '#3b82f6' }}
                   activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
                   connectNulls={true}
@@ -588,11 +588,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-green-500"></div>
-                <span>Progress Aktual</span>
+                  <span>Data Aktual</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
-                <span>Proyeksi Progress</span>
+                  <span>Proyeksi</span>
               </div>
             </div>
           </CardContent>
@@ -784,7 +784,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">{student?.current_hifz_in_pages}</div>
-                  <div className="text-sm text-muted-foreground">Halaman Saat Ini</div>
+                  <div className="text-sm text-muted-foreground">Ayat Saat Ini</div>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">{total_activities}</div>
@@ -862,7 +862,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                   {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
+                                  <span className="font-medium">Ayat:</span> {activity.page_from}-{activity.page_to}
                                 </div>
                                 <div>
                                   <span className="font-medium">Juz:</span>{' '}

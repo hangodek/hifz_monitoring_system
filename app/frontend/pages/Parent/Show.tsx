@@ -266,7 +266,7 @@ export default function ParentShow({
                   <Target className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Halaman</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Ayat Saat Ini</p>
                   <p className="text-lg sm:text-2xl font-bold text-green-600">{student.current_hifz_in_pages}</p>
                 </div>
               </div>
@@ -292,9 +292,9 @@ export default function ParentShow({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-purple-600" />
-                Kemajuan Bulanan (Juz)
+                Total Juz Hafal (Kumulatif)
               </CardTitle>
-              <CardDescription>Perkembangan hafalan dalam 7 bulan (3 bulan lalu, bulan ini, 3 bulan mendatang)</CardDescription>
+              <CardDescription>Jumlah juz unik yang sudah pernah disetorkan (urutannya boleh tidak linear)</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -318,7 +318,7 @@ export default function ParentShow({
                     }}
                     formatter={(value, name, props) => {
                       const isProjected = props?.payload?.is_projected
-                      return [`${value} Juz${isProjected ? ' (proyeksi)' : ''}`, name]
+                      return [`${value} juz${isProjected ? ' (proyeksi)' : ''}`, name]
                     }}
                   />
                   <Legend />
@@ -330,7 +330,7 @@ export default function ParentShow({
                     strokeWidth={2}
                     dot={{ fill: '#10b981', r: 4 }}
                     activeDot={{ r: 6 }}
-                    name="Progress Aktual"
+                    name="Data Aktual"
                     connectNulls={true}
                   />
                   {/* Projected Progress Line */}
@@ -342,7 +342,7 @@ export default function ParentShow({
                     strokeDasharray="8 4"
                     dot={{ fill: '#60a5fa', r: 4, stroke: '#3b82f6' }}
                     activeDot={{ r: 6 }}
-                    name="Proyeksi Progress"
+                    name="Proyeksi"
                     connectNulls={true}
                   />
                   {/* Bridge line to connect actual to projected */}
@@ -361,11 +361,11 @@ export default function ParentShow({
               <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-0.5 bg-green-500"></div>
-                  <span>Progress Aktual</span>
+                  <span>Data Aktual</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-0.5 bg-blue-500" style={{borderTop: '2px dashed #3b82f6', backgroundColor: 'transparent'}}></div>
-                  <span>Proyeksi Progress</span>
+                  <span>Proyeksi</span>
                 </div>
               </div>
             </CardContent>
@@ -610,7 +610,7 @@ export default function ParentShow({
                         {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
                       </div>
                       <div>
-                        <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
+                        <span className="font-medium">Ayat:</span> {activity.page_from}-{activity.page_to}
                       </div>
                       <div>
                         <span className="font-medium">Juz:</span>{' '}

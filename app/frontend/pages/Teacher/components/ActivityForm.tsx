@@ -4,10 +4,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Save } from "lucide-react"
-import { router } from "@inertiajs/react"
 import { AudioRecorder } from "./AudioRecorder"
-import { useState } from "react"
+import { Check, Plus, Save } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { JUZ_OPTIONS, JUZ_SURAH_MAP } from "@/lib/quran"
 
 interface ActivityType {
   value: string
@@ -22,7 +22,8 @@ interface ActivityDetails {
   notes: string
   kelancaran: string // K (1-50)
   fashohah: string  // F (1-15)
-  tajwid: string    // T (1-5)
+  tajwid: string    // T (1-15)
+  completionStatus: string
 }
 
 interface ActivityFormProps {
@@ -44,19 +45,19 @@ interface ActivityFormProps {
   }
 }
 
-// Map frontend evaluation values to backend enum values
-const evaluationMapping = {
-  excellent: 'excellent',
-  good: 'good', 
-  fair: 'fair',
-  needs_improvement: 'needs_improvement'
+interface StudentActivity {
+  surah: string
+  juz: number | null
+  ayat_from: number | null
+  ayat_to: number | null
+  completion_status?: string | null
+  created_at: string
 }
 
 export function ActivityForm({
   activityType,
   setActivityType,
   activityTypes,
-  surahList,
   activityDetails,
   setActivityDetails,
   handleSaveActivity,
@@ -66,57 +67,113 @@ export function ActivityForm({
   
   // Audio recording state
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  
-  const calculateNewProgress = () => {
-    // For memorization, use juzTo and pageTo
-    if (activityType === 'memorization' && activityDetails.juzTo && activityDetails.pageTo) {
-      const juzTo = parseInt(activityDetails.juzTo);
-      const pageTo = parseInt(activityDetails.pageTo);
-      return { newJuz: juzTo, newPages: pageTo };
-    }
-    
-    return null;
-  };
+  const [selectedJuz, setSelectedJuz] = useState<string>("");
+  const [studentActivities, setStudentActivities] = useState<StudentActivity[]>([])
 
-  const validateMemorizationProgress = () => {
-    if (activityType !== 'memorization' || !currentStudent) return true;
-    
-    const newProgress = calculateNewProgress();
-    if (!newProgress) return true;
-    
-    const currentJuz = parseInt(currentStudent.current_hifz_in_juz) || 0;
-    const currentPages = parseInt(currentStudent.current_hifz_in_pages) || 0;
-    const { newJuz, newPages } = newProgress;
-    
-    // New progress must be greater than current progress
-    if (newJuz < currentJuz || (newJuz === currentJuz && newPages <= currentPages)) {
-      return false;
+  const filteredSurahList = useMemo(() => {
+    if (!selectedJuz) return []
+    return JUZ_SURAH_MAP[selectedJuz] || []
+  }, [selectedJuz])
+
+  const completedSurahs = useMemo(() => {
+    const completed = new Set<string>()
+    const activitiesForJuz = studentActivities.filter((activity) => String(activity.juz ?? "") === selectedJuz)
+    activitiesForJuz.forEach((activity) => {
+      if (activity.surah && activity.completion_status === "tuntas") completed.add(activity.surah)
+    })
+    return completed
+  }, [studentActivities, selectedJuz])
+
+  useEffect(() => {
+    if (!currentStudent?.id) {
+      setStudentActivities([])
+      return
     }
-    
-    return true;
-  };
+
+    const fetchStudentActivities = async () => {
+      try {
+        const response = await fetch(`/teachers/student_activities?student_id=${currentStudent.id}`)
+        const data = await response.json()
+        setStudentActivities(data.activities || [])
+      } catch (error) {
+        console.error('Failed to load student activities:', error)
+        setStudentActivities([])
+      }
+    }
+
+    fetchStudentActivities()
+  }, [currentStudent?.id])
+
+  useEffect(() => {
+    if (!selectedJuz) {
+      return
+    }
+
+    const defaultSurah = JUZ_SURAH_MAP[selectedJuz]?.[0] || ""
+    const defaultStatus = completedSurahs.has(defaultSurah) ? "tuntas" : "belum_tuntas"
+    setActivityDetails((prev) => ({ ...prev, surah: defaultSurah, completionStatus: defaultStatus }))
+  }, [completedSurahs, selectedJuz, setActivityDetails])
+
+  const normalizeScoreInput = (value: string, min: number, max: number) => {
+    if (value === "") return ""
+    const parsed = parseInt(value)
+    if (Number.isNaN(parsed)) return ""
+    return String(Math.min(Math.max(parsed, min), max))
+  }
   
-  const handleSubmit = () => {
-    if (!selectedStudent || !activityType || !activityDetails.surah || !activityDetails.ayatFrom || !activityDetails.ayatTo) {
+  const handleSubmit = async () => {
+    if (!selectedStudent || !selectedJuz || !activityType || !activityDetails.surah || !activityDetails.ayatFrom || !activityDetails.ayatTo) {
       alert('Silakan lengkapi semua kolom yang diperlukan');
+      return;
+    }
+
+    const ayatFrom = parseInt(activityDetails.ayatFrom)
+    const ayatTo = parseInt(activityDetails.ayatTo)
+    if (Number.isNaN(ayatFrom) || Number.isNaN(ayatTo) || ayatFrom < 1 || ayatTo < ayatFrom) {
+      alert('Rentang ayat tidak valid. Pastikan Ayat Hingga lebih besar atau sama dengan Ayat Dari.');
+      return;
+    }
+
+    const kelancaran = parseInt(activityDetails.kelancaran) || 25
+    const fashohah = parseInt(activityDetails.fashohah) || 8
+    const tajwid = parseInt(activityDetails.tajwid) || 8
+
+    if (kelancaran < 1 || kelancaran > 50) {
+      alert('Nilai K (Kelancaran) harus di antara 1 sampai 50.');
+      return;
+    }
+    if (fashohah < 1 || fashohah > 15) {
+      alert('Nilai F (Fashohah) harus di antara 1 sampai 15.');
+      return;
+    }
+    if (tajwid < 1 || tajwid > 15) {
+      alert('Nilai T (Tajwid) harus di antara 1 sampai 15.');
       return;
     }
 
     const activityData = {
       activity_type: activityType,
+      juz: parseInt(selectedJuz),
       surah: activityDetails.surah,
-      ayat_from: parseInt(activityDetails.ayatFrom),
-      ayat_to: parseInt(activityDetails.ayatTo),
+      ayat_from: ayatFrom,
+      ayat_to: ayatTo,
       notes: activityDetails.notes || '',
-      kelancaran: parseInt(activityDetails.kelancaran) || null,
-      fashohah: parseInt(activityDetails.fashohah) || null,
-      tajwid: parseInt(activityDetails.tajwid) || null,
+      kelancaran: kelancaran,
+      fashohah: fashohah,
+      tajwid: tajwid,
+      completion_status: activityDetails.completionStatus,
     };
 
     // Create FormData if audio is present, otherwise use regular data
     let submitData;
     if (audioBlob) {
       const formData = new FormData();
+      
+      // Add CSRF token if available
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      if (csrfToken) {
+        formData.append('authenticity_token', csrfToken);
+      }
       
       // Add all activity fields
       Object.entries(activityData).forEach(([key, value]) => {
@@ -132,28 +189,59 @@ export function ActivityForm({
       submitData = { activity: activityData };
     }
 
-    router.post(`/students/${selectedStudent}/activities`, submitData, {
-      onSuccess: () => {
-        // Reset form
-        setActivityDetails({
-          surah: "",
-          ayatFrom: "",
-          ayatTo: "",
-          notes: "",
-          kelancaran: "",
-          fashohah: "",
-          tajwid: "",
-        });
-        setActivityType("");
-        setAudioBlob(null);
-        // Also call the original handler for any additional local actions
-        handleSaveActivity();
-      },
-      onError: (errors) => {
-        console.error('Failed to save activity:', errors);
-        alert('Gagal menyimpan aktivitas. Silakan coba lagi.');
+    try {
+      console.log('Submitting activity:', activityData);
+      
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const response = await fetch(`/students/${selectedStudent}/activities`, {
+        method: 'POST',
+        headers: {
+          ...(!(submitData instanceof FormData) && { 'Content-Type': 'application/json' }),
+          ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+        },
+        body: submitData instanceof FormData ? submitData : JSON.stringify(submitData)
+      });
+
+      const raw = await response.text();
+      let data: { message?: string } = {}
+      try {
+        data = raw ? JSON.parse(raw) : {}
+      } catch {
+        data = { message: "Respons server tidak valid. Coba refresh halaman." }
       }
-    });
+      
+      if (!response.ok) {
+        const errorMessage = data.message || 'Gagal menyimpan aktivitas. Silakan coba lagi.';
+        console.error('Failed to save activity:', errorMessage);
+        alert(errorMessage);
+        return;
+      }
+
+      console.log('Activity saved successfully:', data);
+      
+      // Reset form
+      setActivityDetails({
+        surah: "",
+        ayatFrom: "",
+        ayatTo: "",
+        notes: "",
+        kelancaran: "",
+        fashohah: "",
+        tajwid: "",
+        completionStatus: "belum_tuntas",
+      });
+      setSelectedJuz("");
+      setActivityType("");
+      setAudioBlob(null);
+      
+      // Call the original handler for any additional local actions
+      handleSaveActivity();
+      
+      alert('Aktivitas berhasil disimpan!');
+    } catch (error) {
+      console.error('Error submitting activity:', error);
+      alert('Gagal menyimpan aktivitas. Silakan coba lagi.');
+    }
   };
 
   return (
@@ -187,27 +275,104 @@ export function ActivityForm({
           </Select>
         </div>
 
+        <div className="space-y-2">
+          <Label className="text-xs sm:text-sm">Juz <span className="text-red-500">*</span></Label>
+          <Select
+            value={selectedJuz}
+            onValueChange={(value) => {
+              setSelectedJuz(value)
+              setActivityDetails((prev) => ({
+                ...prev,
+                surah: JUZ_SURAH_MAP[value]?.[0] || "",
+              }))
+            }}
+          >
+            <SelectTrigger className="border-gray-200/60 cursor-pointer">
+              <SelectValue placeholder="Pilih juz..." />
+            </SelectTrigger>
+            <SelectContent className="border-gray-200/60 max-h-[280px]">
+              {JUZ_OPTIONS.map((juz) => (
+                <SelectItem key={juz} value={juz} className="cursor-pointer">
+                  Juz {juz}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {activityType && (
           <>
-            {(activityType === "memorization" ||
-              activityType === "revision" ||
-              activityType === "evaluation") && (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-xs sm:text-sm">Surah <span className="text-red-500">*</span></Label>
-                  <Select
-                    value={activityDetails.surah}
-                    onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, surah: value }))}
+            {selectedJuz && (
+              <div className="space-y-2">
+                <Label className="text-xs sm:text-sm">Surah <span className="text-red-500">*</span></Label>
+                <Select
+                  value={activityDetails.surah}
+                  onValueChange={(value) => {
+                    const nextStatus = completedSurahs.has(value) ? "tuntas" : "belum_tuntas"
+                    setActivityDetails((prev) => ({ ...prev, surah: value, completionStatus: nextStatus }))
+                  }}
+                >
+                  <SelectTrigger className="border-gray-200/60 cursor-pointer">
+                    <SelectValue placeholder="Pilih surah..." />
+                  </SelectTrigger>
+                  <SelectContent className="border-gray-200/60">
+                    {filteredSurahList.map((surah, index) => {
+                      const isCompleted = completedSurahs.has(surah)
+                      return (
+                        <SelectItem key={`${selectedJuz}-${surah}`} value={surah} className="cursor-pointer">
+                          <div className="flex items-center gap-2">
+                            <span>{index + 1}. {surah}</span>
+                            {isCompleted && <Check className="h-4 w-4 text-emerald-600" />}
+                          </div>
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {activityDetails.surah && selectedJuz && (
+              <div className={[
+                "rounded-2xl border p-4 shadow-[0_0_0_1px_rgba(148,163,184,0.12),0_10px_30px_-18px_rgba(15,23,42,0.35)] space-y-4 transition-all",
+                activityDetails.completionStatus === "tuntas"
+                  ? "border-emerald-400/80 bg-white/95 ring-1 ring-emerald-300/50"
+                  : "border-rose-400/80 bg-white/95 ring-1 ring-rose-300/50"
+              ].join(" ")}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{activityDetails.surah}</p>
+                  </div>
+                  <div className={[
+                    "rounded-full px-3 py-1 text-xs font-semibold border",
+                    activityDetails.completionStatus === "tuntas"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-rose-200 bg-rose-50 text-rose-700"
+                  ].join(" ")}
                   >
-                    <SelectTrigger className="border-gray-200/60 cursor-pointer">
-                      <SelectValue placeholder="Pilih surah..." />
+                    {activityDetails.completionStatus === "tuntas" ? "Tuntas" : "Belum tuntas"}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs sm:text-sm">Status <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={activityDetails.completionStatus}
+                    onValueChange={(value) => setActivityDetails((prev) => ({ ...prev, completionStatus: value }))}
+                  >
+                    <SelectTrigger className={[
+                      "cursor-pointer border",
+                      activityDetails.completionStatus === "tuntas"
+                        ? "border-emerald-400 text-emerald-700 shadow-[0_0_0_1px_rgba(16,185,129,0.18),0_0_24px_rgba(16,185,129,0.22)]"
+                        : "border-rose-400 text-rose-700 shadow-[0_0_0_1px_rgba(244,63,94,0.18),0_0_24px_rgba(244,63,94,0.22)]"
+                    ].join(" ")}
+                    >
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="border-gray-200/60">
-                      {surahList.map((surah, index) => (
-                        <SelectItem key={index} value={surah} className="cursor-pointer">
-                          {index + 1}. {surah}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="tuntas" className="cursor-pointer">Tuntas</SelectItem>
+                      <SelectItem value="belum_tuntas" className="cursor-pointer">Belum tuntas</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -236,7 +401,49 @@ export function ActivityForm({
                     />
                   </div>
                 </div>
-              </>
+
+                <div className="space-y-2">
+                  <Label className="text-xs sm:text-sm">Penilaian</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="kelancaran" className="text-[11px] font-medium">K (1-50)</Label>
+                      <Input
+                        id="kelancaran"
+                        type="number"
+                        placeholder="1-50"
+                        value={activityDetails.kelancaran}
+                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, kelancaran: normalizeScoreInput(e.target.value, 1, 50) }))}
+                        className="border-gray-200/60 text-sm"
+                        min="1" max="50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="fashohah" className="text-[11px] font-medium">F (1-15)</Label>
+                      <Input
+                        id="fashohah"
+                        type="number"
+                        placeholder="1-15"
+                        value={activityDetails.fashohah}
+                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: normalizeScoreInput(e.target.value, 1, 15) }))}
+                        className="border-gray-200/60 text-sm"
+                        min="1" max="15"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="tajwid" className="text-[11px] font-medium">T (1-15)</Label>
+                      <Input
+                        id="tajwid"
+                        type="number"
+                        placeholder="1-15"
+                        value={activityDetails.tajwid}
+                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, tajwid: normalizeScoreInput(e.target.value, 1, 15) }))}
+                        className="border-gray-200/60 text-sm"
+                        min="1" max="15"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             <div className="space-y-2">
@@ -249,53 +456,10 @@ export function ActivityForm({
               />
             </div>
 
-            {/* Audio Recording Component */}
             <AudioRecorder
               onAudioRecorded={setAudioBlob}
               disabled={!selectedStudent || !activityType}
             />
-
-            <div className="space-y-2">
-              <Label>Penilaian</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-1">
-                  <Label htmlFor="kelancaran" className="text-xs font-medium">K (1-50)</Label>
-                  <Input
-                    id="kelancaran"
-                    type="number"
-                    placeholder="1-50"
-                    value={activityDetails.kelancaran}
-                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, kelancaran: e.target.value }))}
-                    className="border-gray-200/60 text-sm"
-                    min="1" max="50"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="fashohah" className="text-xs font-medium">F (1-15)</Label>
-                  <Input
-                    id="fashohah"
-                    type="number"
-                    placeholder="1-15"
-                    value={activityDetails.fashohah}
-                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: e.target.value }))}
-                    className="border-gray-200/60 text-sm"
-                    min="1" max="15"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="tajwid" className="text-xs font-medium">T (1-5)</Label>
-                  <Input
-                    id="tajwid"
-                    type="number"
-                    placeholder="1-5"
-                    value={activityDetails.tajwid}
-                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, tajwid: e.target.value }))}
-                    className="border-gray-200/60 text-sm"
-                    min="1" max="5"
-                  />
-                </div>
-              </div>
-            </div>
 
             <Button 
               onClick={handleSubmit} 
@@ -303,6 +467,7 @@ export function ActivityForm({
               disabled={
                 !selectedStudent || 
                 !activityType || 
+                !selectedJuz ||
                 !activityDetails.surah || 
                 !activityDetails.ayatFrom || 
                 !activityDetails.ayatTo

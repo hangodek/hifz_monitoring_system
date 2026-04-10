@@ -2,6 +2,7 @@ class ParentsController < ApplicationController
   include ActionView::Helpers::DateHelper
   include AvatarHelper
   include RoleAuthorization
+  include SurahJuzMapping
 
   skip_before_action :authorize_role
   before_action :require_parent!
@@ -102,7 +103,7 @@ class ParentsController < ApplicationController
                                     surah_to: activity.surah,
                                     page_from: activity.ayat_from,
                                     page_to: activity.ayat_to,
-                                    juz: nil,
+                                    juz: activity.juz,
                                     juz_from: nil,
                                     juz_to: nil,
                                     kelancaran: activity.kelancaran,
@@ -143,7 +144,7 @@ class ParentsController < ApplicationController
 
   def calculate_monthly_progress(student, activities)
     # Get memorization activities ordered by date
-    memorization_activities = activities.where(activity_type: "memorization").order(:created_at)
+    memorization_activities = activities.where(activity_type: "memorization").where.not(surah: [ nil, "" ]).order(:created_at)
 
     # Always show 3 months back and 3 months forward
     current_month = Date.current.beginning_of_month
@@ -153,20 +154,16 @@ class ParentsController < ApplicationController
     monthly_data = []
     month_iterator = start_date
 
-    # Calculate progress for each month based on activity count
+    # Calculate cumulative total juz memorized (non-linear memorization friendly).
     while month_iterator <= end_date
       month_name = month_iterator.strftime("%b")
-      month_range = month_iterator.beginning_of_month..month_iterator.end_of_month
-
-      activities_up_to_month = memorization_activities.where(
-        "created_at <= ?", month_iterator.end_of_month
-      ).count
+      total_juz_hafal = completed_juz_count_up_to(memorization_activities, month_iterator.end_of_month)
 
       is_projected = month_iterator > current_month
 
       monthly_data << {
         month: month_name,
-        completed: activities_up_to_month,
+        completed: total_juz_hafal,
         is_projected: is_projected
       }
 

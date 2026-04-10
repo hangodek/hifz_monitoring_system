@@ -171,15 +171,14 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
 
   // Activity form fields
   const [activityDetails, setActivityDetails] = useState({
-    surahFrom: "",
-    surahTo: "",
-    pageFrom: "",
-    pageTo: "",
-    juz: "",
-    juzFrom: "",
-    juzTo: "",
+    surah: "",
+    ayatFrom: "",
+    ayatTo: "",
     notes: "",
-    evaluation: "",
+    kelancaran: "",
+    fashohah: "",
+    tajwid: "",
+    completionStatus: "belum_tuntas",
   })
 
   const currentStudent = students.find((s) => s.id === selectedStudent)
@@ -189,31 +188,15 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
     if (activityType) {
       // Reset form first
       setActivityDetails({
-        surahFrom: "",
-        surahTo: "",
-        pageFrom: "",
-        pageTo: "",
-        juz: "",
-        juzFrom: "",
-        juzTo: "",
+        surah: "",
+        ayatFrom: "",
+        ayatTo: "",
         notes: "",
-        evaluation: "",
+        kelancaran: "",
+        fashohah: "",
+        tajwid: "",
+        completionStatus: "belum_tuntas",
       })
-
-      // Then auto-fill for memorization
-      if (activityType === "memorization" && currentStudent) {
-        setActivityDetails({
-          surahFrom: currentStudent.current_hifz_in_surah || "",
-          surahTo: "",
-          pageFrom: currentStudent.current_hifz_in_pages || "",
-          pageTo: "",
-          juz: "",
-          juzFrom: currentStudent.current_hifz_in_juz || "",
-          juzTo: "",
-          notes: "",
-          evaluation: "",
-        })
-      }
     }
   }, [activityType, currentStudent])
 
@@ -221,15 +204,14 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
     // This function is now handled by the ActivityForm component itself
     // Reset form after successful save
     setActivityDetails({
-      surahFrom: "",
-      surahTo: "",
-      pageFrom: "",
-      pageTo: "",
-      juz: "",
-      juzFrom: "",
-      juzTo: "",
+      surah: "",
+      ayatFrom: "",
+      ayatTo: "",
       notes: "",
-      evaluation: "",
+      kelancaran: "",
+      fashohah: "",
+      tajwid: "",
+      completionStatus: "belum_tuntas",
     })
   }
 

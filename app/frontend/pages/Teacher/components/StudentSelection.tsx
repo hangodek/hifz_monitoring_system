@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Check, Search, Users, ExternalLink, Loader2 } from "lucide-react"
@@ -123,6 +123,9 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
           <DialogContent className="max-w-sm m-0 gap-0 p-0 rounded-t-2xl rounded-b-none max-h-[80vh] flex flex-col">
             <DialogHeader className="border-b px-4 pt-4">
               <DialogTitle className="text-lg font-semibold text-violet-900">Cari Siswa</DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground pb-3">
+                Pilih siswa dengan mencari nama, lalu tekan pada hasil untuk memilih.
+              </DialogDescription>
             </DialogHeader>
 
             <div className="flex-shrink-0 border-b px-4 py-3">

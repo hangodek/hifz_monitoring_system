@@ -135,7 +135,7 @@ class DashboardController < ApplicationController
                                     surah_to: activity.surah,
                                     page_from: activity.ayat_from,
                                     page_to: activity.ayat_to,
-                                    juz: nil,
+                                    juz: activity.juz,
                                     juz_from: nil,
                                     juz_to: nil,
                                     kelancaran: activity.kelancaran,

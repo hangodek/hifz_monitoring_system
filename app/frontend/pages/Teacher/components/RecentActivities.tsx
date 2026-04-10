@@ -20,7 +20,7 @@ interface ActivityType {
 interface Activity {
   id: string
   activity_type: string
-  activity_grade: string
+  activity_grade: string | null
   surah_from: string
   surah_to: string
   page_from: number
@@ -29,6 +29,9 @@ interface Activity {
   juz_from: number | null
   juz_to: number | null
   notes: string | null
+  kelancaran?: number | null
+  fashohah?: number | null
+  tajwid?: number | null
   created_at: string
   audio_url?: string | null
   student: {
@@ -40,13 +43,6 @@ interface Activity {
 interface RecentActivitiesProps {
   currentStudent: Student | undefined
   activityTypes: ActivityType[]
-}
-
-const gradeLabels = {
-  excellent: "Sangat Baik",
-  good: "Baik", 
-  fair: "Cukup",
-  needs_improvement: "Perlu Diperbaiki"
 }
 
 const activityLabels = {
@@ -122,15 +118,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
             
             // Build activity description
             let activityDescription = `${activityLabels[activity.activity_type as keyof typeof activityLabels]} ${activity.surah_from}${activity.surah_from !== activity.surah_to ? ` - ${activity.surah_to}` : ''}`
-            
-            // Add juz information - use juz_from and juz_to if available
-            if (activity.juz_from && activity.juz_to) {
-              activityDescription += `, Juz ${activity.juz_from}${activity.juz_from !== activity.juz_to ? `-${activity.juz_to}` : ''}`
-            } else if (activity.juz) {
-              activityDescription += `, Juz ${activity.juz}`
-            }
-            
-            activityDescription += `, halaman ${activity.page_from}-${activity.page_to}`
+            activityDescription += `, ayat ${activity.page_from}-${activity.page_to}`
             
             return (
               <div key={activity.id} className="flex items-start space-x-2 sm:space-x-3">
@@ -148,7 +136,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
                     {activityDescription}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {gradeLabels[activity.activity_grade as keyof typeof gradeLabels]} • {formatTimeAgo(activity.created_at)}
+                    K:{activity.kelancaran ?? "-"} F:{activity.fashohah ?? "-"} T:{activity.tajwid ?? "-"} • {formatTimeAgo(activity.created_at)}
                   </p>
                   {activity.notes && (
                     <p className="text-xs text-muted-foreground italic line-clamp-2" title={activity.notes}>
