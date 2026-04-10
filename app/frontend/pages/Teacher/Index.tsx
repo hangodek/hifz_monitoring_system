@@ -172,8 +172,7 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
   // Activity form fields
   const [activityDetails, setActivityDetails] = useState({
     surah: "",
-    ayatFrom: "",
-    ayatTo: "",
+    ayat: "",
     notes: "",
     kelancaran: "",
     fashohah: "",
@@ -189,8 +188,7 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
       // Reset form first
       setActivityDetails({
         surah: "",
-        ayatFrom: "",
-        ayatTo: "",
+        ayat: "",
         notes: "",
         kelancaran: "",
         fashohah: "",
@@ -205,8 +203,7 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
     // Reset form after successful save
     setActivityDetails({
       surah: "",
-      ayatFrom: "",
-      ayatTo: "",
+      ayat: "",
       notes: "",
       kelancaran: "",
       fashohah: "",

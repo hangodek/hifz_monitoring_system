@@ -17,8 +17,7 @@ interface ActivityType {
 
 interface ActivityDetails {
   surah: string
-  ayatFrom: string
-  ayatTo: string
+  ayat: string
   notes: string
   kelancaran: string // K (1-50)
   fashohah: string  // F (1-15)
@@ -120,15 +119,14 @@ export function ActivityForm({
   }
   
   const handleSubmit = async () => {
-    if (!selectedStudent || !selectedJuz || !activityType || !activityDetails.surah || !activityDetails.ayatFrom || !activityDetails.ayatTo) {
+    if (!selectedStudent || !selectedJuz || !activityType || !activityDetails.surah || !activityDetails.ayat) {
       alert('Silakan lengkapi semua kolom yang diperlukan');
       return;
     }
 
-    const ayatFrom = parseInt(activityDetails.ayatFrom)
-    const ayatTo = parseInt(activityDetails.ayatTo)
-    if (Number.isNaN(ayatFrom) || Number.isNaN(ayatTo) || ayatFrom < 1 || ayatTo < ayatFrom) {
-      alert('Rentang ayat tidak valid. Pastikan Ayat Hingga lebih besar atau sama dengan Ayat Dari.');
+    const ayat = parseInt(activityDetails.ayat)
+    if (Number.isNaN(ayat) || ayat < 1) {
+      alert('Ayat tidak valid. Pastikan ayat bernilai minimal 1.');
       return;
     }
 
@@ -153,8 +151,8 @@ export function ActivityForm({
       activity_type: activityType,
       juz: parseInt(selectedJuz),
       surah: activityDetails.surah,
-      ayat_from: ayatFrom,
-      ayat_to: ayatTo,
+      ayat_from: ayat,
+      ayat_to: ayat,
       notes: activityDetails.notes || '',
       kelancaran: kelancaran,
       fashohah: fashohah,
@@ -235,8 +233,7 @@ export function ActivityForm({
       // Reset form
       setActivityDetails({
         surah: "",
-        ayatFrom: "",
-        ayatTo: "",
+        ayat: "",
         notes: "",
         kelancaran: "",
         fashohah: "",
@@ -249,8 +246,13 @@ export function ActivityForm({
       
       // Call the original handler for any additional local actions
       handleSaveActivity();
-      
-      alert('Aktivitas berhasil disimpan!');
+
+      // Notify other teacher widgets (e.g., recent activities) to refresh without page reload.
+      window.dispatchEvent(
+        new CustomEvent("teacher:activity-saved", {
+          detail: { studentId: selectedStudent },
+        })
+      )
     } catch (error) {
       console.error('Error submitting activity:', error);
       alert('Gagal menyimpan aktivitas. Silakan coba lagi.');
@@ -390,29 +392,16 @@ export function ActivityForm({
                   </Select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Ayat Dari <span className="text-red-500">*</span></Label>
-                    <Input
-                      type="number"
-                      placeholder="1"
-                      value={activityDetails.ayatFrom}
-                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, ayatFrom: e.target.value }))}
-                      className="border-gray-200/60 text-sm"
-                      min="1"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Ayat Hingga <span className="text-red-500">*</span></Label>
-                    <Input
-                      type="number"
-                      placeholder="7"
-                      value={activityDetails.ayatTo}
-                      onChange={(e) => setActivityDetails((prev) => ({ ...prev, ayatTo: e.target.value }))}
-                      className="border-gray-200/60 text-sm"
-                      min="1"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-xs sm:text-sm">Ayat <span className="text-red-500">*</span></Label>
+                  <Input
+                    type="number"
+                    placeholder="1"
+                    value={activityDetails.ayat}
+                    onChange={(e) => setActivityDetails((prev) => ({ ...prev, ayat: e.target.value }))}
+                    className="border-gray-200/60 text-sm"
+                    min="1"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -482,8 +471,7 @@ export function ActivityForm({
                 !activityType || 
                 !selectedJuz ||
                 !activityDetails.surah || 
-                !activityDetails.ayatFrom || 
-                !activityDetails.ayatTo
+                !activityDetails.ayat
               }
             >
               <Save className="h-4 w-4 mr-2" />

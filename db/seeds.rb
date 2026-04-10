@@ -89,6 +89,11 @@ JUZ_TO_SURAHS = {
 RANDOM = Random.new(42)
 
 STARTING_JUZ_POOL = [30, 30, 30, 29, 28, 1, 1, 1, 15, 12].freeze
+SEED_PROFILES = [
+  :juz_30_first,
+  :beginner_low_total,
+  :mixed_non_linear
+].freeze
 
 
 def random_name(gender)
@@ -160,10 +165,44 @@ def build_completed_juz_list(anchor_juz, completed_juz_target)
   pool.sample(completed_juz_target, random: RANDOM).sort
 end
 
+def pick_profile(index, total)
+  ratio = index.to_f / total
+  return :juz_30_first if ratio < 0.5
+  return :beginner_low_total if ratio < 0.75
+
+  :mixed_non_linear
+end
+
+def profile_anchor_and_target(profile)
+  case profile
+  when :juz_30_first
+    [ [30, 30, 30, 29, 28].sample(random: RANDOM), RANDOM.rand(2..8) ]
+  when :beginner_low_total
+    [ [1, 1, 2, 3].sample(random: RANDOM), RANDOM.rand(1..2) ]
+  else
+    [ RANDOM.rand(1..30), RANDOM.rand(1..7) ]
+  end
+end
+
+def normalize_surah(surah)
+  surah.to_s.downcase.gsub(/[^a-z0-9]/, "")
+end
+
+def completed_juz_count_from_progressions(student)
+  by_juz = student.student_surah_progressions.where(completion_status: :tuntas).group_by(&:juz)
+
+  JUZ_TO_SURAHS.count do |juz, surahs|
+    expected = surahs.map { |s| normalize_surah(s) }.uniq
+    actual = Array(by_juz[juz]).map { |row| normalize_surah(row.surah) }.uniq
+    (expected - actual).empty?
+  end
+end
+
 puts "Creating students and activities..."
 
 student_count = 50
 students = []
+profile_counter = Hash.new(0)
 
 student_count.times do |i|
   gender = GENDERS.sample(random: RANDOM)
@@ -171,8 +210,10 @@ student_count.times do |i|
   father_name = "#{MALE_FIRST_NAMES.sample(random: RANDOM)} #{last_name}"
   mother_name = "#{FEMALE_FIRST_NAMES.sample(random: RANDOM)} #{LAST_NAMES.sample(random: RANDOM)}"
 
-  anchor_juz = weighted_anchor_juz
-  completed_juz_target = RANDOM.rand(0..8)
+  profile = pick_profile(i, student_count)
+  profile_counter[profile] += 1
+
+  anchor_juz, completed_juz_target = profile_anchor_and_target(profile)
   completed_juz_list = build_completed_juz_list(anchor_juz, completed_juz_target)
 
   in_progress_candidates = if anchor_juz == 30
@@ -242,23 +283,42 @@ student_count.times do |i|
   in_progress_surahs = JUZ_TO_SURAHS[in_progress_juz] || ["Al-Fatihah"]
   in_progress_surahs.each do |surah|
     first_time = start_date + RANDOM.rand(30..260).days
-    create_memorization_activity(
-      student: student,
-      juz: in_progress_juz,
-      surah: surah,
-      completion_status: :tuntas,
-      created_at: first_time
-    )
 
-    if RANDOM.rand < 0.5
-      # Add a later evaluation that can override previous status.
-      latest_status = RANDOM.rand < 0.7 ? :belum_tuntas : :tuntas
+    tuntas_probability = case profile
+    when :juz_30_first
+      0.65
+    when :beginner_low_total
+      0.25
+    else
+      0.45
+    end
+
+    if RANDOM.rand < tuntas_probability
+      # Optional earlier "belum_tuntas", then final "tuntas" (never downgrade).
+      if RANDOM.rand < 0.4
+        create_memorization_activity(
+          student: student,
+          juz: in_progress_juz,
+          surah: surah,
+          completion_status: :belum_tuntas,
+          created_at: first_time - RANDOM.rand(3..20).days
+        )
+      end
+
       create_memorization_activity(
         student: student,
         juz: in_progress_juz,
         surah: surah,
-        completion_status: latest_status,
-        created_at: first_time + RANDOM.rand(5..60).days
+        completion_status: :tuntas,
+        created_at: first_time
+      )
+    else
+      create_memorization_activity(
+        student: student,
+        juz: in_progress_juz,
+        surah: surah,
+        completion_status: :belum_tuntas,
+        created_at: first_time
       )
     end
   end
@@ -267,7 +327,7 @@ student_count.times do |i|
   student.update!(
     current_hifz_in_juz: in_progress_juz.to_s,
     current_hifz_in_surah: current_surah,
-    total_juz_memorized: student.student_surah_progressions.where(completion_status: :tuntas).distinct.count(:juz)
+    total_juz_memorized: completed_juz_count_from_progressions(student)
   )
 
   # Additional revision activity spread.
@@ -296,3 +356,4 @@ puts "Students: #{Student.count}"
 puts "Activities: #{Activity.count}"
 puts "Surah progression records: #{StudentSurahProgression.count}"
 puts "Users: #{User.count} (admin/teacher/parent)"
+puts "Seed profiles: #{profile_counter.inspect}"

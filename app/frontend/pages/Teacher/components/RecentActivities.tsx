@@ -54,28 +54,41 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(false)
 
+  const fetchActivitiesForStudent = async (studentId: string) => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/teachers/student_activities?student_id=${studentId}`)
+      const data = await response.json()
+      setActivities(data.activities || [])
+    } catch (error) {
+      console.error('Failed to fetch activities:', error)
+      setActivities([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!currentStudent) {
       setActivities([])
       return
     }
 
-    // Fetch activities for the selected student
-    const fetchActivities = async () => {
-      setLoading(true)
-      try {
-        const response = await fetch(`/teachers/student_activities?student_id=${currentStudent.id}`)
-        const data = await response.json()
-        setActivities(data.activities || [])
-      } catch (error) {
-        console.error('Failed to fetch activities:', error)
-        setActivities([])
-      } finally {
-        setLoading(false)
+    fetchActivitiesForStudent(currentStudent.id)
+  }, [currentStudent])
+
+  useEffect(() => {
+    if (!currentStudent) return
+
+    const onActivitySaved = (event: Event) => {
+      const customEvent = event as CustomEvent<{ studentId?: string }>
+      if (customEvent.detail?.studentId === currentStudent.id) {
+        fetchActivitiesForStudent(currentStudent.id)
       }
     }
 
-    fetchActivities()
+    window.addEventListener("teacher:activity-saved", onActivitySaved)
+    return () => window.removeEventListener("teacher:activity-saved", onActivitySaved)
   }, [currentStudent])
 
   if (!currentStudent) {
@@ -118,7 +131,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
             
             // Build activity description
             let activityDescription = `${activityLabels[activity.activity_type as keyof typeof activityLabels]} ${activity.surah_from}${activity.surah_from !== activity.surah_to ? ` - ${activity.surah_to}` : ''}`
-            activityDescription += `, ayat ${activity.page_from}-${activity.page_to}`
+            activityDescription += `, ayat ${activity.page_to ?? activity.page_from}`
             
             return (
               <div key={activity.id} className="flex items-start space-x-2 sm:space-x-3">

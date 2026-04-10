@@ -1,4 +1,5 @@
 class StudentSurahProgression < ApplicationRecord
+  include StudentJuzCompletion
   belongs_to :student
 
   enum :completion_status, {

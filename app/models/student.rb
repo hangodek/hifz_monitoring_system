@@ -16,6 +16,32 @@ class Student < ApplicationRecord
   # Process avatar after upload to optimize it
   after_commit :process_avatar, on: [:create, :update]
 
+  def recalculate_total_juz_memorized!
+    # This method calculates how many juz a student has fully memorized.
+    # A juz is considered memorized only if all of its surahs are 'tuntas'.
+
+    # Get all 'tuntas' progressions for the student
+    tuntas_surah_names = student_surah_progressions.where(completion_status: 'tuntas').pluck(:surah).map(&:downcase).uniq
+
+    completed_juz_count = 0
+    (1..30).each do |juz_number|
+      # Get the list of surah names for the current juz from the mapping
+      surah_names_in_juz = SurahJuzMapping::JUZ_TO_SURAHS[juz_number]
+      next if surah_names_in_juz.nil? || surah_names_in_juz.empty?
+
+      # Normalize the names from the mapping
+      normalized_surah_names_in_juz = surah_names_in_juz.map(&:downcase)
+
+      # Check if all surahs in the juz are present in the student's 'tuntas' list
+      if (normalized_surah_names_in_juz - tuntas_surah_names).empty?
+        completed_juz_count += 1
+      end
+    end
+
+    # Update the count in the database
+    update_column(:total_juz_memorized, completed_juz_count)
+  end
+
   private
 
   def acceptable_avatar

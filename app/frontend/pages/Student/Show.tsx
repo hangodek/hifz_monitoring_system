@@ -35,7 +35,6 @@ import {
   BookOpen,
   CalendarIcon,
   TrendingUp,
-  Award,
   Clock,
   Target,
   Star,
@@ -59,6 +58,7 @@ interface Student {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  total_juz_memorized: number
   avatar?: string
   class_level: string
   phone?: string
@@ -113,13 +113,6 @@ interface MonthlyProgress {
   is_projected?: boolean
 }
 
-// Grade distribution data
-interface GradeDistribution {
-  name: string
-  value: number
-  color: string
-}
-
 // Type distribution data
 interface TypeDistribution {
   name: string
@@ -168,17 +161,15 @@ const getStudentData = (student: Student, all_activities: Activity[], startDate:
 
 interface StudentShowProps {
   student: Student // The actual student data object from Rails controller
-  total_juz: number // Total juz completed (non-linear)
   recent_activities: Activity[] // Recent activities from backend (limited to 5)
   total_activities_count: number // Total count for "View All" button
   total_activities: number // Total count of activities
   monthly_progress: MonthlyProgress[] // Monthly progress data
-  grade_distribution: GradeDistribution[] // Grade distribution data
   type_distribution: TypeDistribution[] // Activity type distribution data
   monthly_activities: MonthlyActivities[] // Monthly activities data
 }
 
-export default function StudentShow({ student, total_juz, recent_activities, total_activities_count, total_activities, monthly_progress, grade_distribution, type_distribution, monthly_activities }: StudentShowProps) {
+export default function StudentShow({ student, recent_activities, total_activities_count, total_activities, monthly_progress, type_distribution, monthly_activities }: StudentShowProps) {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 7 days ago
     to: new Date(),
@@ -326,7 +317,7 @@ export default function StudentShow({ student, total_juz, recent_activities, tot
               <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold">{student.name}</h2>
                 <p className="text-muted-foreground">Sedang menghafal: {student.current_hifz_in_surah}</p>
-                <p className="text-muted-foreground">Total Juz {total_juz} daripada 30 Juz</p>
+                <p className="text-muted-foreground">Total Juz {student.total_juz_memorized} dari 30 Juz</p>
                 <div className="mt-2">
                   <div className="text-sm text-muted-foreground">Ayat berjalan: {student.current_hifz_in_pages}</div>
                 </div>
@@ -428,7 +419,7 @@ export default function StudentShow({ student, total_juz, recent_activities, tot
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-purple-700/70">Total Juz {total_juz} • Ayat berjalan {student?.current_hifz_in_pages || 0}</p>
+              <p className="text-xs text-purple-700/70">Total Juz {student?.total_juz_memorized} • Ayat berjalan {student?.current_hifz_in_pages || 0}</p>
             </CardContent>
           </Card>
         </div>
@@ -646,56 +637,8 @@ export default function StudentShow({ student, total_juz, recent_activities, tot
           </CardContent>
         </Card>
 
-        {/* Pie Charts Section - Side by Side, Hidden on mobile */}
-        <div className="hidden md:grid gap-6 md:grid-cols-2">
-          {/* Activity Grade Distribution */}
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-amber-50/30 hover:shadow-xl transition-shadow duration-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-900">
-                <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <Award className="h-5 w-5 text-amber-600" />
-                </div>
-                Distribusi Prestasi
-              </CardTitle>
-              <CardDescription>Kualitas aktivitas hafalan</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {grade_distribution && grade_distribution.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={grade_distribution}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {grade_distribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value, name) => [`${value} activities`, name]}
-                      labelFormatter={(label) => `Grade: ${label}`}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-[300px] text-center">
-                  <div>
-                    <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">Tidak ada data prestasi tersedia</p>
-                    <p className="text-sm text-muted-foreground">Data akan muncul saat aktivitas diberi nilai</p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Activity Type Distribution */}
+        {/* Activity Type Distribution - Hidden on mobile */}
+        <div className="hidden md:grid gap-6 md:grid-cols-1">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-teal-50/30 hover:shadow-xl transition-shadow duration-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-teal-900">
@@ -780,7 +723,7 @@ export default function StudentShow({ student, total_juz, recent_activities, tot
                   <div className="text-sm text-muted-foreground">Surah Saat Ini</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{total_juz}</div>
+                  <div className="text-2xl font-bold text-blue-600">{student?.total_juz_memorized}</div>
                   <div className="text-sm text-muted-foreground">Juz Saat Ini</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">

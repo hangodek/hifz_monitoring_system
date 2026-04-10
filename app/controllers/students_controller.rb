@@ -73,8 +73,7 @@ class StudentsController < ApplicationController
                 .offset((page - 1) * per_page)
                 .map do |student|
                   student.as_json.merge(
-                    avatar: avatar_url(student, size: :thumb),
-                    total_juz: total_juz_completed_for_student(student)
+                    avatar: avatar_url(student, size: :thumb)
                   )
                 end
 
@@ -155,8 +154,7 @@ class StudentsController < ApplicationController
                 .offset((page - 1) * per_page)
                 .map do |student|
                   student.as_json.merge(
-                    avatar: avatar_url(student, size: :thumb),
-                    total_juz: total_juz_completed_for_student(student)
+                    avatar: avatar_url(student, size: :thumb)
                   )
                 end
 
@@ -195,16 +193,6 @@ class StudentsController < ApplicationController
     # Calculate monthly progress (cumulative juz progress)
     monthly_progress = calculate_monthly_progress(student, activities)
 
-    # Calculate activity score distribution (based on K score)
-    score_ranges = activities.pluck(:kelancaran).compact.map(&:to_i)
-    
-    grade_distribution = [
-      { name: "Sangat Baik (40-50)", value: score_ranges.count { |s| s >= 40 }, color: "#10b981" },
-      { name: "Baik (30-39)", value: score_ranges.count { |s| s >= 30 && s < 40 }, color: "#3b82f6" },
-      { name: "Cukup (20-29)", value: score_ranges.count { |s| s >= 20 && s < 30 }, color: "#f59e0b" },
-      { name: "Perlu Diperbaiki (<20)", value: score_ranges.count { |s| s < 20 }, color: "#ef4444" }
-    ]
-
     # Calculate activity type distribution
     type_distribution = activities.group(:activity_type).count.map do |type, count|
       {
@@ -232,12 +220,10 @@ class StudentsController < ApplicationController
       student: student.as_json.merge(
         avatar: avatar_url(student, size: :medium)
       ),
-      total_juz: total_juz_completed_for_student(student),
       recent_activities: recent_activities,
       total_activities_count: total_activities_count,
       total_activities: activities.count,
       monthly_progress: monthly_progress,
-      grade_distribution: grade_distribution,
       type_distribution: type_distribution,
       monthly_activities: monthly_activities
     }
@@ -574,7 +560,7 @@ class StudentsController < ApplicationController
         # Validate class level format (7A-12D only)
         if student_data[:class_level].present?
           unless valid_class_level?(student_data[:class_level])
-            row_errors << "Kelas harus antara 7A-12D (contoh: 7A, 8B, 12D)"
+            row_errors << "Kelas harus antara 7A-12D (contoh: 7A, 8B, 10C, 12D)"
           end
         end
         
