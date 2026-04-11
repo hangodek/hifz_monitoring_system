@@ -104,4 +104,23 @@ module SurahJuzMapping
       expected_surahs.present? && expected_surahs.all? { |surah| completed_surahs_by_juz[juz].include?(surah) }
     end
   end
+
+  def total_juz_completed_for_student_up_to(student, cutoff_time = nil)
+    progressions = student.student_surah_progressions.where(completion_status: :tuntas)
+    progressions = progressions.where("last_activity_at <= ?", cutoff_time) if cutoff_time.present?
+
+    completed_surahs_by_juz = Hash.new { |hash, key| hash[key] = [] }
+    progressions.find_each do |progression|
+      juz = progression.juz.to_i
+      surah = normalize_surah_name(progression.surah)
+      next if juz <= 0 || surah.blank?
+
+      completed_surahs_by_juz[juz] << surah unless completed_surahs_by_juz[juz].include?(surah)
+    end
+
+    (1..30).count do |juz|
+      expected_surahs = Array(JUZ_TO_SURAHS[juz]).map { |surah| normalize_surah_name(surah) }
+      expected_surahs.present? && expected_surahs.all? { |surah| completed_surahs_by_juz[juz].include?(surah) }
+    end
+  end
 end

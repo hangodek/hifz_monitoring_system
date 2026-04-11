@@ -723,9 +723,6 @@ class StudentsController < ApplicationController
   end
 
   def calculate_monthly_progress(student, activities)
-    # Get memorization activities ordered by date
-    memorization_activities = activities.where(activity_type: "memorization").where.not(surah: [ nil, "" ]).order(:created_at)
-
     # Always show 3 months back and 3 months forward
     current_month = Date.current.beginning_of_month
     start_date = current_month - 3.months
@@ -737,7 +734,7 @@ class StudentsController < ApplicationController
     # Calculate cumulative total juz memorized (non-linear memorization friendly).
     while month_iterator <= end_date
       month_name = month_iterator.strftime("%b")
-      total_juz_hafal = completed_juz_count_up_to(memorization_activities, month_iterator.end_of_month)
+      total_juz_hafal = total_juz_completed_for_student_up_to(student, month_iterator.end_of_month)
 
       is_projected = month_iterator > current_month
 
