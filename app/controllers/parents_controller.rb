@@ -17,7 +17,7 @@ class ParentsController < ApplicationController
       {
         id: activity.id,
         activity: format_activity_description(activity),
-        time: time_ago_in_words(activity.created_at) + " ago",
+        time: time_ago_in_words(activity.created_at) + " yang lalu",
         type: activity.activity_type,
         date: activity.created_at.strftime("%Y-%m-%d"),
         created_at: activity.created_at,
@@ -97,7 +97,7 @@ class ParentsController < ApplicationController
                                   {
                                     id: activity.id,
                                     activity: format_activity_description(activity),
-                                    time: time_ago_in_words(activity.created_at) + " ago",
+                                    time: time_ago_in_words(activity.created_at) + " yang lalu",
                                     type: activity.activity_type,
                                     grade: nil,
                                     surah_from: activity.surah,

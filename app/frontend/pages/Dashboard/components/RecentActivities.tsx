@@ -51,6 +51,9 @@ interface DetailedActivity {
   juz: number
   juz_from?: number | null
   juz_to?: number | null
+  kelancaran?: number | null
+  fashohah?: number | null
+  tajwid?: number | null
   notes?: string
   audio_url?: string | null
 }
@@ -161,19 +164,16 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             </Link>
                             <p className="text-xs text-muted-foreground">{activity.activity}</p>
                           </div>
-                          <Badge variant={activity.grade === "Sangat Baik" ? "default" : 
-                                        activity.grade === "Baik" ? "secondary" : 
-                                        activity.grade === "Cukup" ? "outline" : "destructive"}>
-                            {activity.grade}
-                          </Badge>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
                           <div>
-                            <span className="font-medium">Surah:</span> {activity.surah_from}
-                            {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
+                            <span className="font-medium">K (Kelancaran):</span> {activity.kelancaran || '-'}
                           </div>
                           <div>
-                            <span className="font-medium">Halaman:</span> {activity.page_from}-{activity.page_to}
+                            <span className="font-medium">F (Fasahah):</span> {activity.fashohah || '-'}
+                          </div>
+                          <div>
+                            <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
                           </div>
                           <div>
                             <span className="font-medium">Juz:</span>{' '}

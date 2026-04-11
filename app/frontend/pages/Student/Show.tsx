@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -102,6 +101,9 @@ interface DetailedActivity {
   juz: number
   juz_from?: number | null
   juz_to?: number | null
+  kelancaran?: number | null
+  fashohah?: number | null
+  tajwid?: number | null
   notes?: string
   audio_url?: string | null
 }
@@ -145,6 +147,30 @@ const generateDailySubmissions = (startDate: Date, endDate: Date, dailySubmissio
   }
 
   return data
+}
+
+const formatRelativeTimeIndonesian = (time: string) => {
+  return time
+    .replace(/^about\s+/i, "")
+    .replace(/\bminute\b/i, "menit")
+    .replace(/\bminutes\b/i, "menit")
+    .replace(/\bhour\b/i, "jam")
+    .replace(/\bhours\b/i, "jam")
+    .replace(/\bday\b/i, "hari")
+    .replace(/\bdays\b/i, "hari")
+    .replace(/\bweek\b/i, "minggu")
+    .replace(/\bweeks\b/i, "minggu")
+    .replace(/\bmonth\b/i, "bulan")
+    .replace(/\bmonths\b/i, "bulan")
+    .replace(/\byear\b/i, "tahun")
+    .replace(/\byears\b/i, "tahun")
+    .replace(/\bminute ago\b/i, "menit yang lalu")
+    .replace(/\bhour ago\b/i, "jam yang lalu")
+    .replace(/\bday ago\b/i, "hari yang lalu")
+    .replace(/\bweek ago\b/i, "minggu yang lalu")
+    .replace(/\bmonth ago\b/i, "bulan yang lalu")
+    .replace(/\byear ago\b/i, "tahun yang lalu")
+    .replace(/\bago\b/i, "yang lalu")
 }
 
 interface StudentShowProps {
@@ -456,7 +482,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                           })
                         }
                       >
-                        7 Days
+                        7 Hari
                       </Button>
                       <Button
                         size="sm"
@@ -469,7 +495,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                           })
                         }
                       >
-                        30 Days
+                        30 Hari
                       </Button>
                     </div>
                   </div>
@@ -514,7 +540,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                     const isProjected = props?.payload?.is_projected
                     return [`${value} juz${isProjected ? ' (proyeksi)' : ''}`, name]
                   }}
-                  labelFormatter={(label) => `Month: ${label}`}
+                  labelFormatter={(label) => `Bulan: ${label}`}
                 />
                 <Legend />
                 {/* Actual Progress Line */}
@@ -573,10 +599,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
               <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-indigo-600" />
               </div>
-              Monthly Revision & Memorization Activities
+              Aktivitas Murajaah & Hafalan Bulanan
             </CardTitle>
             <CardDescription>
-              {student?.name}'s monthly activity breakdown - revision vs memorization
+              Rincian aktivitas bulanan {student?.name} - murajaah vs hafalan
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -586,8 +612,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip 
-                  formatter={(value, name) => [`${value} activities`, name]}
-                  labelFormatter={(label) => `Month: ${label}`}
+                  formatter={(value, name) => [`${value} aktivitas`, name]}
+                  labelFormatter={(label) => `Bulan: ${label}`}
                 />
                 <Legend />
                 <Line 
@@ -595,7 +621,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   dataKey="revision" 
                   stroke="#10b981" 
                   strokeWidth={3} 
-                  name="Revision Activities"
+                  name="Aktivitas Murajaah"
                   dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
                 />
@@ -604,7 +630,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   dataKey="memorization" 
                   stroke="#3b82f6" 
                   strokeWidth={3} 
-                  name="Memorization Activities"
+                  name="Aktivitas Hafalan"
                   dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
                 />
@@ -753,7 +779,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                             <div
                               className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
                                 activity.type === "memorization"
-                                  ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
+                                  ? "bg-gradient-to-br from-blue-400 to-blue-600 shadow-sm"
                                   : activity.type === "revision"
                                     ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
                                     : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
@@ -770,19 +796,16 @@ export default function StudentShow({ student, recent_activities, total_activiti
                             <div className="flex-1 space-y-2">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium">{activity.activity}</p>
-                                <Badge variant={activity.grade === "Sangat Baik" ? "default" : 
-                                              activity.grade === "Baik" ? "secondary" : 
-                                              activity.grade === "Cukup" ? "outline" : "destructive"}>
-                                  {activity.grade}
-                                </Badge>
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
                                 <div>
-                                  <span className="font-medium">Surah:</span> {activity.surah_from}
-                                  {activity.surah_from !== activity.surah_to && ` - ${activity.surah_to}`}
+                                  <span className="font-medium">K (Kelancaran):</span> {activity.kelancaran || '-'}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Ayat:</span> {activity.page_from === activity.page_to ? activity.page_from : `${activity.page_from}-${activity.page_to}`}
+                                  <span className="font-medium">F (Fasahah):</span> {activity.fashohah || '-'}
+                                </div>
+                                <div>
+                                  <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
                                 </div>
                                 <div>
                                   <span className="font-medium">Juz:</span>{' '}
@@ -791,7 +814,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                     : activity.juz || 'N/A'}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Waktu:</span> {activity.time}
+                                  <span className="font-medium">Waktu:</span> {formatRelativeTimeIndonesian(activity.time)}
                                 </div>
                               </div>
                               {activity.notes && (
@@ -844,7 +867,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   <div
                     className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white text-xs flex-shrink-0 ${
                       activity.type === "memorization"
-                        ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm"
+                        ? "bg-gradient-to-br from-blue-400 to-blue-600 shadow-sm"
                         : activity.type === "revision"
                           ? "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
                           : "bg-gradient-to-br from-gray-400 to-gray-600 shadow-sm"
@@ -860,7 +883,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   </div>
                   <div className="flex-1 space-y-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium line-clamp-2">{activity.activity}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    <p className="text-xs text-muted-foreground">{formatRelativeTimeIndonesian(activity.time)}</p>
                     {activity.audio_url && (
                       <div className="mt-1">
                         <AudioPlayer 

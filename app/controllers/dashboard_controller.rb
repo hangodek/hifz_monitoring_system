@@ -51,7 +51,7 @@ class DashboardController < ApplicationController
                                   student_id: activity.student.id,
                                   student: activity.student.name,
                                   activity: format_activity_description(activity),
-                                  time: time_ago_in_words(activity.created_at) + " ago",
+                                  time: time_ago_in_words(activity.created_at) + " yang lalu",
                                   type: activity.activity_type,
                                   audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
                                 }
@@ -130,7 +130,7 @@ class DashboardController < ApplicationController
                                     student_id: activity.student.id,
                                     student: activity.student.name,
                                     activity: format_activity_description(activity),
-                                    time: time_ago_in_words(activity.created_at) + " ago",
+                                    time: time_ago_in_words(activity.created_at) + " yang lalu",
                                     type: activity.activity_type,
                                     grade: nil,
                                     surah_from: activity.surah,
