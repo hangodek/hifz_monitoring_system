@@ -43,7 +43,7 @@ class ParentsController < ApplicationController
     # Calculate activity type distribution
     type_distribution = activities.group(:activity_type).count.map do |type, count|
       {
-        name: type.humanize,
+        name: type == "memorization" ? "Hafalan" : "Murajaah",
         value: count,
         color: type_color(type)
       }
