@@ -518,7 +518,7 @@ export default function ParentShow({
                 {isLoadingActivities ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Memuatkan...
+                    Memuat...
                   </>
                 ) : (
                   <>
@@ -652,7 +652,7 @@ export default function ParentShow({
                     {isLoadingActivities ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Memuatkan...
+                        Memuat...
                       </>
                     ) : (
                       "Muat Lebih Banyak"

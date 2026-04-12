@@ -183,6 +183,10 @@ class StudentsController < ApplicationController
         type: activity.activity_type,
         date: activity.created_at.strftime("%Y-%m-%d"),
         created_at: activity.created_at,
+        kelancaran: activity.kelancaran,
+        fashohah: activity.fashohah,
+        tajwid: activity.tajwid,
+        completion_status: activity.completion_status,
         audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
       }
     end
@@ -265,6 +269,7 @@ class StudentsController < ApplicationController
                                     kelancaran: activity.kelancaran,
                                     fashohah: activity.fashohah,
                                     tajwid: activity.tajwid,
+                                    completion_status: activity.completion_status,
                                     score: calculate_activity_score(activity),
                                     notes: activity.notes,
                                     audio_url: activity.audio.attached? ? url_for(activity.audio) : nil

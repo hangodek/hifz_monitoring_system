@@ -214,10 +214,10 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                         {isLoading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Memuatkan...
+                            Memuat...
                           </>
                         ) : (
-                          `Muatkan Lagi (${totalActivitiesCount - allActivities.length} lagi)`
+                          `Muat Lagi (${totalActivitiesCount - allActivities.length} lagi)`
                         )}
                       </Button>
                     </div>

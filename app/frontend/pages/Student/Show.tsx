@@ -82,6 +82,10 @@ interface Activity {
   type: string
   date: string
   created_at: string
+  kelancaran?: number | null
+  fashohah?: number | null
+  tajwid?: number | null
+  completion_status?: string
   audio_url?: string | null
 }
 
@@ -104,6 +108,7 @@ interface DetailedActivity {
   kelancaran?: number | null
   fashohah?: number | null
   tajwid?: number | null
+  completion_status?: string
   notes?: string
   audio_url?: string | null
 }
@@ -151,6 +156,7 @@ const generateDailySubmissions = (startDate: Date, endDate: Date, dailySubmissio
 
 const formatRelativeTimeIndonesian = (time: string) => {
   return time
+    .replace(/less than (an? |1 )?minutes?/i, "kurang dari 1 menit")
     .replace(/^about\s+/i, "")
     .replace(/\bminute\b/i, "menit")
     .replace(/\bminutes\b/i, "menit")
@@ -171,6 +177,10 @@ const formatRelativeTimeIndonesian = (time: string) => {
     .replace(/\bmonth ago\b/i, "bulan yang lalu")
     .replace(/\byear ago\b/i, "tahun yang lalu")
     .replace(/\bago\b/i, "yang lalu")
+}
+
+const formatCompletionStatus = (status?: string) => {
+  return status === "tuntas" ? "Tuntas" : "Belum Tuntas"
 }
 
 interface StudentShowProps {
@@ -808,6 +818,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                   <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
                                 </div>
                                 <div>
+                                  <span className="font-medium">Status:</span> {formatCompletionStatus(activity.completion_status)}
+                                </div>
+                                <div>
                                   <span className="font-medium">Juz:</span>{' '}
                                   {activity.type === 'revision' && activity.juz_from && activity.juz_to 
                                     ? `${activity.juz_from}${activity.juz_from !== activity.juz_to ? `-${activity.juz_to}` : ''}`
@@ -846,10 +859,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
                               {isLoading ? (
                                 <>
                                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                  Loading...
+                                  Memuat...
                                 </>
                               ) : (
-                                `Load More (${total_activities_count - allActivities.length} remaining)`
+                                `Muat Lagi (${total_activities_count - allActivities.length} tersisa)`
                               )}
                             </Button>
                           </div>
@@ -883,6 +896,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   </div>
                   <div className="flex-1 space-y-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium line-clamp-2">{activity.activity}</p>
+                    <p className="text-xs text-muted-foreground">
+                      K:{activity.kelancaran ?? "-"} F:{activity.fashohah ?? "-"} T:{activity.tajwid ?? "-"} • {formatCompletionStatus(activity.completion_status)}
+                    </p>
                     <p className="text-xs text-muted-foreground">{formatRelativeTimeIndonesian(activity.time)}</p>
                     {activity.audio_url && (
                       <div className="mt-1">

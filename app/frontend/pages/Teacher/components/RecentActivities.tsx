@@ -21,6 +21,7 @@ interface Activity {
   id: string
   activity_type: string
   activity_grade: string | null
+  completion_status?: string | null
   surah_from: string
   surah_to: string
   page_from: number
@@ -48,6 +49,10 @@ interface RecentActivitiesProps {
 const activityLabels = {
   memorization: "Hafalan",
   revision: "Murajaah"
+}
+
+const formatCompletionStatus = (status?: string | null) => {
+  return status === "tuntas" ? "Tuntas" : "Belum Tuntas"
 }
 
 export function RecentActivities({ currentStudent, activityTypes }: RecentActivitiesProps) {
@@ -103,7 +108,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
     const now = new Date()
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
     
-    if (diffInHours < 1) return "Baru sahaja"
+    if (diffInHours < 1) return "Baru saja"
     if (diffInHours < 24) return `${diffInHours} jam yang lalu`
     
     const diffInDays = Math.floor(diffInHours / 24)
@@ -149,7 +154,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
                     {activityDescription}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    K:{activity.kelancaran ?? "-"} F:{activity.fashohah ?? "-"} T:{activity.tajwid ?? "-"} • {formatTimeAgo(activity.created_at)}
+                    K:{activity.kelancaran ?? "-"} F:{activity.fashohah ?? "-"} T:{activity.tajwid ?? "-"} • {formatCompletionStatus(activity.completion_status)} • {formatTimeAgo(activity.created_at)}
                   </p>
                   {activity.notes && (
                     <p className="text-xs text-muted-foreground italic line-clamp-2" title={activity.notes}>
