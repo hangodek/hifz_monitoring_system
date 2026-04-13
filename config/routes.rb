@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   end
   resources :teachers, only: [ :index ] do
     collection do
+      get :export_scores, defaults: { format: 'xlsx' }
       get :search_students
       get :student_activities
       get :load_more_activities

@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Users, LogOut } from "lucide-react"
+import { ArrowLeft, Download, LogOut, Users } from "lucide-react"
 import { router, usePage } from "@inertiajs/react"
 import { PageProps } from "@/types/auth"
 
 export function TeacherHeader() {
   const { auth } = usePage<PageProps>().props
   const userRole = auth?.user?.role
+  const canExport = userRole === "admin" || userRole === "teacher"
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -13,7 +14,17 @@ export function TeacherHeader() {
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Mode Guru</h1>
         <p className="text-sm sm:text-base text-muted-foreground">Catat aktivitas hafalan siswa</p>
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+        {canExport && (
+          <Button
+            variant="outline"
+            className="border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 cursor-pointer"
+            onClick={() => window.location.href = "/teachers/export_scores.xlsx"}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Ekspor Nilai
+          </Button>
+        )}
         {/* Only show "View All Students" for admin */}
         {userRole === "admin" && (
           <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer" onClick={() => router.visit("/students")}>
@@ -32,7 +43,7 @@ export function TeacherHeader() {
         )}
         {/* Show logout for teacher role */}
         {userRole === "teacher" && (
-          <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer col-span-2" onClick={() => router.delete("/session")}>
+          <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer" onClick={() => router.delete("/session")}>
             <LogOut className="h-4 w-4 mr-2" />
             Keluar
           </Button>
