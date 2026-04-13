@@ -8,6 +8,17 @@ Activity.delete_all
 StudentSurahProgression.delete_all
 Student.delete_all
 
+# Reset PK sequences so test runs start from predictable IDs.
+connection = ActiveRecord::Base.connection
+tables_to_reset = %w[sessions users activities student_surah_progressions students]
+
+if connection.respond_to?(:reset_pk_sequence!)
+  tables_to_reset.each { |table| connection.reset_pk_sequence!(table) }
+elsif connection.adapter_name.downcase.include?("sqlite")
+  quoted = tables_to_reset.map { |name| "'#{name}'" }.join(",")
+  connection.execute("DELETE FROM sqlite_sequence WHERE name IN (#{quoted})")
+end
+
 puts "Creating app setting..."
 AppSetting.find_or_create_by!(id: 1) do |setting|
   setting.app_name = "Sistem Manajemen Hifz"
