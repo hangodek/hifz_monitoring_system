@@ -451,9 +451,9 @@ class StudentsController < ApplicationController
           alignment: { horizontal: :left, vertical: :center }
         )
         
-        workbook.add_worksheet(name: "Import Pelajar") do |sheet|
+        workbook.add_worksheet(name: "Import Siswa") do |sheet|
           # Header row - Urutan: NISN, No Induk, Nama, Gender, dst
-          sheet.add_row [
+          base_headers = [
             "NISN",
             "No Induk*",
             "Nama Lengkap*",
@@ -465,37 +465,47 @@ class StudentsController < ApplicationController
             "No HP Orang Tua",
             "Alamat",
             "Kelas* (7A-12D)",
-            "Status* (active/inactive)",
+            "Status* (Aktif/Tidak Aktif)",
             "Juz Hafalan Saat Ini* (1-30)",
-            "Halaman Hafalan Saat Ini* (1-604)",
             "Surah Hafalan Saat Ini*"
-          ], style: header_style
+          ]
+
+          juz_30_headers = juz_30_surahs.map { |surah| juz_30_column_name(surah) }
+          sheet.add_row(base_headers + juz_30_headers, style: header_style)
           
-          # Example row
-          sheet.add_row [
-            "0123456789",
-            "2024001",
-            "Ahmad Rasyid",
-            "Laki-laki",
-            "Jakarta",
-            "2012-01-15",
-            "Ahmad",
-            "Siti",
-            "081234567890",
-            "Jl. Merdeka No. 123",
-            "7A",
-            "active",
-            "1",
-            "1",
-            "Al-Fatihah"
-          ], style: example_style
+          # Example rows (5 siswa) with different Juz 30 patterns.
+          base_examples = [
+            ["320120010001", "S-2026-001", "Ahmad Fauzan", "Laki-laki", "Bandung", "2012-02-10", "Budi Fauzan", "Siti Aminah", "081210000001", "Jl. Cendana 1", "7A", "Aktif", "30", "An-Naba"],
+            ["320120010002", "S-2026-002", "Naila Putri", "Perempuan", "Bekasi", "2011-09-21", "Rizal Putra", "Nur Aisyah", "081210000002", "Jl. Melati 5", "7B", "Aktif", "30", "An-Nazi'at"],
+            ["320120010003", "S-2026-003", "Rafi Maulana", "Laki-laki", "Depok", "2012-05-14", "Deni Maulana", "Fitri Handayani", "081210000003", "Jl. Kenanga 3", "8A", "Aktif", "30", "Abasa"],
+            ["320120010004", "S-2026-004", "Alya Rahma", "Perempuan", "Bogor", "2011-12-01", "Irfan Rahma", "Dewi Lestari", "081210000004", "Jl. Anggrek 7", "8B", "Aktif", "30", "At-Takwir"],
+            ["320120010005", "S-2026-005", "Farhan Akbar", "Laki-laki", "Jakarta", "2012-07-30", "Hendra Akbar", "Lina Marlina", "081210000005", "Jl. Mawar 9", "9A", "Aktif", "30", "Al-Infitar"]
+          ]
+
+          status_patterns = [
+            ->(index) { index < 37 ? "tuntas" : "belum_tuntas" },
+            ->(index) { index < 25 ? "tuntas" : "belum_tuntas" },
+            ->(index) { index < 15 ? "tuntas" : "belum_tuntas" },
+            ->(index) { index.even? ? "tuntas" : "belum_tuntas" },
+            ->(_index) { "belum_tuntas" }
+          ]
+
+          base_examples.each_with_index do |base_example, row_index|
+            juz_30_example = juz_30_surahs.map.with_index do |_surah, index|
+              status_patterns[row_index].call(index)
+            end
+
+            sheet.add_row(base_example + juz_30_example, style: example_style)
+          end
           
           # Set column widths for better readability
-          sheet.column_widths 15, 12, 20, 15, 15, 18, 20, 20, 17, 30, 10, 12, 25, 28, 25
+          base_widths = [15, 12, 20, 22, 15, 18, 20, 20, 17, 30, 10, 16, 25, 25]
+          juz_30_widths = Array.new(juz_30_surahs.size, 22)
+          sheet.column_widths(*(base_widths + juz_30_widths))
         end
         
         send_data package.to_stream.read,
-                  filename: "template_import_pelajar_#{Date.current}.xlsx",
+                  filename: "template_import_siswa_#{Date.current}.xlsx",
                   type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                   disposition: 'attachment'
       end
@@ -544,18 +554,19 @@ class StudentsController < ApplicationController
           nisn: row_hash["NISN"]&.to_s&.strip,
           student_number: row_hash["No Induk*"]&.to_s&.strip,
           name: row_hash["Nama Lengkap*"]&.to_s&.strip,
-          gender: row_hash["Gender* (Laki-laki/Perempuan)"]&.to_s&.strip&.downcase,
+          gender: normalize_import_gender(row_hash["Gender* (Laki-laki/Perempuan)"] || row_hash["Gender* (male/female atau laki-laki/perempuan)"]),
           birth_place: row_hash["Tempat Lahir*"]&.to_s&.strip,
           birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"]),
           father_name: row_hash["Nama Ayah*"]&.to_s&.strip,
           mother_name: row_hash["Nama Ibu*"]&.to_s&.strip,
           parent_phone: row_hash["No HP Orang Tua"]&.to_s&.strip,
           address: row_hash["Alamat"]&.to_s&.strip,
-          class_level: row_hash["Kelas*"]&.to_s&.strip,
-          status: row_hash["Status* (active/inactive)"]&.to_s&.strip&.downcase,
+          class_level: (row_hash["Kelas* (7A-12D)"] || row_hash["Kelas*"])&.to_s&.strip,
+          status: normalize_import_status(row_hash["Status* (Aktif/Tidak Aktif)"] || row_hash["Status* (active/inactive)"]),
           current_hifz_in_juz: row_hash["Juz Hafalan Saat Ini* (1-30)"]&.to_s&.strip,
-          current_hifz_in_pages: row_hash["Halaman Hafalan Saat Ini* (1-604)"]&.to_s&.strip,
-          current_hifz_in_surah: row_hash["Surah Hafalan Saat Ini*"]&.to_s&.strip
+          current_hifz_in_pages: default_import_hifz_page,
+          current_hifz_in_surah: row_hash["Surah Hafalan Saat Ini*"]&.to_s&.strip,
+          juz_30_statuses: {}
         }
 
         # Validate required fields
@@ -563,7 +574,7 @@ class StudentsController < ApplicationController
         row_errors << "No Induk wajib diisi" if student_data[:student_number].blank?
         row_errors << "Nama lengkap wajib diisi" if student_data[:name].blank?
         row_errors << "Gender wajib diisi (Laki-laki/Perempuan)" if student_data[:gender].blank?
-        row_errors << "Gender harus 'laki-laki' atau 'perempuan'" unless ["laki-laki", "perempuan"].include?(student_data[:gender])
+        row_errors << "Gender harus Laki-laki atau Perempuan" unless ["male", "female"].include?(student_data[:gender])
         row_errors << "Tempat lahir wajib diisi" if student_data[:birth_place].blank?
         row_errors << "Tanggal lahir wajib diisi" if student_data[:birth_date].blank?
         row_errors << "Nama ayah wajib diisi" if student_data[:father_name].blank?
@@ -577,11 +588,34 @@ class StudentsController < ApplicationController
           end
         end
         
-        row_errors << "Status wajib diisi (active/inactive)" if student_data[:status].blank?
-        row_errors << "Status harus 'active' atau 'inactive'" unless ["active", "inactive"].include?(student_data[:status])
+        row_errors << "Status wajib diisi (Aktif/Tidak Aktif)" if student_data[:status].blank?
+        row_errors << "Status harus Aktif atau Tidak Aktif" unless ["active", "inactive"].include?(student_data[:status])
         row_errors << "Juz hafalan wajib diisi" if student_data[:current_hifz_in_juz].blank?
-        row_errors << "Halaman hafalan wajib diisi" if student_data[:current_hifz_in_pages].blank?
         row_errors << "Surah hafalan wajib diisi" if student_data[:current_hifz_in_surah].blank?
+
+        if student_data[:current_hifz_in_juz].present?
+          juz_value = student_data[:current_hifz_in_juz].to_i
+          row_errors << "Juz hafalan harus di antara 1 sampai 30" unless juz_value.between?(1, 30)
+        end
+
+        # Validate and collect Juz 30 per-surah statuses.
+        juz_30_surahs.each do |surah|
+          header = juz_30_column_name(surah)
+          raw_status = row_hash[header]
+          normalized_status = normalize_import_completion_status(raw_status)
+
+          if raw_status.blank?
+            row_errors << "Status #{surah} (Juz 30) wajib diisi: tuntas atau belum_tuntas"
+            next
+          end
+
+          if normalized_status.blank?
+            row_errors << "Status #{surah} (Juz 30) harus 'tuntas' atau 'belum_tuntas'"
+            next
+          end
+
+          student_data[:juz_30_statuses][surah] = normalized_status
+        end
 
         # Validate date formats
         begin
@@ -610,7 +644,7 @@ class StudentsController < ApplicationController
 
   def bulk_create
     if params[:students].blank?
-      render json: { error: "Data pelajar tidak ditemukan" }, status: :unprocessable_entity
+      render json: { error: "Data siswa tidak ditemukan" }, status: :unprocessable_entity
       return
     end
 
@@ -623,7 +657,7 @@ class StudentsController < ApplicationController
           nisn: student_params[:nisn],
           student_number: student_params[:student_number],
           name: student_params[:name],
-          gender: student_params[:gender],
+          gender: normalize_import_gender(student_params[:gender]),
           birth_place: student_params[:birth_place],
           birth_date: Date.parse(student_params[:birth_date]),
           father_name: student_params[:father_name],
@@ -631,13 +665,16 @@ class StudentsController < ApplicationController
           parent_phone: student_params[:parent_phone],
           address: student_params[:address],
           class_level: student_params[:class_level]&.upcase,
-          status: student_params[:status],
+          status: normalize_import_status(student_params[:status]),
           current_hifz_in_juz: student_params[:current_hifz_in_juz],
-          current_hifz_in_pages: student_params[:current_hifz_in_pages],
+          current_hifz_in_pages: default_import_hifz_page,
           current_hifz_in_surah: student_params[:current_hifz_in_surah]
         )
 
         if student.save
+          import_juz_30_progressions!(student, student_params[:juz_30_statuses])
+          student.recalculate_total_juz_memorized!
+
           created_students << {
             line_number: student_params[:line_number],
             name: student.name,
@@ -665,7 +702,7 @@ class StudentsController < ApplicationController
       failed: failed_students.length,
       created_students: created_students,
       failed_students: failed_students,
-      message: "Berhasil membuat #{created_students.length} pelajar dari #{params[:students].length} data"
+      message: "Berhasil membuat #{created_students.length} siswa dari #{params[:students].length} data"
     }
   end
 
@@ -697,6 +734,82 @@ class StudentsController < ApplicationController
     
     # If it's a string, return as is
     value.to_s.strip
+  end
+
+  def juz_30_surahs
+    Array(JUZ_TO_SURAHS[30])
+  end
+
+  def juz_30_column_name(surah)
+    "Juz 30 - #{surah} (tuntas/belum_tuntas)"
+  end
+
+  def normalize_import_gender(value)
+    normalized = value.to_s.strip.downcase
+    case normalized
+    when "male", "laki-laki", "lakilaki", "l"
+      "male"
+    when "female", "perempuan", "p"
+      "female"
+    else
+      nil
+    end
+  end
+
+  def normalize_import_status(value)
+    normalized = value.to_s.strip.downcase
+    case normalized
+    when "active", "aktif"
+      "active"
+    when "inactive", "tidak aktif", "nonaktif", "non-active"
+      "inactive"
+    else
+      nil
+    end
+  end
+
+  def default_import_hifz_page
+    "1"
+  end
+
+  def normalize_import_completion_status(value)
+    normalized = value.to_s.strip.downcase
+    case normalized
+    when "tuntas", "selesai"
+      "tuntas"
+    when "belum_tuntas", "belum tuntas", "belum"
+      "belum_tuntas"
+    else
+      nil
+    end
+  end
+
+  def import_juz_30_progressions!(student, raw_statuses)
+    return if student.blank?
+
+    statuses = (raw_statuses || {}).to_h
+    now = Time.current
+    rows = []
+
+    juz_30_surahs.each do |surah|
+      raw_status = statuses[surah] || statuses[surah.to_sym]
+      normalized_status = normalize_import_completion_status(raw_status)
+      next if normalized_status.blank?
+
+      rows << {
+        student_id: student.id,
+        juz: 30,
+        surah: surah,
+        completion_status: StudentSurahProgression.completion_statuses[normalized_status],
+        last_activity_at: now,
+        created_at: now,
+        updated_at: now
+      }
+    end
+
+    return if rows.empty?
+
+    StudentSurahProgression.upsert_all(rows, unique_by: :idx_student_surah_progressions_unique)
   end
 
   def student_params

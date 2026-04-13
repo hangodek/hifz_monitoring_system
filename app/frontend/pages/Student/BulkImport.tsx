@@ -41,6 +41,7 @@ interface PreviewStudent {
   current_hifz_in_juz: string
   current_hifz_in_pages: string
   current_hifz_in_surah: string
+  juz_30_statuses?: Record<string, string>
   errors?: string[]
   valid: boolean
 }
@@ -50,6 +51,12 @@ interface PreviewData {
   total: number
   valid: number
   invalid: number
+}
+
+const formatGenderLabel = (gender: string) => {
+  if (gender === "male") return "Laki-laki"
+  if (gender === "female") return "Perempuan"
+  return gender || "-"
 }
 
 export default function BulkImport() {
@@ -213,7 +220,7 @@ export default function BulkImport() {
               Download Template
             </CardTitle>
             <CardDescription>
-              Download template Excel terlebih dahulu untuk memastikan format data yang benar
+              Download template Excel terlebih dahulu. Template memuat profil siswa + kolom status Juz 30 per surah (An-Naba sampai An-Nas) dengan nilai tuntas/belum_tuntas.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -236,7 +243,7 @@ export default function BulkImport() {
               Upload File Excel atau CSV
             </CardTitle>
             <CardDescription>
-              Upload file Excel (.xlsx, .xls) atau CSV yang sudah diisi dengan data siswa
+              Upload file Excel (.xlsx, .xls) atau CSV yang sudah diisi dengan data siswa dan status surah Juz 30. Kolom halaman tidak diperlukan.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -256,7 +263,7 @@ export default function BulkImport() {
                 {file ? file.name : 'Drag & drop file Excel atau CSV di sini'}
               </p>
               <p className="text-sm text-muted-foreground mb-4">
-                atau klik untuk memilih file (.xlsx, .xls, .csv)
+                atau klik untuk memilih file (.xlsx, .xls, .csv). Pastikan kolom status Juz 30 diisi tuntas/belum_tuntas.
               </p>
               <Button variant="outline" className="cursor-pointer">
                 <Upload className="h-4 w-4 mr-2" />
@@ -339,6 +346,7 @@ export default function BulkImport() {
                       <TableHead>NISN</TableHead>
                       <TableHead>No Induk</TableHead>
                       <TableHead>Nama</TableHead>
+                      <TableHead>Juz 30 (Tuntas/Belum)</TableHead>
                       <TableHead>Gender</TableHead>
                       <TableHead>Tempat, Tanggal Lahir</TableHead>
                       <TableHead>Kelas</TableHead>
@@ -352,6 +360,13 @@ export default function BulkImport() {
                         key={index}
                         className={student.valid ? '' : 'bg-red-50'}
                       >
+                        {(() => {
+                          const statuses = Object.values(student.juz_30_statuses || {})
+                          const tuntasCount = statuses.filter((status) => status === 'tuntas').length
+                          const belumTuntasCount = statuses.filter((status) => status === 'belum_tuntas').length
+
+                          return (
+                            <>
                         <TableCell>{student.line_number}</TableCell>
                         <TableCell>
                           {student.valid ? (
@@ -363,7 +378,13 @@ export default function BulkImport() {
                         <TableCell>{student.nisn || '-'}</TableCell>
                         <TableCell className="font-medium">{student.student_number}</TableCell>
                         <TableCell className="font-medium">{student.name}</TableCell>
-                        <TableCell>{student.gender}</TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div><span className="font-medium">T:</span> {tuntasCount}</div>
+                            <div><span className="font-medium">B:</span> {belumTuntasCount}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{formatGenderLabel(student.gender)}</TableCell>
                         <TableCell>
                           {student.birth_place}, {student.birth_date}
                         </TableCell>
@@ -384,6 +405,9 @@ export default function BulkImport() {
                             </ul>
                           )}
                         </TableCell>
+                            </>
+                          )
+                        })()}
                       </TableRow>
                     ))}
                   </TableBody>
