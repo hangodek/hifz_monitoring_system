@@ -652,6 +652,7 @@ class StudentsController < ApplicationController
     failed_students = []
 
     params[:students].each do |student_params|
+      student_params = student_params.respond_to?(:to_unsafe_h) ? student_params.to_unsafe_h : student_params.to_h
       begin
         student = Student.new(
           nisn: student_params[:nisn],
@@ -787,29 +788,27 @@ class StudentsController < ApplicationController
   def import_juz_30_progressions!(student, raw_statuses)
     return if student.blank?
 
-    statuses = (raw_statuses || {}).to_h
+    statuses = if raw_statuses.respond_to?(:to_unsafe_h)
+      raw_statuses.to_unsafe_h
+    else
+      (raw_statuses || {}).to_h
+    end
     now = Time.current
-    rows = []
-
     juz_30_surahs.each do |surah|
-      raw_status = statuses[surah] || statuses[surah.to_sym]
+      raw_status = statuses[surah] || statuses[surah.to_sym] || statuses[surah.to_s]
       normalized_status = normalize_import_completion_status(raw_status)
       next if normalized_status.blank?
 
-      rows << {
+      progression = StudentSurahProgression.find_or_initialize_by(
         student_id: student.id,
         juz: 30,
-        surah: surah,
-        completion_status: StudentSurahProgression.completion_statuses[normalized_status],
-        last_activity_at: now,
-        created_at: now,
-        updated_at: now
-      }
+        surah: surah
+      )
+
+      progression.completion_status = normalized_status
+      progression.last_activity_at = now
+      progression.save!
     end
-
-    return if rows.empty?
-
-    StudentSurahProgression.upsert_all(rows, unique_by: :idx_student_surah_progressions_unique)
   end
 
   def student_params
