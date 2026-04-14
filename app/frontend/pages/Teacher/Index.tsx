@@ -216,7 +216,7 @@ export default function TeacherIndex({ students, recent_activities }: TeacherInd
     <div className="min-h-screen bg-gray-50/50">
       <div className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Header */}
-        <TeacherHeader />
+        <TeacherHeader mode="index" />
 
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Student Selection & Recording */}

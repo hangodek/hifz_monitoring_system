@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Download, LogOut, Users } from "lucide-react"
+import { ArrowLeft, Download, LogOut, Plus, Users } from "lucide-react"
 import { router, usePage } from "@inertiajs/react"
 import { PageProps } from "@/types/auth"
 
-export function TeacherHeader() {
+type TeacherHeaderProps = {
+  mode?: "index" | "bulk"
+}
+
+export function TeacherHeader({ mode = "index" }: TeacherHeaderProps) {
   const { auth } = usePage<PageProps>().props
   const userRole = auth?.user?.role
   const canExport = userRole === "admin" || userRole === "teacher"
@@ -15,6 +19,26 @@ export function TeacherHeader() {
         <p className="text-sm sm:text-base text-muted-foreground">Catat aktivitas hafalan siswa</p>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+        {canExport && mode === "index" && (
+          <Button
+            variant="outline"
+            className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 cursor-pointer"
+            onClick={() => router.visit("/teachers/bulk_edit")}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Edit Massal
+          </Button>
+        )}
+        {mode === "bulk" && (
+          <Button
+            variant="outline"
+            className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 cursor-pointer"
+            onClick={() => router.visit("/teachers")}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Kembali ke Input Biasa
+          </Button>
+        )}
         {canExport && (
           <Button
             variant="outline"

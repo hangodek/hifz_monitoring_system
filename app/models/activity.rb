@@ -24,6 +24,7 @@ class Activity < ApplicationRecord
 
   before_save :set_default_scores
   after_commit :sync_surah_progression_after_create, on: :create
+  after_commit :sync_surah_progression_after_update, on: :update
   after_commit :sync_surah_progression_after_destroy, on: :destroy
 
   private
@@ -37,6 +38,19 @@ class Activity < ApplicationRecord
   def sync_surah_progression_after_create
     return unless memorization?
     return if juz.blank? || surah.blank?
+
+    StudentSurahProgression.sync_from_activities!(student: student, juz: juz, surah: surah)
+  end
+
+  def sync_surah_progression_after_update
+    return unless memorization?
+    return if juz.blank? || surah.blank?
+
+    if saved_change_to_juz? || saved_change_to_surah?
+      previous_juz = juz_before_last_save
+      previous_surah = surah_before_last_save
+      StudentSurahProgression.sync_from_activities!(student: student, juz: previous_juz, surah: previous_surah)
+    end
 
     StudentSurahProgression.sync_from_activities!(student: student, juz: juz, surah: surah)
   end
