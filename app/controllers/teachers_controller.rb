@@ -32,27 +32,48 @@ class TeachersController < ApplicationController
       b: true,
       alignment: { horizontal: :left, vertical: :center }
     )
+    meta_label_style = workbook.styles.add_style(
+      b: true,
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :left, vertical: :center }
+    )
+    meta_value_style = workbook.styles.add_style(
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :left, vertical: :center }
+    )
     header_style = workbook.styles.add_style(
       b: true,
       fg_color: "FFFFFF",
       bg_color: "4472C4",
+      border: Axlsx::STYLE_THIN_BORDER,
       alignment: { horizontal: :center, vertical: :center, wrap_text: true }
     )
     subheader_style = workbook.styles.add_style(
       b: true,
       fg_color: "FFFFFF",
       bg_color: "5B9BD5",
+      border: Axlsx::STYLE_THIN_BORDER,
       alignment: { horizontal: :center, vertical: :center, wrap_text: true }
     )
     value_style = workbook.styles.add_style(
+      border: Axlsx::STYLE_THIN_BORDER,
       alignment: { horizontal: :center, vertical: :center }
     )
     name_style = workbook.styles.add_style(
+      border: Axlsx::STYLE_THIN_BORDER,
       alignment: { horizontal: :left, vertical: :center }
     )
 
     workbook.add_worksheet(name: "Rekap Semua Siswa") do |sheet|
-      setup_export_header(sheet, "Semua Kelas", title_style, label_style, header_style)
+      setup_export_header(
+        sheet,
+        "Semua Kelas",
+        title_style,
+        label_style,
+        meta_label_style,
+        meta_value_style,
+        header_style
+      )
 
       surah_headers = export_surah_headers
       add_export_score_headers(
@@ -78,7 +99,6 @@ class TeachersController < ApplicationController
 
         style_row = [ value_style, name_style, value_style ] + Array.new(surah_headers.length * 4, value_style)
         sheet.add_row(row, style: style_row)
-        sheet.add_row([])  # Empty row for spacing
       end
 
       sheet.column_widths(6, 30, 10, *Array.new(surah_headers.length * 4, 6))
@@ -88,7 +108,15 @@ class TeachersController < ApplicationController
       next if class_students.blank?
 
       workbook.add_worksheet(name: class_label) do |sheet|
-        setup_export_header(sheet, class_label, title_style, label_style, header_style)
+        setup_export_header(
+          sheet,
+          class_label,
+          title_style,
+          label_style,
+          meta_label_style,
+          meta_value_style,
+          header_style
+        )
 
         surah_headers = export_surah_headers
         add_export_score_headers(
@@ -114,7 +142,6 @@ class TeachersController < ApplicationController
 
           style_row = [ value_style, name_style ] + Array.new(surah_headers.length * 4, value_style)
           sheet.add_row(row, style: style_row)
-          sheet.add_row([])  # Empty row for spacing
         end
 
         sheet.column_widths(6, 30, *Array.new(surah_headers.length * 4, 6))
@@ -256,7 +283,7 @@ class TeachersController < ApplicationController
             .to_h
   end
 
-  def setup_export_header(sheet, class_label, title_style, label_style, header_style)
+  def setup_export_header(sheet, class_label, title_style, label_style, meta_label_style, meta_value_style, header_style)
     app_setting = AppSetting.instance
     academic_year = academic_year_for_export
     semester = current_semester_for_export
@@ -265,12 +292,22 @@ class TeachersController < ApplicationController
 
     sheet.add_row([ "DAFTAR PENILAIAN TAHFIZ QUR'AN" ], style: [ title_style ])
     sheet.add_row([ "#{institution_name} TAHUN AJARAN #{academic_year}" ], style: [ title_style ])
-    sheet.add_row([ "Nama Guru", teacher_name ], style: [ label_style, header_style ])
-    sheet.add_row([ "Mata Pelajaran", "TAHFIZHUL QURAN" ], style: [ label_style, header_style ])
-    sheet.add_row([ "Kelas", class_label ], style: [ label_style, header_style ])
-    sheet.add_row([ "Semester", semester.to_s ], style: [ label_style, header_style ])
-    sheet.add_row([ "Tahun Pelajaran", academic_year ], style: [ label_style, header_style ])
-    sheet.add_row([ "KKM", "68" ], style: [ label_style, header_style ])
+    sheet.add_row([ "Nama Guru :", nil, teacher_name ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+    sheet.add_row([ "Mata Pelajaran :", nil, "TAHFIZHUL QURAN" ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+    sheet.add_row([ "Kelas :", nil, class_label ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+    sheet.add_row([ "Semester :", nil, semester.to_s ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+    sheet.add_row([ "Tahun Pelajaran :", nil, academic_year ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+    sheet.add_row([ "KKM :", nil, "68" ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+
+    # Keep title lines centered and tidy across the same width as metadata block.
+    merge_sheet_cells(sheet, 0, 1, 5, 1)
+    merge_sheet_cells(sheet, 0, 2, 5, 2)
+
+    start_row = sheet.rows.size - 5
+    6.times do |offset|
+      merge_sheet_cells(sheet, 0, start_row + offset, 1, start_row + offset)
+      merge_sheet_cells(sheet, 2, start_row + offset, 5, start_row + offset)
+    end
     sheet.add_row([])
   end
 
