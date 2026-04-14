@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { CheckCircle2, Circle, Save, Sparkles } from "lucide-react"
+import { Check, CheckCircle2, Circle, Save, Sparkles } from "lucide-react"
 import { TeacherHeader, StudentSelection } from "./components"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -81,6 +81,10 @@ type BulkRow = {
 type ActivityPayload = {
   activities: StudentActivity[]
   surah_progressions: StudentProgression[]
+}
+
+function normalizeSurahName(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "")
 }
 
 function createEmptyRow(surah: string, juz: string, status = "belum_tuntas"): BulkRow {
@@ -267,6 +271,27 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
     }
   }, [rows])
 
+  const completedJuzSet = useMemo(() => {
+    const completed = new Set<string>()
+
+    JUZ_OPTIONS.forEach((juz) => {
+      const expectedSurahs = (JUZ_SURAH_MAP[juz] || []).map(normalizeSurahName)
+      if (expectedSurahs.length === 0) return
+
+      const tuntasSurahs = new Set(
+        payload.surah_progressions
+          .filter((progression) => String(progression.juz) === juz && progression.completion_status === "tuntas")
+          .map((progression) => normalizeSurahName(progression.surah))
+      )
+
+      if (expectedSurahs.every((surah) => tuntasSurahs.has(surah))) {
+        completed.add(juz)
+      }
+    })
+
+    return completed
+  }, [payload.surah_progressions])
+
   const updateRow = (rowKey: string, field: keyof BulkRow, value: string) => {
     setRows((prev) =>
       prev.map((row) => {
@@ -398,7 +423,12 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
                   <SelectContent>
                     {JUZ_OPTIONS.map((option) => (
                       <SelectItem key={option} value={option}>
-                        Juz {option}
+                        <div className="flex items-center justify-between gap-2 w-full">
+                          <span>Juz {option}</span>
+                          {completedJuzSet.has(option) && (
+                            <Check className="h-4 w-4 text-emerald-600" />
+                          )}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
