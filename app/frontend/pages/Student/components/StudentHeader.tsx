@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Download, Plus, Mic, FileText, FileSpreadsheet, Sheet, GraduationCap, Upload } from "lucide-react"
+import { ArrowLeft, Download, Plus, Mic, FileText, Sheet, GraduationCap, Upload } from "lucide-react"
 import { router } from "@inertiajs/react"
 import {
   DropdownMenu,
@@ -52,23 +52,13 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
     }
   }
 
-  const handleExportCSV = async () => {
-    try {
-      setIsExporting(true)
-      const { exportStudentsToCSV } = await import('@/utils/exportUtils')
-      exportStudentsToCSV(students, filteredStudents)
-    } catch (error) {
-      console.error('Failed to export CSV:', error)
-    } finally {
-      setIsExporting(false)
-    }
-  }
+
 
   const handleExportExcel = async () => {
     try {
       setIsExporting(true)
-      const { exportStudentsToExcel } = await import('@/utils/exportUtils')
-      exportStudentsToExcel(students, filteredStudents)
+      const queryString = window.location.search
+      window.location.href = `/students/export_report.xlsx${queryString}`
     } catch (error) {
       console.error('Failed to export Excel:', error)
     } finally {
@@ -131,10 +121,6 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
             <DropdownMenuItem onClick={handleExportExcel} className="cursor-pointer" disabled={isExporting}>
               <Sheet className="h-4 w-4 mr-2" />
               Ekspor sebagai Excel
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExportCSV} className="cursor-pointer" disabled={isExporting}>
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Ekspor sebagai CSV
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

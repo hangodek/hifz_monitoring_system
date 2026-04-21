@@ -162,67 +162,6 @@ export const exportStudentsToPDF = (students: Student[], filteredStudents?: Stud
   doc.save(`laporan_siswa_hifz_${format(new Date(), 'yyyy-MM-dd')}.pdf`)
 }
 
-export const exportStudentsToCSV = (students: Student[], filteredStudents?: Student[]) => {
-  const dataToExport = filteredStudents || students
-  const { grouped, sortedClasses } = groupStudentsByClass(dataToExport)
-
-  const summaryRows = sortedClasses.map((className) => {
-    const classStudents = grouped[className]
-    const totalJuz = classStudents.reduce((sum, student) => sum + getCompletedJuz(student), 0)
-    const totalSurah = classStudents.reduce((sum, student) => sum + getCompletedSurahCount(student), 0)
-
-    return [
-      className,
-      classStudents.length,
-      `${totalJuz} juz`,
-      `${totalSurah} surah`
-    ]
-  })
-
-  const classRows = sortedClasses.flatMap((className) => {
-    const studentsInClass = sortStudentsByProgress(grouped[className])
-
-    return [
-      [''],
-      [`Kelas ${className}`],
-      ['No', 'Nama', 'Jumlah Juz yang Dihafal', 'Jumlah Surah yang Dihafal'],
-      ...studentsInClass.map((student, index) => [
-        index + 1,
-        student.name,
-        `${getCompletedJuz(student)} juz`,
-        `${getCompletedSurahCount(student)} surah`
-      ])
-    ]
-  })
-
-  const csvRows = [
-    ['Laporan Hafalan Siswa'],
-    [''],
-    ['Dibuat pada', format(new Date(), 'dd MMMM yyyy')],
-    ['Jumlah Siswa', dataToExport.length],
-    ['Jumlah Kelas', sortedClasses.length],
-    [''],
-    ['Ringkasan Semua Kelas'],
-    ['Kelas', 'Jumlah Siswa', 'Total Juz Dihafal', 'Total Surah Dihafal'],
-    ...summaryRows,
-    ...classRows
-  ]
-
-  const csvContent = csvRows.map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
-    .join('\n')
-  
-  // Create and download CSV file
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-  link.setAttribute('href', url)
-  link.setAttribute('download', `laporan-hifz-${format(new Date(), 'yyyy-MM-dd')}.csv`)
-  link.style.visibility = 'hidden'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-}
-
 export const exportStudentsToExcel = (students: Student[], filteredStudents?: Student[]) => {
   const dataToExport = filteredStudents || students
   const { grouped, sortedClasses } = groupStudentsByClass(dataToExport)
@@ -274,9 +213,21 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   const summarySheet = XLSX.utils.aoa_to_sheet(reportRows)
   const maxColumns = reportRows.reduce((max, row) => Math.max(max, row.length), 0)
   const columnWidths = Array.from({ length: maxColumns }, (_, columnIndex) => ({
-    wch: Math.max(...reportRows.map(row => String(row[columnIndex] ?? '').length), 10) + 2
+    wch: Math.max(...reportRows.map(row => String(row[columnIndex] ?? '').length), 14) + 3
   }))
   summarySheet['!cols'] = columnWidths
+  
+  // Add row heights for better spacing
+  const headerRowIndex = reportRows.findIndex(row => row[0] === 'Kelas')
+  summarySheet['!rows'] = reportRows.map((_, index) => {
+    if (index === headerRowIndex) {
+      return { hpx: 25 }
+    }
+    if (index === 0 || index === 1 || index === 6) {
+      return { hpx: 18 }
+    }
+    return { hpx: 20 }
+  })
 
   XLSX.utils.book_append_sheet(workbook, summarySheet, 'Laporan')
   

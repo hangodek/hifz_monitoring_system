@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       get :bulk_import
       post :preview_import
       post :bulk_create
+      get :export_report, defaults: { format: 'xlsx' }
       get 'download_template', defaults: { format: 'xlsx' }
       get :load_more
     end

@@ -166,6 +166,154 @@ class StudentsController < ApplicationController
     }
   end
 
+  def export_report
+    students_query = students_query_with_memorization_summary
+
+    if params[:search].present?
+      search_term = params[:search].strip.downcase
+      students_query = students_query.where(
+        "LOWER(name) LIKE ? OR LOWER(nisn) LIKE ? OR LOWER(student_number) LIKE ?",
+        "%#{search_term}%",
+        "%#{search_term}%",
+        "%#{search_term}%"
+      )
+    end
+
+    if params[:class_filter].present? && params[:class_filter] != "all"
+      students_query = students_query.where(class_level: params[:class_filter])
+    end
+
+    if params[:status_filter].present? && params[:status_filter] != "all"
+      students_query = students_query.where(status: params[:status_filter])
+    end
+
+    if params[:juz_filter].present? && params[:juz_filter] != "all"
+      case params[:juz_filter]
+      when "Juz 1-5"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 1, 5)
+      when "Juz 6-10"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 6, 10)
+      when "Juz 11-15"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 11, 15)
+      when "Juz 16-20"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 16, 20)
+      when "Juz 21-25"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 21, 25)
+      when "Juz 26-30"
+        students_query = students_query.where("CAST(current_hifz_in_juz AS INTEGER) BETWEEN ? AND ?", 26, 30)
+      end
+    end
+
+    students = students_query.order(:class_level, :name).to_a
+    students_by_class = students.group_by { |student| student.class_level.presence || "Tanpa Kelas" }
+                              .sort_by { |class_name, _| class_level_sort_key(class_name) }
+
+    package = Axlsx::Package.new
+    workbook = package.workbook
+
+    title_style = workbook.styles.add_style(
+      b: true,
+      sz: 14,
+      alignment: { horizontal: :center, vertical: :center }
+    )
+    section_title_style = workbook.styles.add_style(
+      b: true,
+      sz: 12,
+      alignment: { horizontal: :left, vertical: :center }
+    )
+    meta_label_style = workbook.styles.add_style(
+      b: true,
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :left, vertical: :center }
+    )
+    meta_value_style = workbook.styles.add_style(
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :left, vertical: :center }
+    )
+    header_style = workbook.styles.add_style(
+      b: true,
+      fg_color: "FFFFFF",
+      bg_color: "4472C4",
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :center, vertical: :center, wrap_text: true }
+    )
+    name_style = workbook.styles.add_style(
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :left, vertical: :center }
+    )
+    value_style = workbook.styles.add_style(
+      border: Axlsx::STYLE_THIN_BORDER,
+      alignment: { horizontal: :center, vertical: :center }
+    )
+
+    workbook.add_worksheet(name: "Laporan Hafalan") do |sheet|
+      sheet.add_row([ "Laporan Hafalan Siswa" ], style: [ title_style ])
+      sheet.merge_cells("A1:D1")
+      sheet.add_row([])
+
+      sheet.add_row(
+        [ "Dibuat pada", I18n.l(Date.current, format: :long), "Jumlah Siswa", students.size ],
+        style: [ meta_label_style, meta_value_style, meta_label_style, meta_value_style ]
+      )
+      sheet.add_row(
+        [ "Jumlah Kelas", students_by_class.size, "", "" ],
+        style: [ meta_label_style, meta_value_style, meta_value_style, meta_value_style ]
+      )
+      sheet.merge_cells("B4:D4")
+
+      sheet.add_row([])
+      sheet.add_row([ "Ringkasan Semua Kelas" ], style: [ section_title_style ])
+      sheet.merge_cells("A6:D6")
+
+      sheet.add_row(
+        [ "Kelas", "Jumlah Siswa", "Total Juz Dihafal", "Total Surah Dihafal" ],
+        style: [ header_style, header_style, header_style, header_style ]
+      )
+
+      students_by_class.each do |class_name, class_students|
+        total_juz = class_students.sum { |student| student.total_juz_memorized || 0 }
+        total_surah = class_students.sum { |student| completed_surah_count_for(student) }
+
+        sheet.add_row(
+          [ class_name, class_students.size, "#{total_juz} juz", "#{total_surah} surah" ],
+          style: [ name_style, value_style, value_style, value_style ]
+        )
+      end
+
+      students_by_class.each do |class_name, class_students|
+        sheet.add_row([])
+        sheet.add_row([ "Kelas #{class_name}" ], style: [ section_title_style ])
+        section_row = sheet.rows.size
+        sheet.merge_cells("A#{section_row}:D#{section_row}")
+
+        sheet.add_row(
+          [ "No", "Nama", "Jumlah Juz yang Dihafal", "Jumlah Surah yang Dihafal" ],
+          style: [ header_style, header_style, header_style, header_style ]
+        )
+
+        class_students.sort_by { |student| [ -(student.total_juz_memorized || 0), -completed_surah_count_for(student), student.name.to_s ] }
+                      .each_with_index do |student, index|
+          sheet.add_row(
+            [
+              index + 1,
+              student.name,
+              "#{student.total_juz_memorized || 0} juz",
+              "#{completed_surah_count_for(student)} surah"
+            ],
+            style: [ value_style, name_style, value_style, value_style ]
+          )
+        end
+      end
+
+      sheet.column_widths(8, 34, 30, 30)
+    end
+
+    send_data package.to_stream.read,
+              filename: "laporan_hafalan_siswa_#{Date.current}.xlsx",
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              disposition: "attachment"
+  end
+
   def students_query_with_memorization_summary
     Student.includes(:student_surah_progressions)
   end
@@ -177,6 +325,17 @@ class StudentsController < ApplicationController
       completed_surah_count: student.student_surah_progressions.count { |progression| progression.completion_status == "tuntas" },
       date_joined: student.created_at&.iso8601
     )
+  end
+
+  def class_level_sort_key(class_name)
+    match = class_name.to_s.match(/\A(\d+)([A-Za-z]*)\z/)
+    return [ 999, class_name.to_s ] unless match
+
+    [ match[1].to_i, match[2].to_s ]
+  end
+
+  def completed_surah_count_for(student)
+    student.student_surah_progressions.count { |progression| progression.completion_status == "tuntas" }
   end
 
   def show
