@@ -58,7 +58,7 @@ export function TopStudentsRanking({ students }: TopStudentsRankingProps) {
               <div className="flex items-center justify-between">
                 <p className="text-xs sm:text-sm font-medium truncate pr-2">{student.name}</p>
                 <Badge variant="secondary" className="text-xs flex-shrink-0 bg-amber-100 text-amber-700 border-amber-200">
-                  Juz {student.current_juz}
+                  {student.current_juz} Juz
                 </Badge>
               </div>
               <Progress value={student.progress} className="h-1.5 sm:h-2 bg-amber-100" />

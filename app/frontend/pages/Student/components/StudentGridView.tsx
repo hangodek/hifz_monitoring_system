@@ -20,6 +20,8 @@ interface Student {
   current_hifz_in_pages: string
   current_hifz_in_surah: string
   total_juz?: number
+  total_juz_memorized?: number
+  completed_surah_count?: number
   avatar?: string
   class_level: string
   phone?: string
@@ -72,10 +74,9 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
             <div className="grid grid-cols-1 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
-                <span className="text-xs sm:text-sm truncate">{student.current_hifz_in_surah}</span>
-              </div>
-              <div className="flex items-center gap-2 ml-5 sm:ml-6">
-                <span className="text-xs sm:text-sm text-muted-foreground">Total Juz {student.total_juz ?? student.current_hifz_in_juz} • {student.current_hifz_in_pages} pages</span>
+                <span className="text-xs sm:text-sm text-muted-foreground truncate">
+                  Total hafalan: {(student.total_juz_memorized ?? student.total_juz ?? parseInt(student.current_hifz_in_juz)) || 0} juz • {student.completed_surah_count ?? 0} surah
+                </span>
               </div>
             </div>
 
@@ -105,9 +106,9 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
             <div className="space-y-2">
               <div className="flex justify-between text-xs sm:text-sm">
                 <span>Kemajuan Keseluruhan</span>
-                <span>{Math.round((parseInt(student.current_hifz_in_juz) || 0) / 30 * 100)}%</span>
+                <span>{Math.round(((((student.total_juz_memorized ?? student.total_juz ?? parseInt(student.current_hifz_in_juz)) || 0) / 30) * 100))}%</span>
               </div>
-              <Progress value={Math.round((parseInt(student.current_hifz_in_juz) || 0) / 30 * 100)} className="h-1.5 sm:h-2" />
+              <Progress value={Math.round(((((student.total_juz_memorized ?? student.total_juz ?? parseInt(student.current_hifz_in_juz)) || 0) / 30) * 100))} className="h-1.5 sm:h-2" />
             </div>
 
             <div className="flex gap-2 pt-2">
