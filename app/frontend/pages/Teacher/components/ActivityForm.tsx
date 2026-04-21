@@ -47,6 +47,7 @@ interface ActivityFormProps {
 interface StudentSurahProgression {
   surah: string
   juz: number
+  resolved_juz?: number
   completion_status: string
   last_activity_at?: string | null
 }
@@ -74,7 +75,9 @@ export function ActivityForm({
 
   const completedSurahs = useMemo(() => {
     const completed = new Set<string>()
-    const progressionsForJuz = surahProgressions.filter((progression) => String(progression.juz) === selectedJuz)
+    const progressionsForJuz = surahProgressions.filter(
+      (progression) => String(progression.resolved_juz ?? progression.juz) === selectedJuz
+    )
     progressionsForJuz.forEach((progression) => {
       if (progression.surah && progression.completion_status === "tuntas") completed.add(progression.surah)
     })
@@ -88,7 +91,9 @@ export function ActivityForm({
       const surahsInJuz = JUZ_SURAH_MAP[juz] || []
       if (surahsInJuz.length === 0) return
 
-      const progressionsForJuz = surahProgressions.filter((progression) => String(progression.juz) === juz)
+      const progressionsForJuz = surahProgressions.filter(
+        (progression) => String(progression.resolved_juz ?? progression.juz) === juz
+      )
       const tuntasSurahs = new Set(
         progressionsForJuz
           .filter((progression) => progression.completion_status === "tuntas")
