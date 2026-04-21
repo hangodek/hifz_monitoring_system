@@ -13,7 +13,7 @@ class StudentsController < ApplicationController
     per_page = 20
     
     # Base query
-    students_query = Student.all.order(name: :asc)
+    students_query = students_query_with_memorization_summary.order(name: :asc)
     
     # Apply search filter if present
     if params[:search].present?
@@ -72,9 +72,7 @@ class StudentsController < ApplicationController
                 .limit(per_page)
                 .offset((page - 1) * per_page)
                 .map do |student|
-                  student.as_json.merge(
-                    avatar: avatar_url(student, size: :thumb)
-                  )
+                  serialize_student_for_index(student)
                 end
 
     # Get parent credentials from flash if available
@@ -106,7 +104,7 @@ class StudentsController < ApplicationController
     per_page = 20
     
     # Base query
-    students_query = Student.all.order(name: :asc)
+    students_query = students_query_with_memorization_summary.order(name: :asc)
     
     # Apply search filter if present
     if params[:search].present?
@@ -153,9 +151,7 @@ class StudentsController < ApplicationController
                 .limit(per_page)
                 .offset((page - 1) * per_page)
                 .map do |student|
-                  student.as_json.merge(
-                    avatar: avatar_url(student, size: :thumb)
-                  )
+                  serialize_student_for_index(student)
                 end
 
     render json: {
@@ -168,6 +164,19 @@ class StudentsController < ApplicationController
         has_more: page < (total_count.to_f / per_page).ceil
       }
     }
+  end
+
+  def students_query_with_memorization_summary
+    Student.includes(:student_surah_progressions)
+  end
+
+  def serialize_student_for_index(student)
+    student.as_json.merge(
+      avatar: avatar_url(student, size: :thumb),
+      total_juz_memorized: student.total_juz_memorized || 0,
+      completed_surah_count: student.student_surah_progressions.count { |progression| progression.completion_status == "tuntas" },
+      date_joined: student.created_at&.iso8601
+    )
   end
 
   def show
