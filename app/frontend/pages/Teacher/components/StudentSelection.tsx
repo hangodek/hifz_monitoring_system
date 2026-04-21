@@ -26,7 +26,6 @@ interface StudentSelectionProps {
 interface StudentSurahProgression {
   surah: string
   juz: number
-  resolved_juz?: number
   completion_status: string
   last_activity_at?: string | null
 }
@@ -64,7 +63,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
     const grouped = new Map<number, StudentSurahProgression[]>()
 
     surahProgressions.forEach((progression) => {
-      const key = Number(progression.resolved_juz ?? progression.juz)
+      const key = Number(progression.juz)
       if (!grouped.has(key)) grouped.set(key, [])
       grouped.get(key)?.push(progression)
     })

@@ -322,7 +322,7 @@ class StudentsController < ApplicationController
     student.as_json.merge(
       avatar: avatar_url(student, size: :thumb),
       total_juz_memorized: student.total_juz_memorized || 0,
-      completed_surah_count: student.student_surah_progressions.count { |progression| progression.completion_status == "tuntas" },
+      completed_surah_count: student.completed_surah_count,
       date_joined: student.created_at&.iso8601
     )
   end
@@ -335,7 +335,7 @@ class StudentsController < ApplicationController
   end
 
   def completed_surah_count_for(student)
-    student.student_surah_progressions.count { |progression| progression.completion_status == "tuntas" }
+    student.completed_surah_count
   end
 
   def show

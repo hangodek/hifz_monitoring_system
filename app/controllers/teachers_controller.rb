@@ -208,10 +208,8 @@ class TeachersController < ApplicationController
         .where(student_id: student_id)
         .select(:juz, :surah, :completion_status, :last_activity_at)
         .map do |progression|
-          resolved_juz = map_surah_to_juz(progression.surah)
           {
             juz: progression.juz,
-            resolved_juz: resolved_juz || progression.juz,
             surah: progression.surah,
             completion_status: progression.completion_status,
             last_activity_at: progression.last_activity_at&.iso8601
