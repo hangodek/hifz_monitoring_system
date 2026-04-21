@@ -68,23 +68,39 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
       grouped.get(key)?.push(progression)
     })
 
+    const currentJuz = Number(currentStudent?.current_hifz_in_juz)
+    if (!Number.isNaN(currentJuz) && currentJuz > 0 && !grouped.has(currentJuz)) {
+      grouped.set(currentJuz, [])
+    }
+
     return Array.from(grouped.entries())
       .sort((a, b) => a[0] - b[0])
       .map(([juz, progressions]) => {
         const mapBySurah = new Map<string, StudentSurahProgression>()
         progressions.forEach((item) => mapBySurah.set(item.surah, item))
 
-        const orderedSurahs = [...mapBySurah.values()].sort((a, b) => {
-          const surahOrder = JUZ_SURAH_MAP[String(juz)] || []
-          const indexA = surahOrder.indexOf(a.surah)
-          const indexB = surahOrder.indexOf(b.surah)
-          if (indexA === -1 || indexB === -1) return a.surah.localeCompare(b.surah)
-          return indexA - indexB
+        const surahOrder = JUZ_SURAH_MAP[String(juz)] || []
+
+        // Show full juz checklist with default "belum_tuntas" for untouched surahs.
+        const orderedSurahs = surahOrder.map((surahName) => {
+          return (
+            mapBySurah.get(surahName) || {
+              juz,
+              surah: surahName,
+              completion_status: "belum_tuntas",
+              last_activity_at: null,
+            }
+          )
         })
 
-        return { juz, progressions: orderedSurahs }
+        // Keep any legacy/non-canonical records visible at the end for transparency.
+        const extras = [...mapBySurah.values()]
+          .filter((item) => !surahOrder.includes(item.surah))
+          .sort((a, b) => a.surah.localeCompare(b.surah))
+
+        return { juz, progressions: [...orderedSurahs, ...extras] }
       })
-  }, [surahProgressions])
+  }, [surahProgressions, currentStudent?.current_hifz_in_juz])
 
   // Debounced search function with native fetch
   useEffect(() => {
