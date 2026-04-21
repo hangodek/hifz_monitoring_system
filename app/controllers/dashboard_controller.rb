@@ -9,15 +9,16 @@ class DashboardController < ApplicationController
 
   def index
     user = Current.user
+    activity_scope = Activity.where(created_at: ..Time.current)
 
     # Stats for cards
-    today_submissions = Activity.where(created_at: Date.current.all_day).count
-    students_revising_today = Activity.joins(:student)
+    today_submissions = activity_scope.where(created_at: Date.current.all_day).count
+    students_revising_today = activity_scope.joins(:student)
                                     .where(created_at: Date.current.all_day, activity_type: "revision")
                                     .select(:student_id)
                                     .distinct
                                     .count
-    students_memorizing_today = Activity.joins(:student)
+    students_memorizing_today = activity_scope.joins(:student)
                                       .where(created_at: Date.current.all_day, activity_type: "memorization")
                                       .select(:student_id)
                                       .distinct
@@ -42,7 +43,7 @@ class DashboardController < ApplicationController
                          .first(10)
 
     # Recent activities (last 5 for display)
-    recent_activities = Activity.includes(:student, audio_attachment: :blob)
+    recent_activities = activity_scope.includes(:student, audio_attachment: :blob)
                               .order(created_at: :desc)
                               .limit(5)
                               .map do |activity|
@@ -58,7 +59,7 @@ class DashboardController < ApplicationController
                               end
 
     # Get total count of all activities for the "View All" button
-    total_activities_count = Activity.count
+    total_activities_count = activity_scope.count
 
     # Daily submissions for chart (configurable date range)
     from_date = params[:from]&.to_date || 6.days.ago.to_date
@@ -67,7 +68,7 @@ class DashboardController < ApplicationController
     daily_submissions = (from_date..to_date).map do |date|
       {
         date: date.strftime("%m/%d"),
-        submissions: Activity.where(created_at: date.all_day).count
+        submissions: activity_scope.where(created_at: date.all_day).count
       }
     end
 
@@ -84,13 +85,13 @@ class DashboardController < ApplicationController
     monthly_progress = (5.months.ago.beginning_of_month.to_date..Date.current.end_of_month).
                       group_by(&:beginning_of_month).map do |month_start, dates|
       month_range = month_start..month_start.end_of_month
-      revision_count = Activity.where(created_at: month_range, activity_type: "revision").count
-      memorization_count = Activity.where(created_at: month_range, activity_type: "memorization").count
+      revision_count = activity_scope.where(created_at: month_range, activity_type: "revision").count
+      memorization_count = activity_scope.where(created_at: month_range, activity_type: "memorization").count
 
       {
         month: month_start.strftime("%b"),
-        revision: revision_count,
-        memorization: memorization_count
+          revision: revision_count,
+          memorization: memorization_count
       }
     end
 
@@ -118,7 +119,8 @@ class DashboardController < ApplicationController
     offset = (page - 1) * per_page
 
     # Fetch activities with pagination
-    activities_query = Activity.includes(:student, audio_attachment: :blob)
+    activities_query = Activity.where(created_at: ..Time.current)
+                  .includes(:student, audio_attachment: :blob)
                               .order(created_at: :desc)
     
     total_count = activities_query.count

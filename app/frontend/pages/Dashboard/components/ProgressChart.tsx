@@ -23,11 +23,11 @@ interface ProgressChartProps {
 
 export function ProgressChart({ data }: ProgressChartProps) {
   return (
-    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-emerald-50/30 hover:shadow-xl transition-shadow duration-200">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-emerald-900">
-          <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-            <TrendingUp className="h-5 w-5 text-emerald-600" />
+        <CardTitle className="flex items-center gap-2 text-gray-900">
+          <div className="h-10 w-10 rounded-full bg-gray-500/20 flex items-center justify-center">
+            <TrendingUp className="h-5 w-5 text-gray-600" />
           </div>
           Kemajuan Muraja'ah & Hafalan Bulanan
         </CardTitle>
@@ -55,20 +55,20 @@ export function ProgressChart({ data }: ProgressChartProps) {
             />
             <Line 
               type="monotone" 
+              dataKey="memorization" 
+              stroke="#3b82f6" 
+              strokeWidth={3} 
+              name="Aktivitas Hafalan"
+              dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line 
+              type="monotone" 
               dataKey="revision" 
               stroke="#10b981" 
               strokeWidth={3} 
               name="Aktivitas Muraja'ah"
               dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="memorization" 
-              stroke="#f59e0b" 
-              strokeWidth={3} 
-              name="Aktivitas Hafalan"
-              dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6 }}
             />
           </LineChart>

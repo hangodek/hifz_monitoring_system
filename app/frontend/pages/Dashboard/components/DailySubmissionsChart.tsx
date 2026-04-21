@@ -48,13 +48,13 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
   }
 
   return (
-    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30 hover:shadow-xl transition-shadow duration-200">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-orange-50/30 hover:shadow-xl transition-shadow duration-200">
       <CardHeader>
         <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <CardTitle className="flex items-center gap-2 text-blue-900">
-              <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <CalendarIcon className="h-5 w-5 text-blue-600" />
+            <CardTitle className="flex items-center gap-2 text-orange-900">
+              <div className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <CalendarIcon className="h-5 w-5 text-orange-600" />
               </div>
               Penyerahan Harian
             </CardTitle>
@@ -62,7 +62,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 cursor-pointer w-full md:w-auto">
+              <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 hover:text-orange-700 cursor-pointer w-full md:w-auto">
                 <CalendarIcon className="h-4 w-4 mr-2" />
                 <span className="text-xs sm:text-sm">
                   {format(dateRange.from, "dd MMM", { locale: id })} -{" "}
@@ -97,7 +97,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-blue-200 hover:bg-blue-50 cursor-pointer text-xs"
+                    className="border-orange-200 hover:bg-orange-50 cursor-pointer text-xs"
                     onClick={() =>
                       handleDateRangeChange({
                         from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
@@ -110,7 +110,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-blue-200 hover:bg-blue-50 cursor-pointer text-xs"
+                    className="border-orange-200 hover:bg-orange-50 cursor-pointer text-xs"
                     onClick={() =>
                       handleDateRangeChange({
                         from: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
@@ -146,8 +146,8 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
             <Bar dataKey="submissions" fill="url(#colorSubmissions)" radius={[4, 4, 0, 0]} />
             <defs>
               <linearGradient id="colorSubmissions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                <stop offset="5%" stopColor="#f97316" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#f97316" stopOpacity={0.3}/>
               </linearGradient>
             </defs>
           </BarChart>

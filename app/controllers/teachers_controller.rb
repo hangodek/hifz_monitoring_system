@@ -349,12 +349,21 @@ class TeachersController < ApplicationController
 
     sheet.add_row([ "DAFTAR PENILAIAN TAHFIZ QUR'AN" ], style: [ title_style ])
     sheet.add_row([ "#{institution_name} TAHUN AJARAN #{academic_year}" ], style: [ title_style ])
-    sheet.add_row([ "Nama Guru :", nil, teacher_name ], style: [ meta_label_style, meta_label_style, meta_value_style ])
-    sheet.add_row([ "Mata Pelajaran :", nil, "TAHFIZHUL QURAN" ], style: [ meta_label_style, meta_label_style, meta_value_style ])
-    sheet.add_row([ "Kelas :", nil, class_label ], style: [ meta_label_style, meta_label_style, meta_value_style ])
-    sheet.add_row([ "Semester :", nil, semester.to_s ], style: [ meta_label_style, meta_label_style, meta_value_style ])
-    sheet.add_row([ "Tahun Pelajaran :", nil, academic_year ], style: [ meta_label_style, meta_label_style, meta_value_style ])
-    sheet.add_row([ "KKM :", nil, "68" ], style: [ meta_label_style, meta_label_style, meta_value_style ])
+    metadata_rows = [
+      [ "Nama Guru :", teacher_name ],
+      [ "Mata Pelajaran :", "TAHFIZHUL QURAN" ],
+      [ "Kelas :", class_label ],
+      [ "Semester :", semester.to_s ],
+      [ "Tahun Pelajaran :", academic_year ],
+      [ "KKM :", "68" ]
+    ]
+
+    metadata_rows.each do |label, value|
+      sheet.add_row(
+        [ label, nil, value, nil, nil, nil ],
+        style: [ meta_label_style, meta_label_style, meta_value_style, meta_value_style, meta_value_style, meta_value_style ]
+      )
+    end
 
     # Keep title lines centered and tidy across the same width as metadata block.
     merge_sheet_cells(sheet, 0, 1, 5, 1)
