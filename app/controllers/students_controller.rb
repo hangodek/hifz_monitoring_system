@@ -401,7 +401,8 @@ class StudentsController < ApplicationController
     render inertia: "Student/Show", props: {
       student: student.as_json.merge(
         avatar: avatar_url(student, size: :medium),
-        total_juz_memorized: total_juz_completed_for_student(student)
+        total_juz_memorized: total_juz_completed_for_student(student),
+        completed_surah_count: student.completed_surah_count
       ),
       recent_activities: recent_activities,
       total_activities_count: total_activities_count,

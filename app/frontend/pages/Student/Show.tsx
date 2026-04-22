@@ -58,6 +58,7 @@ interface Student {
   current_hifz_in_pages: string
   current_hifz_in_surah: string
   total_juz_memorized: number
+  completed_surah_count?: number
   avatar?: string
   class_level: string
   phone?: string
@@ -424,14 +425,13 @@ export default function StudentShow({ student, recent_activities, total_activiti
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100/50 hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-900">Kemajuan Saat Ini</CardTitle>
+              <CardTitle className="text-sm font-medium text-purple-900">Surah Yang Saat Ini Dihafal</CardTitle>
               <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center">
                 <TrendingUp className="h-4 w-4 text-purple-600" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{student?.current_hifz_in_surah}</div>
-              <p className="text-xs text-purple-700/70">Total Juz {student?.total_juz_memorized} dari 30 Juz</p>
             </CardContent>
           </Card>
         </div>
@@ -739,8 +739,8 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   <div className="text-sm text-muted-foreground">Juz Tuntas</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">30</div>
-                  <div className="text-sm text-muted-foreground">Target Total Juz</div>
+                  <div className="text-2xl font-bold text-green-600">{student?.completed_surah_count || 0}</div>
+                  <div className="text-sm text-muted-foreground">Jumlah Surah yang Dihafal</div>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">{total_activities}</div>
