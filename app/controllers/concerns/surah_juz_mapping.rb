@@ -4,39 +4,67 @@ module SurahJuzMapping
   JUZ_TO_SURAHS = {
     1 => ["Al-Fatihah", "Al-Baqarah"],
     2 => ["Al-Baqarah"],
-    3 => ["Al-Baqarah", "Ali 'Imran"],
-    4 => ["Ali 'Imran", "An-Nisa"],
+    3 => ["Al-Baqarah", "Ali Imran"],
+    4 => ["Ali Imran", "An-Nisa"],
     5 => ["An-Nisa"],
     6 => ["An-Nisa", "Al-Ma'idah"],
     7 => ["Al-Ma'idah", "Al-An'am"],
     8 => ["Al-An'am", "Al-A'raf"],
     9 => ["Al-A'raf", "Al-Anfal"],
-    10 => ["Al-Anfal", "At-Tawbah"],
-    11 => ["At-Tawbah", "Yunus", "Hud"],
+    10 => ["Al-Anfal", "At-Taubah"],
+    11 => ["At-Taubah", "Yunus", "Hud"],
     12 => ["Hud", "Yusuf"],
     13 => ["Yusuf", "Ar-Ra'd", "Ibrahim"],
     14 => ["Al-Hijr", "An-Nahl"],
-    15 => ["Al-Isra", "Al-Kahf"],
-    16 => ["Al-Kahf", "Maryam", "Ta-Ha"],
+    15 => ["Al-Isra'", "Al-Kahf"],
+    16 => ["Al-Kahf", "Maryam", "Ta Ha"],
     17 => ["Al-Anbiya", "Al-Hajj"],
     18 => ["Al-Mu'minun", "An-Nur", "Al-Furqan"],
-    19 => ["Al-Furqan", "Ash-Shu'ara", "An-Naml"],
+    19 => ["Al-Furqan", "Asy-Syu'ara'", "An-Naml"],
     20 => ["An-Naml", "Al-Qasas"],
-    21 => ["Al-Qasas", "Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajdah"],
-    22 => ["Al-Ahzab", "Saba", "Fatir", "Ya-Sin"],
-    23 => ["Ya-Sin", "As-Saffat", "Sad", "Az-Zumar"],
+    21 => ["Al-Qasas", "Al-'Ankabut", "Ar-Rum", "Luqman", "As-Sajdah"],
+    22 => ["Al-Ahzab", "Saba'", "Fatir", "Ya Sin"],
+    23 => ["Ya Sin", "As-Saffat", "Sad", "Az-Zumar"],
     24 => ["Az-Zumar", "Ghafir", "Fussilat"],
-    25 => ["Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah", "Al-Ahqaf"],
-    26 => ["Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat"],
-    27 => ["Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"],
-    28 => ["Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim"],
-    29 => ["Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat"],
-    30 => ["An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"]
+    25 => ["Fussilat", "Asy-Syura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jasiyah", "Al-Ahqaf"],
+    26 => ["Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Az-Zariyat"],
+    27 => ["Az-Zariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"],
+    28 => ["Al-Mujadilah", "Al-Hasyr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Tagabun", "At-Talaq", "At-Tahrim"],
+    29 => ["Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddassir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat"],
+    30 => ["An-Naba'", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Insyiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Gasyiyah", "Al-Fajr", "Al-Balad", "Asy-Syams", "Al-Lail", "Ad-Duha", "Al-Insyirah", "At-Tin", "Al-'Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Adiyat", "Al-Qari'ah", "At-Takasur", "Al-'Asr", "Al-Humazah", "Al-Fil", "Quraisy", "Al-Ma'un", "Al-Kautsar", "Al-Kafirun", "An-Nasr", "Al-Lahab", "Al-Ikhlas", "Al-Falaq", "An-Nas"]
+  }.freeze
+
+  SURAH_NORMALIZATION_ALIASES = {
+    "alitmran" => "aliimran",
+    "attaubah" => "attaubah",
+    "attawbah" => "attaubah",
+    "alisra" => "alisra",
+    "yasin" => "yasin",
+    "ashyshura" => "asysyura",
+    "aljathiyah" => "aljasiyah",
+    "adhdhariyat" => "azzariyat",
+    "alhashr" => "alhasyr",
+    "attaghabun" => "attagabun",
+    "almuddaththir" => "almuddassir",
+    "annaba" => "annaba",
+    "alinshiqaq" => "alinsyiqaq",
+    "alghashiyah" => "algasyiyah",
+    "ashshams" => "asysyams",
+    "allayl" => "allail",
+    "ashsharh" => "alinsyirah",
+    "alalaq" => "alalaq",
+    "aladiyat" => "aladiyat",
+    "attakathur" => "attakasur",
+    "alasr" => "alasr",
+    "quraysh" => "quraisy",
+    "alkawthar" => "alkautsar",
+    "almasad" => "allahab"
   }.freeze
 
   SURAH_TO_JUZ = JUZ_TO_SURAHS.each_with_object({}) do |(juz, surahs), map|
     surahs.each do |surah|
-      key = surah.downcase.gsub(/[^a-z0-9]/, "")
+      raw_key = surah.to_s.downcase.gsub(/[^a-z0-9]/, "")
+      key = SURAH_NORMALIZATION_ALIASES.fetch(raw_key, raw_key)
       map[key] ||= juz
     end
   end.freeze
@@ -46,7 +74,7 @@ module SurahJuzMapping
   def map_surah_to_juz(surah_name)
     return nil if surah_name.blank?
 
-    key = surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")
+    key = normalize_surah_key(surah_name)
     SURAH_TO_JUZ[key]
   end
   
@@ -81,7 +109,12 @@ module SurahJuzMapping
   end
 
   def normalize_surah_name(surah_name)
-    surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")
+    normalize_surah_key(surah_name)
+  end
+
+  def normalize_surah_key(surah_name)
+    raw_key = surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")
+    SURAH_NORMALIZATION_ALIASES.fetch(raw_key, raw_key)
   end
 
   def total_juz_completed_for_student(student)

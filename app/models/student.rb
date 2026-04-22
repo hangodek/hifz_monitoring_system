@@ -1,4 +1,25 @@
 class Student < ApplicationRecord
+  SURAH_NORMALIZATION_ALIASES = {
+    "alitmran" => "aliimran",
+    "attawbah" => "attaubah",
+    "ashyshura" => "asysyura",
+    "aljathiyah" => "aljasiyah",
+    "adhdhariyat" => "azzariyat",
+    "alhashr" => "alhasyr",
+    "attaghabun" => "attagabun",
+    "almuddaththir" => "almuddassir",
+    "alinshiqaq" => "alinsyiqaq",
+    "alghashiyah" => "algasyiyah",
+    "ashshams" => "asysyams",
+    "allayl" => "allail",
+    "ashsharh" => "alinsyirah",
+    "aladiyat" => "aladiyat",
+    "attakathur" => "attakasur",
+    "quraysh" => "quraisy",
+    "alkawthar" => "alkautsar",
+    "almasad" => "allahab"
+  }.freeze
+
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [100, 100], preprocessed: true
     attachable.variant :medium, resize_to_limit: [300, 300], preprocessed: true
@@ -24,7 +45,7 @@ class Student < ApplicationRecord
     student_surah_progressions.where(completion_status: :tuntas).find_each do |progression|
       next if progression.juz.blank? || progression.surah.blank?
 
-      normalized_surah = progression.surah.to_s.downcase
+      normalized_surah = normalize_surah_name(progression.surah)
       juz_key = progression.juz.to_i
       tuntas_by_juz[juz_key] << normalized_surah unless tuntas_by_juz[juz_key].include?(normalized_surah)
     end
@@ -36,7 +57,7 @@ class Student < ApplicationRecord
       next if surah_names_in_juz.nil? || surah_names_in_juz.empty?
 
       # Normalize the names from the mapping
-      normalized_surah_names_in_juz = surah_names_in_juz.map(&:downcase)
+      normalized_surah_names_in_juz = surah_names_in_juz.map { |surah| normalize_surah_name(surah) }
       completed_surahs_in_juz = tuntas_by_juz[juz_number]
 
       # Check if all expected surahs in this juz are tuntas for this juz.
@@ -82,7 +103,8 @@ class Student < ApplicationRecord
   private
 
   def normalize_surah_name(surah_name)
-    surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")
+    raw_key = surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")
+    SURAH_NORMALIZATION_ALIASES.fetch(raw_key, raw_key)
   end
 
   def acceptable_avatar

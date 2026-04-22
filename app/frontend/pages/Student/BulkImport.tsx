@@ -220,7 +220,7 @@ export default function BulkImport() {
               Download Template
             </CardTitle>
             <CardDescription>
-              Download template Excel terlebih dahulu. Template memuat profil siswa + kolom status Juz 30 per surah (An-Naba sampai An-Nas) dengan nilai tuntas/belum_tuntas.
+              Download template Excel terlebih dahulu. Template memuat profil siswa + kolom status Juz 30 per surah (An-Naba' sampai An-Nas) dengan nilai tuntas/belum_tuntas.
             </CardDescription>
           </CardHeader>
           <CardContent>

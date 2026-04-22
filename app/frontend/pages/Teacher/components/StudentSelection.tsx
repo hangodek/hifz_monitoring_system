@@ -30,6 +30,10 @@ interface StudentSurahProgression {
   last_activity_at?: string | null
 }
 
+function normalizeSurahName(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "")
+}
+
 export function StudentSelection({ students, selectedStudent, setSelectedStudent, currentStudent }: StudentSelectionProps) {
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -77,14 +81,16 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
       .sort((a, b) => a[0] - b[0])
       .map(([juz, progressions]) => {
         const mapBySurah = new Map<string, StudentSurahProgression>()
-        progressions.forEach((item) => mapBySurah.set(item.surah, item))
+        progressions.forEach((item) => mapBySurah.set(normalizeSurahName(item.surah || ""), item))
 
         const surahOrder = JUZ_SURAH_MAP[String(juz)] || []
+        const canonicalSurahKeys = new Set(surahOrder.map((surahName) => normalizeSurahName(surahName)))
 
         // Show full juz checklist with default "belum_tuntas" for untouched surahs.
         const orderedSurahs = surahOrder.map((surahName) => {
+          const key = normalizeSurahName(surahName)
           return (
-            mapBySurah.get(surahName) || {
+            mapBySurah.get(key) || {
               juz,
               surah: surahName,
               completion_status: "belum_tuntas",
@@ -95,7 +101,7 @@ export function StudentSelection({ students, selectedStudent, setSelectedStudent
 
         // Keep any legacy/non-canonical records visible at the end for transparency.
         const extras = [...mapBySurah.values()]
-          .filter((item) => !surahOrder.includes(item.surah))
+          .filter((item) => !canonicalSurahKeys.has(normalizeSurahName(item.surah || "")))
           .sort((a, b) => a.surah.localeCompare(b.surah))
 
         return { juz, progressions: [...orderedSurahs, ...extras] }

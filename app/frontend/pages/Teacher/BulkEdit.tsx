@@ -87,42 +87,20 @@ function normalizeSurahName(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "")
 }
 
-function createEmptyRow(surah: string, juz: string, status = "belum_tuntas"): BulkRow {
-  const rowKey = `${juz}-${surah}`
-
-  return {
-    rowKey,
-    activityId: "",
-    juz,
-    surah,
-    ayat: "",
-    completionStatus: status,
-    kelancaran: "",
-    fashohah: "",
-    tajwid: "",
-    notes: "",
-    originalActivityId: "",
-    originalJuz: juz,
-    originalSurah: surah,
-    originalAyat: "",
-    originalCompletionStatus: status,
-    originalKelancaran: "",
-    originalFashohah: "",
-    originalTajwid: "",
-    originalNotes: "",
-  }
-}
-
 function buildRowsForJuz(juz: string, payload: ActivityPayload): BulkRow[] {
   const surahs = JUZ_SURAH_MAP[juz] || []
 
   return surahs.map((surah) => {
+    const normalizedSurah = normalizeSurahName(surah)
     const latestActivity = payload.activities
       .filter((activity) => activity.activity_type === "memorization")
-      .find((activity) => String(activity.juz || "") === juz && activity.surah_from === surah)
+      .find(
+        (activity) =>
+          String(activity.juz || "") === juz && normalizeSurahName(activity.surah_from || "") === normalizedSurah
+      )
 
     const progression = payload.surah_progressions.find(
-      (item) => String(item.juz) === juz && item.surah === surah
+      (item) => String(item.juz) === juz && normalizeSurahName(item.surah || "") === normalizedSurah
     )
 
     const completionStatus = progression?.completion_status || latestActivity?.completion_status || "belum_tuntas"

@@ -51,6 +51,10 @@ interface StudentSurahProgression {
   last_activity_at?: string | null
 }
 
+function normalizeSurahName(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "")
+}
+
 export function ActivityForm({
   activityType,
   setActivityType,
@@ -76,7 +80,9 @@ export function ActivityForm({
     const completed = new Set<string>()
     const progressionsForJuz = surahProgressions.filter((progression) => String(progression.juz) === selectedJuz)
     progressionsForJuz.forEach((progression) => {
-      if (progression.surah && progression.completion_status === "tuntas") completed.add(progression.surah)
+      if (progression.surah && progression.completion_status === "tuntas") {
+        completed.add(normalizeSurahName(progression.surah))
+      }
     })
     return completed
   }, [surahProgressions, selectedJuz])
@@ -92,10 +98,10 @@ export function ActivityForm({
       const tuntasSurahs = new Set(
         progressionsForJuz
           .filter((progression) => progression.completion_status === "tuntas")
-          .map((progression) => progression.surah)
+          .map((progression) => normalizeSurahName(progression.surah))
       )
 
-      if (surahsInJuz.every((surah) => tuntasSurahs.has(surah))) {
+      if (surahsInJuz.every((surah) => tuntasSurahs.has(normalizeSurahName(surah)))) {
         completed.add(juz)
       }
     })
@@ -129,7 +135,7 @@ export function ActivityForm({
     }
 
     const defaultSurah = JUZ_SURAH_MAP[selectedJuz]?.[0] || ""
-    const defaultStatus = completedSurahs.has(defaultSurah) ? "tuntas" : "belum_tuntas"
+    const defaultStatus = completedSurahs.has(normalizeSurahName(defaultSurah)) ? "tuntas" : "belum_tuntas"
     setActivityDetails((prev) => ({ ...prev, surah: defaultSurah, completionStatus: defaultStatus }))
   }, [completedSurahs, selectedJuz, setActivityDetails])
 

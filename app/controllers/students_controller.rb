@@ -650,7 +650,7 @@ class StudentsController < ApplicationController
           
           # Example rows (5 siswa) with different Juz 30 patterns.
           base_examples = [
-            ["320120010001", "S-2026-001", "Ahmad Fauzan", "Laki-laki", "Bandung", "2012-02-10", "Budi Fauzan", "Siti Aminah", "081210000001", "Jl. Cendana 1", "7A", "Aktif", "30", "An-Naba"],
+            ["320120010001", "S-2026-001", "Ahmad Fauzan", "Laki-laki", "Bandung", "2012-02-10", "Budi Fauzan", "Siti Aminah", "081210000001", "Jl. Cendana 1", "7A", "Aktif", "30", "An-Naba'"],
             ["320120010002", "S-2026-002", "Naila Putri", "Perempuan", "Bekasi", "2011-09-21", "Rizal Putra", "Nur Aisyah", "081210000002", "Jl. Melati 5", "7B", "Aktif", "30", "An-Nazi'at"],
             ["320120010003", "S-2026-003", "Rafi Maulana", "Laki-laki", "Depok", "2012-05-14", "Deni Maulana", "Fitri Handayani", "081210000003", "Jl. Kenanga 3", "8A", "Aktif", "30", "Abasa"],
             ["320120010004", "S-2026-004", "Alya Rahma", "Perempuan", "Bogor", "2011-12-01", "Irfan Rahma", "Dewi Lestari", "081210000004", "Jl. Anggrek 7", "8B", "Aktif", "30", "At-Takwir"],
