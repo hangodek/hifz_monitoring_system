@@ -174,8 +174,8 @@ class StudentsController < ApplicationController
     recent_activities = activities.limit(5).map do |activity|
       {
         id: activity.id,
-        activity: format_activity_description(activity),
-                    time: time_ago_in_words(activity.created_at) + " yang lalu",
+        activity: activity.description,
+        time: time_ago_in_words(activity.created_at) + " yang lalu",
         type: activity.activity_type,
         date: activity.created_at.strftime("%Y-%m-%d"),
         created_at: activity.created_at,
@@ -207,7 +207,7 @@ class StudentsController < ApplicationController
       {
         name: type == "memorization" ? "Hafalan" : "Murajaah",
         value: count,
-        color: type_color(type)
+        color: Activity.color_for_type(type)
       }
     end
 
@@ -261,7 +261,7 @@ class StudentsController < ApplicationController
                                 .map do |activity|
                                   {
                                     id: activity.id,
-                                    activity: format_activity_description(activity),
+                                    activity: activity.description,
                                     time: time_ago_in_words(activity.created_at) + " yang lalu",
                                     type: activity.activity_type,
                                     surah: activity.surah,

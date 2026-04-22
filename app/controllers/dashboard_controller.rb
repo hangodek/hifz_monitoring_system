@@ -51,7 +51,7 @@ class DashboardController < ApplicationController
                                   id: activity.id,
                                   student_id: activity.student.id,
                                   student: activity.student.name,
-                                  activity: format_activity_description(activity),
+                                  activity: activity.description,
                                   time: time_ago_in_words(activity.created_at) + " yang lalu",
                                   type: activity.activity_type,
                                   audio_url: activity.audio.attached? ? url_for(activity.audio) : nil
@@ -131,7 +131,7 @@ class DashboardController < ApplicationController
                                     id: activity.id,
                                     student_id: activity.student.id,
                                     student: activity.student.name,
-                                    activity: format_activity_description(activity),
+                                    activity: activity.description,
                                     time: time_ago_in_words(activity.created_at) + " yang lalu",
                                     type: activity.activity_type,
                                     grade: nil,
@@ -165,15 +165,5 @@ class DashboardController < ApplicationController
     # Calculate progress as percentage (30 Juz = 100%)
     ((current_juz.to_f / 30) * 100).round
   end
-
-  def format_activity_description(activity)
-    case activity.activity_type
-    when "memorization"
-      "Menghafal Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
-    when "revision"
-      "Murajaah Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
-    else
-      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
-    end
-  end
 end
+

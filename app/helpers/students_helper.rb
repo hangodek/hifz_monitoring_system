@@ -6,23 +6,6 @@ module StudentsHelper
     k + f + t
   end
 
-  def format_activity_description(activity)
-    ayat_display = if activity.ayat_from.present? && activity.ayat_to.present? && activity.ayat_from == activity.ayat_to
-      activity.ayat_from
-    else
-      "#{activity.ayat_from}-#{activity.ayat_to}"
-    end
-
-    case activity.activity_type
-    when "memorization"
-      "Menghafal Surah #{activity.surah} ayat #{ayat_display}"
-    when "revision"
-      "Murajaah Surah #{activity.surah} ayat #{ayat_display}"
-    else
-      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{ayat_display}"
-    end
-  end
-
   def calculate_monthly_progress(student, activities)
     current_month = Date.current.beginning_of_month
     start_date = current_month - 3.months
@@ -47,16 +30,5 @@ module StudentsHelper
     end
 
     monthly_data
-  end
-
-  def type_color(type)
-    case type
-    when "memorization"
-      "#3b82f6" # blue
-    when "revision"
-      "#10b981" # green
-    else
-      "#6b7280" # gray
-    end
   end
 end

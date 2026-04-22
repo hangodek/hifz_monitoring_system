@@ -61,4 +61,37 @@ class Activity < ApplicationRecord
 
     StudentSurahProgression.sync_from_activities!(student: student, juz: juz, surah: surah)
   end
+
+  public
+
+  def description
+    ayat_display = if ayat_from.present? && ayat_to.present? && ayat_from == ayat_to
+      ayat_from.to_s
+    else
+      "#{ayat_from}-#{ayat_to}"
+    end
+
+    if memorization?
+      "Menghafal Surah #{surah} ayat #{ayat_display}"
+    elsif revision?
+      "Murajaah Surah #{surah} ayat #{ayat_display}"
+    else
+      "#{activity_type.to_s.humanize} Surah #{surah} ayat #{ayat_display}"
+    end
+  end
+
+  def color_code
+    self.class.color_for_type(activity_type)
+  end
+
+  def self.color_for_type(type)
+    type_str = type.to_s
+    if type_str == "memorization"
+      "#3b82f6" # blue
+    elsif type_str == "revision"
+      "#10b981" # green
+    else
+      "#6b7280" # gray
+    end
+  end
 end

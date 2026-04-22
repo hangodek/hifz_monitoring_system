@@ -3,6 +3,7 @@ class ParentsController < ApplicationController
   include AvatarHelper
   include RoleAuthorization
   include SurahJuzMapping
+  include StudentsHelper
 
   skip_before_action :authorize_role
   before_action :require_parent!
@@ -10,13 +11,13 @@ class ParentsController < ApplicationController
 
   def show
     student = Current.user.student
-    activities = student.activities.order(created_at: :desc)
+    activities = student.activities.includes(audio_attachment: :blob).order(created_at: :desc)
 
     # Get recent activities (last 5 for display)
     recent_activities = activities.limit(5).map do |activity|
       {
         id: activity.id,
-        activity: format_activity_description(activity),
+        activity: activity.description,
         time: time_ago_in_words(activity.created_at) + " yang lalu",
         type: activity.activity_type,
         date: activity.created_at.strftime("%Y-%m-%d"),
@@ -45,7 +46,7 @@ class ParentsController < ApplicationController
       {
         name: type == "memorization" ? "Hafalan" : "Murajaah",
         value: count,
-        color: type_color(type)
+        color: Activity.color_for_type(type)
       }
     end
 
@@ -96,7 +97,7 @@ class ParentsController < ApplicationController
                                 .map do |activity|
                                   {
                                     id: activity.id,
-                                    activity: format_activity_description(activity),
+                                    activity: activity.description,
                                     time: time_ago_in_words(activity.created_at) + " yang lalu",
                                     type: activity.activity_type,
                                     grade: nil,
@@ -132,53 +133,5 @@ class ParentsController < ApplicationController
     end
   end
 
-  def format_activity_description(activity)
-    case activity.activity_type
-    when "memorization"
-      "Menghafal Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
-    when "revision"
-      "Murajaah Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
-    else
-      "#{activity.activity_type.humanize} Surah #{activity.surah} ayat #{activity.ayat_from}-#{activity.ayat_to}"
-    end
-  end
 
-  def calculate_monthly_progress(student, activities)
-    # Always show 3 months back and 3 months forward
-    current_month = Date.current.beginning_of_month
-    start_date = current_month - 3.months
-    end_date = current_month + 3.months
-    
-    monthly_data = []
-    month_iterator = start_date
-
-    # Calculate cumulative total juz memorized (non-linear memorization friendly).
-    while month_iterator <= end_date
-      month_name = month_iterator.strftime("%b")
-      total_juz_hafal = total_juz_completed_for_student_up_to(student, month_iterator.end_of_month)
-
-      is_projected = month_iterator > current_month
-
-      monthly_data << {
-        month: month_name,
-        completed: total_juz_hafal,
-        is_projected: is_projected
-      }
-
-      month_iterator = month_iterator.next_month
-    end
-
-    monthly_data
-  end
-
-  def type_color(type)
-    case type
-    when "memorization"
-      "#3b82f6" # blue
-    when "revision"
-      "#10b981" # green
-    else
-      "#6b7280" # gray
-    end
-  end
 end
