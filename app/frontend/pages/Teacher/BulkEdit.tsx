@@ -125,7 +125,7 @@ function buildRowsForJuz(juz: string, payload: ActivityPayload): BulkRow[] {
       (item) => String(item.juz) === juz && item.surah === surah
     )
 
-    const completionStatus = latestActivity?.completion_status || progression?.completion_status || "belum_tuntas"
+    const completionStatus = progression?.completion_status || latestActivity?.completion_status || "belum_tuntas"
     const ayat = latestActivity?.page_from ? String(latestActivity.page_from) : ""
 
     const kelancaran = latestActivity?.kelancaran ? String(latestActivity.kelancaran) : ""
