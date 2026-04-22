@@ -20,6 +20,32 @@ import { useState } from "react"
 import axios from "axios"
 import { Link } from "@inertiajs/react"
 
+const formatRelativeTimeIndonesian = (time: string) => {
+  return time
+    .replace(/less than (an? |1 )?minutes?/i, "kurang dari 1 menit")
+    .replace(/^about\s+/i, "")
+    .replace(/\bminuts\b/i, "menit")
+    .replace(/\bminute\b/i, "menit")
+    .replace(/\bminutes\b/i, "menit")
+    .replace(/\bhour\b/i, "jam")
+    .replace(/\bhours\b/i, "jam")
+    .replace(/\bday\b/i, "hari")
+    .replace(/\bdays\b/i, "hari")
+    .replace(/\bweek\b/i, "minggu")
+    .replace(/\bweeks\b/i, "minggu")
+    .replace(/\bmonth\b/i, "bulan")
+    .replace(/\bmonths\b/i, "bulan")
+    .replace(/\byear\b/i, "tahun")
+    .replace(/\byears\b/i, "tahun")
+    .replace(/\bminute ago\b/i, "menit yang lalu")
+    .replace(/\bhour ago\b/i, "jam yang lalu")
+    .replace(/\bday ago\b/i, "hari yang lalu")
+    .replace(/\bweek ago\b/i, "minggu yang lalu")
+    .replace(/\bmonth ago\b/i, "bulan yang lalu")
+    .replace(/\byear ago\b/i, "tahun yang lalu")
+    .replace(/\bago\b/i, "yang lalu")
+}
+
 // Activity types - konsisten dengan Teacher mode
 const activityTypes = [
   { value: "memorization", label: "Hafalan", icon: BookOpen, color: "bg-blue-500" },
@@ -182,7 +208,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                               : activity.juz || 'N/A'}
                           </div>
                           <div>
-                            <span className="font-medium">Waktu:</span> {activity.time}
+                            <span className="font-medium">Waktu:</span> {formatRelativeTimeIndonesian(activity.time)}
                           </div>
                         </div>
                         {activity.notes && (
@@ -253,7 +279,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                 {activity.student}
               </Link>
               <p className="text-xs text-muted-foreground line-clamp-2">{activity.activity}</p>
-              <p className="text-xs text-muted-foreground">{activity.time}</p>
+              <p className="text-xs text-muted-foreground">{formatRelativeTimeIndonesian(activity.time)}</p>
               {activity.audio_url && (
                 <div className="mt-1">
                   <AudioPlayer 
