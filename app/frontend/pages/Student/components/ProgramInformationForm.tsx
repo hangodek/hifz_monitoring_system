@@ -44,7 +44,7 @@ export function ProgramInformationForm({ formData, errors, handleInputChange }: 
           <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center">
             <BookOpen className="h-5 w-5 text-amber-600" />
           </div>
-          Informasi Program Hifz
+          Informasi Program Hafalan
         </CardTitle>
         <CardDescription>
           Detail kemajuan hafalan Al-Quran siswa

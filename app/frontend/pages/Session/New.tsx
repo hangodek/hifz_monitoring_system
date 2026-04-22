@@ -49,7 +49,7 @@ export default function Session() {
           <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-white to-blue-50/30">
             <CardHeader className="space-y-1 pb-4">
               <CardTitle className="text-center text-2xl font-bold">
-                Masuk ke Dasbor
+                Masuk ke Dashboard
               </CardTitle>
               <p className="text-center text-sm text-muted-foreground">{appSubtitle}</p>
             </CardHeader>

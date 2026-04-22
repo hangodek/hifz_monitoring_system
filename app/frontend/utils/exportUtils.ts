@@ -232,6 +232,6 @@ export const exportStudentsToExcel = (students: Student[], filteredStudents?: St
   XLSX.utils.book_append_sheet(workbook, summarySheet, 'Laporan')
   
   // Generate and download the file
-  const fileName = `laporan-hifz-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
+  const fileName = `laporan-hafalan-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
   XLSX.writeFile(workbook, fileName)
 }

@@ -274,11 +274,11 @@ export default function StudentShow({ student, recent_activities, total_activiti
           <CardContent className="text-center py-12">
             <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Siswa tidak ditemukan</h3>
-            <p className="text-muted-foreground">Kembali ke daftar siswa atau dasbor.</p>
+            <p className="text-muted-foreground">Kembali ke daftar siswa atau dashboard.</p>
             <div className="mt-4 flex gap-2 justify-center">
               <Button onClick={() => router.visit("/students")} className="cursor-pointer">Daftar Siswa</Button>
               <Button variant="outline" onClick={() => router.visit("/dashboard")} className="cursor-pointer">
-                Dasbor
+                Dashboard
               </Button>
             </div>
           </CardContent>
