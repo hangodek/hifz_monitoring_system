@@ -9,9 +9,9 @@ class AppSetting < ApplicationRecord
   # Singleton pattern - only one settings record should exist
   def self.instance
     first_or_create!(
-      app_name: "Sistem Manajemen Hifz",
+      app_name: "Sistem Monitoring Hafalan",
       app_subtitle: "Sistem Monitoring Hafalan",
-      institution_name: "MATAN"
+      institution_name: "Sistem Monitoring Hafalan"
     )
   end
 

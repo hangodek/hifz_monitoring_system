@@ -175,7 +175,7 @@ export default function SettingsEdit({ setting: initialSetting, errors }: Settin
                   type="text"
                   value={setting.app_name}
                   onChange={(e) => setSetting({ ...setting, app_name: e.target.value })}
-                  placeholder="Sistem Manajemen Hifz"
+                  placeholder="Sistem Monitoring Hafalan"
                   required
                 />
               </div>
@@ -198,7 +198,7 @@ export default function SettingsEdit({ setting: initialSetting, errors }: Settin
                   type="text"
                   value={setting.institution_name || ''}
                   onChange={(e) => setSetting({ ...setting, institution_name: e.target.value })}
-                  placeholder="Contoh: Ma'had MATAN, Universitas Islam, dll"
+                  placeholder="Sistem Monitoring Hafalan"
                 />
               </div>
             </CardContent>

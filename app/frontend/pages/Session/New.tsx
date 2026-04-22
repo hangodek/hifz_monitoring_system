@@ -29,21 +29,23 @@ export default function Session() {
   }
 
   // Use dynamic logo if available, fallback to default
-  const appName = app_settings?.app_name || "Sistem Manajemen Hifz"
-  const appSubtitle = app_settings?.app_subtitle || "Sistem Manajemen Hifz MATAN"
+  const appName = app_settings?.app_name || "Sistem Monitoring Hafalan"
+  const appSubtitle = app_settings?.app_subtitle || "Sistem Monitoring Hafalan"
 
   return (
     <>
       <SessionLayout>
         <div className="flex flex-col items-center gap-6 w-full max-w-sm">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-2xl opacity-20"></div>
-            <img 
-              src={app_settings?.logo_url || "/default_logo.png"} 
-              alt={`${appName} Logo`}
-              className="relative w-32 h-32 object-contain"
-            />
-          </div>
+          {app_settings?.logo_url && (
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-2xl opacity-20"></div>
+              <img 
+                src={app_settings.logo_url} 
+                alt={`${appName} Logo`}
+                className="relative w-32 h-32 object-contain"
+              />
+            </div>
+          )}
           <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-white to-blue-50/30">
             <CardHeader className="space-y-1 pb-4">
               <CardTitle className="text-center text-2xl font-bold">

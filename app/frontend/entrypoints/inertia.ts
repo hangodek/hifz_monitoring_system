@@ -26,7 +26,7 @@ createInertiaApp({
   //
   title: title => {
     // Get app name from shared props if available
-    const appName = (window as any).appName || 'Sistem Manajemen Hifz'
+    const appName = (window as any).appName || 'Sistem Monitoring Hafalan'
     return title ? `${title} - ${appName}` : appName
   },
 
