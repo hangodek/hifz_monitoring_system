@@ -341,6 +341,7 @@ class StudentsController < ApplicationController
   def show
     student = Student.find(params[:id])
     activities = student.activities.order(created_at: :desc)
+    today_submissions = activities.where(created_at: Time.zone.now.all_day).count
 
     # Get recent activities (last 5 for display)
     recent_activities = activities.limit(5).map do |activity|
@@ -363,10 +364,13 @@ class StudentsController < ApplicationController
     total_activities_count = activities.count
 
     # Daily submission counts from all activities (not limited to recent items).
+    # Build date keys in app timezone to keep charts and "today" count consistent.
     daily_submission_counts = activities
-                  .group("DATE(created_at)")
-                  .count
-                  .transform_keys(&:to_s)
+      .pluck(:created_at)
+      .each_with_object(Hash.new(0)) do |created_at, counts|
+        key = created_at.in_time_zone.to_date.to_s
+        counts[key] += 1
+      end
 
     # Calculate monthly progress (cumulative juz progress)
     monthly_progress = calculate_monthly_progress(student, activities)
@@ -397,12 +401,13 @@ class StudentsController < ApplicationController
     render inertia: "Student/Show", props: {
       student: student.as_json.merge(
         avatar: avatar_url(student, size: :medium),
-        total_juz_memorized: total_juz_completed_for_student(student),
-        completed_surah_count: student.completed_surah_count
+        total_juz_memorized: total_juz_completed_for_student(student)
       ),
       recent_activities: recent_activities,
       total_activities_count: total_activities_count,
       total_activities: activities.count,
+      today_submissions: today_submissions,
+      today_date: Time.zone.today.to_s,
       daily_submission_counts: daily_submission_counts,
       monthly_progress: monthly_progress,
       type_distribution: type_distribution,

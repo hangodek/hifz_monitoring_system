@@ -12,8 +12,6 @@ class ActivitiesController < ApplicationController
     @activity = @student.activities.build(activity_params)
 
     if @activity.save
-      update_student_current_hifz!(@student, @activity)
-
       # Invalidate cache for teacher mode
       Rails.cache.delete("teacher_active_students")
       Rails.cache.delete("student_activities_#{@student.id}")
@@ -65,18 +63,6 @@ class ActivitiesController < ApplicationController
       :tajwid, 
         :completion_status,
       :audio
-    )
-  end
-
-  def update_student_current_hifz!(student, activity)
-    # "Surah saat ini" should follow the latest memorization setoran,
-    # regardless of completion status.
-    return unless activity.memorization?
-
-    student.update_columns(
-      current_hifz_in_juz: activity.juz.to_s,
-      current_hifz_in_surah: activity.surah.to_s,
-      updated_at: Time.current
     )
   end
 end
