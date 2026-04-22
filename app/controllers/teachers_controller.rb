@@ -207,7 +207,11 @@ class TeachersController < ApplicationController
       surah_progressions = StudentSurahProgression
         .where(student_id: student_id)
         .select(:juz, :surah, :completion_status, :last_activity_at)
-        .map do |progression|
+        .filter_map do |progression|
+          expected_surahs = Array(JUZ_TO_SURAHS[progression.juz.to_i]).map { |name| normalize_surah_name(name) }
+          normalized_surah = normalize_surah_name(progression.surah)
+          next if expected_surahs.present? && !expected_surahs.include?(normalized_surah)
+
           {
             juz: progression.juz,
             surah: progression.surah,

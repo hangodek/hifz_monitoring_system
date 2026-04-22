@@ -64,38 +64,7 @@ FEMALE_FIRST_NAMES = ["Maryam", "Fatima", "Aisha", "Khadija", "Zainab", "Safiya"
 LAST_NAMES = ["Khan", "Ahmed", "Ali", "Hussain", "Malik", "Abdullah", "Rahman", "Siddiqui", "Farooq", "Iqbal"].freeze
 CITIES = ["Jakarta", "Surabaya", "Bandung", "Medan", "Semarang", "Makassar", "Palembang", "Depok", "Tangerang", "Bekasi"].freeze
 
-JUZ_TO_SURAHS = {
-  1 => ["Al-Fatihah", "Al-Baqarah"],
-  2 => ["Al-Baqarah"],
-  3 => ["Al-Baqarah", "Ali 'Imran"],
-  4 => ["Ali 'Imran", "An-Nisa"],
-  5 => ["An-Nisa"],
-  6 => ["An-Nisa", "Al-Ma'idah"],
-  7 => ["Al-Ma'idah", "Al-An'am"],
-  8 => ["Al-An'am", "Al-A'raf"],
-  9 => ["Al-A'raf", "Al-Anfal"],
-  10 => ["Al-Anfal", "At-Tawbah"],
-  11 => ["At-Tawbah", "Yunus", "Hud"],
-  12 => ["Hud", "Yusuf"],
-  13 => ["Yusuf", "Ar-Ra'd", "Ibrahim"],
-  14 => ["Al-Hijr", "An-Nahl"],
-  15 => ["Al-Isra", "Al-Kahf"],
-  16 => ["Al-Kahf", "Maryam", "Ta-Ha"],
-  17 => ["Al-Anbiya", "Al-Hajj"],
-  18 => ["Al-Mu'minun", "An-Nur"],
-  19 => ["An-Nur", "Al-Furqan", "Ash-Shu'ara"],
-  20 => ["An-Naml", "Al-Qasas"],
-  21 => ["Al-Qasas", "Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajdah"],
-  22 => ["Al-Ahzab"],
-  23 => ["Al-Ahzab", "Saba", "Fatir", "Ya-Sin"],
-  24 => ["As-Saffat", "Sad", "Az-Zumar"],
-  25 => ["Az-Zumar", "Ghafir", "Fussilat"],
-  26 => ["Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah"],
-  27 => ["Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat"],
-  28 => ["At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"],
-  29 => ["Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim"],
-  30 => ["Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat", "An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"]
-}.freeze
+JUZ_TO_SURAHS = SurahJuzMapping::JUZ_TO_SURAHS
 
 RANDOM = Random.new(42)
 

@@ -65,6 +65,7 @@ export const JUZ_SURAH_MAP: Record<string, string[]> = {
     "At-Tahrim"
   ],
   "27": [
+    "Adh-Dhariyat",
     "At-Tur",
     "An-Najm",
     "Al-Qamar",
@@ -73,7 +74,6 @@ export const JUZ_SURAH_MAP: Record<string, string[]> = {
     "Al-Hadid"
   ],
   "26": [
-    "Al-Ahqaf",
     "Muhammad",
     "Al-Fath",
     "Al-Hujurat",
@@ -81,22 +81,25 @@ export const JUZ_SURAH_MAP: Record<string, string[]> = {
     "Adh-Dhariyat"
   ],
   "25": [
+    "Fussilat",
+    "Ash-Shura",
+    "Az-Zukhruf",
+    "Ad-Dukhan",
+    "Al-Jathiyah",
+    "Al-Ahqaf"
+  ],
+  "24": [
     "Az-Zumar",
     "Ghafir",
     "Fussilat"
   ],
-  "24": [
+  "23": [
+    "Ya-Sin",
     "As-Saffat",
     "Sad",
     "Az-Zumar"
   ],
-  "23": [
-    "Al-Ahzab",
-    "Saba",
-    "Fatir",
-    "Ya-Sin"
-  ],
-  "22": ["Al-Ahzab"],
+  "22": ["Al-Ahzab", "Saba", "Fatir", "Ya-Sin"],
   "21": [
     "Al-Qasas",
     "Al-Ankabut",
@@ -105,8 +108,8 @@ export const JUZ_SURAH_MAP: Record<string, string[]> = {
     "As-Sajdah"
   ],
   "20": ["An-Naml", "Al-Qasas"],
-  "19": ["An-Nur", "Al-Furqan", "Ash-Shu'ara"],
-  "18": ["Al-Mu'minun", "An-Nur"],
+  "19": ["Al-Furqan", "Ash-Shu'ara", "An-Naml"],
+  "18": ["Al-Mu'minun", "An-Nur", "Al-Furqan"],
   "17": ["Al-Anbiya", "Al-Hajj"],
   "16": ["Al-Kahf", "Maryam", "Ta-Ha"],
   "15": ["Al-Isra", "Al-Kahf"],
