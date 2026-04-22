@@ -2,6 +2,18 @@
 
 one:
   student: one
+  activity_type: memorization
+  surah: Al-Fatihah
+  ayat_from: 1
+  ayat_to: 7
+  juz: 1
+  completion_status: belum_tuntas
 
 two:
   student: two
+  activity_type: revision
+  surah: Al-Baqarah
+  ayat_from: 1
+  ayat_to: 5
+  juz: 1
+  completion_status: belum_tuntas

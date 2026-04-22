@@ -1,13 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  app_name: MyString
-  logo_url: MyString
-  primary_color: MyString
-  secondary_color: MyString
+  app_name: Sistem Manajemen Hifz
+  app_subtitle: Sistem Monitoring Hafalan
+  institution_name: MATAN
+  primary_color: "#3B82F6"
+  secondary_color: "#8B5CF6"
 
 two:
-  app_name: MyString
-  logo_url: MyString
-  primary_color: MyString
-  secondary_color: MyString
+  app_name: Sistem Manajemen Hifz 2
+  app_subtitle: Sistem Monitoring Hafalan 2
+  institution_name: MATAN 2
+  primary_color: "#1D4ED8"
+  secondary_color: "#6366F1"

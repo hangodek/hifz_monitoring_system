@@ -1,21 +1,31 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  address: MyString
-  birth_date: 2025-08-01
-  mother_name: MyString
-  father_name: MyString
-  date_joined: 2025-08-01
-  hifz_in_juz: 1
-  hifz_in_page: 1
+  name: Student One
+  current_hifz_in_juz: "1"
+  current_hifz_in_pages: "1"
+  current_hifz_in_surah: Al-Fatihah
+  class_level: 7A
+  status: active
+  gender: male
+  birth_place: Bandung
+  birth_date: 2012-08-01
+  father_name: Ayah One
+  mother_name: Ibu One
+  address: Jalan Satu
+  student_number: S-TEST-001
 
 two:
-  name: MyString
-  address: MyString
-  birth_date: 2025-08-01
-  mother_name: MyString
-  father_name: MyString
-  date_joined: 2025-08-01
-  hifz_in_juz: 1
-  hifz_in_page: 1
+  name: Student Two
+  current_hifz_in_juz: "2"
+  current_hifz_in_pages: "3"
+  current_hifz_in_surah: Al-Baqarah
+  class_level: 8A
+  status: inactive
+  gender: female
+  birth_place: Cimahi
+  birth_date: 2011-07-10
+  father_name: Ayah Two
+  mother_name: Ibu Two
+  address: Jalan Dua
+  student_number: S-TEST-002
