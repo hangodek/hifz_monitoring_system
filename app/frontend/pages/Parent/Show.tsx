@@ -35,10 +35,37 @@ import {
   Star,
   BarChart3,
   Loader2,
+  User,
 } from "lucide-react"
 import { AudioPlayer } from "@/components/AudioPlayer"
 import { ParentHeader } from "./components"
 import axios from "axios"
+
+const formatRelativeTimeIndonesian = (time: string) => {
+  return time
+    .replace(/less than (an? |1 )?minutes?/i, "kurang dari 1 menit")
+    .replace(/^about\s+/i, "")
+    .replace(/\bminuts\b/i, "menit")
+    .replace(/\bminute\b/i, "menit")
+    .replace(/\bminutes\b/i, "menit")
+    .replace(/\bhour\b/i, "jam")
+    .replace(/\bhours\b/i, "jam")
+    .replace(/\bday\b/i, "hari")
+    .replace(/\bdays\b/i, "hari")
+    .replace(/\bweek\b/i, "minggu")
+    .replace(/\bweeks\b/i, "minggu")
+    .replace(/\bmonth\b/i, "bulan")
+    .replace(/\bmonths\b/i, "bulan")
+    .replace(/\byear\b/i, "tahun")
+    .replace(/\byears\b/i, "tahun")
+    .replace(/\bminute ago\b/i, "menit yang lalu")
+    .replace(/\bhour ago\b/i, "jam yang lalu")
+    .replace(/\bday ago\b/i, "hari yang lalu")
+    .replace(/\bweek ago\b/i, "minggu yang lalu")
+    .replace(/\bmonth ago\b/i, "bulan yang lalu")
+    .replace(/\byear ago\b/i, "tahun yang lalu")
+    .replace(/\bago\b/i, "yang lalu")
+}
 
 interface Student {
   id: string
@@ -98,12 +125,6 @@ interface MonthlyProgress {
   is_projected?: boolean
 }
 
-interface GradeDistribution {
-  name: string
-  value: number
-  color: string
-}
-
 interface TypeDistribution {
   name: string
   value: number
@@ -123,7 +144,7 @@ interface ParentShowProps {
   total_activities_count: number
   total_activities: number
   monthly_progress: MonthlyProgress[]
-  grade_distribution: GradeDistribution[]
+
   type_distribution: TypeDistribution[]
   monthly_activities: MonthlyActivities[]
 }
@@ -135,7 +156,7 @@ export default function ParentShow({
   total_activities_count,
   total_activities,
   monthly_progress,
-  grade_distribution,
+
   type_distribution,
   monthly_activities,
 }: ParentShowProps) {
@@ -183,15 +204,6 @@ export default function ParentShow({
     }
   }
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map(n => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -221,8 +233,8 @@ export default function ParentShow({
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
               <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-blue-50">
                 <AvatarImage src={student.avatar} alt={student.name} />
-                <AvatarFallback className="text-lg sm:text-xl bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                  {getInitials(student.name)}
+                <AvatarFallback className="bg-gray-100">
+                  <User className="h-10 w-10 text-gray-400" />
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 space-y-2">
@@ -239,7 +251,7 @@ export default function ParentShow({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Current Progress */}
               <div className="flex items-start gap-3 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
@@ -259,17 +271,6 @@ export default function ParentShow({
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground">Surah Saat Ini</p>
                   <p className="text-base sm:text-lg font-bold text-purple-600">{student.current_hifz_in_surah}</p>
-                </div>
-              </div>
-
-              {/* Current Pages */}
-              <div className="flex items-start gap-3 p-3 sm:p-4 bg-green-50 rounded-lg border border-green-100">
-                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-green-100">
-                  <Target className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Ayat Saat Ini</p>
-                  <p className="text-lg sm:text-2xl font-bold text-green-600">{student.current_hifz_in_pages}</p>
                 </div>
               </div>
 
@@ -410,43 +411,9 @@ export default function ParentShow({
             </CardContent>
           </Card>
 
-          {/* Grade Distribution Chart */}
-          {grade_distribution.length > 0 && (
-            <Card className="border-green-100 shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5 text-green-600" />
-                  Distribusi Nilai
-                </CardTitle>
-                <CardDescription>Prestasi keseluruhan</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={grade_distribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {grade_distribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Type Distribution Chart */}
           {type_distribution.length > 0 && (
-            <Card className="border-orange-100 shadow-md">
+            <Card className="border-orange-100 shadow-md md:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-orange-600" />
@@ -497,21 +464,21 @@ export default function ParentShow({
         </div>
 
         {/* Recent Activities */}
-        <Card className="border-gray-200 shadow-md">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/30 hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-slate-800">
                   <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                      <Clock className="h-5 w-5 text-indigo-600" />
-                    </div>
-                    Aktivitas Terbaru
+                    <Clock className="h-5 w-5 text-indigo-600" />
+                  </div>
+                  Aktivitas Terkini
                 </CardTitle>
                 <CardDescription>5 aktivitas hafalan terbaru</CardDescription>
               </div>
               <Button
                 variant="outline"
-                className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 w-full sm:w-auto cursor-pointer"
+                className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 w-full sm:w-auto cursor-pointer"
                 onClick={handleViewAllActivities}
                 disabled={isLoadingActivities}
               >
@@ -522,44 +489,55 @@ export default function ParentShow({
                   </>
                 ) : (
                   <>
-                    Lihat Semua Aktivitas ({total_activities_count})
+                    Lihat Semua ({total_activities_count})
                   </>
                 )}
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recent_activities.map((activity) => (
+          <CardContent className="space-y-3 sm:space-y-4">
+            {recent_activities.map((activity) => (
+              <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-colors duration-200">
                 <div
-                  key={activity.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors gap-3"
+                  className={`flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white flex-shrink-0 ${
+                    activity.type === "memorization" ? "bg-blue-500" : "bg-green-500"
+                  }`}
                 >
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-full text-white ${
-                      activity.type === "memorization" 
-                        ? "bg-gradient-to-br from-orange-400 to-orange-600 shadow-sm" 
-                        : "bg-gradient-to-br from-green-400 to-green-600 shadow-sm"
-                    }`}>
-                      {activity.type === "memorization" ? (
-                        <BookOpen className="h-5 w-5" />
-                      ) : (
-                        <Star className="h-5 w-5" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 break-words">{activity.activity}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
-                    </div>
-                  </div>
+                  {activity.type === "memorization" ? (
+                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+                  ) : (
+                    <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 break-words line-clamp-2 block">{activity.activity}</p>
+                  <p className="text-xs text-muted-foreground">{formatRelativeTimeIndonesian(activity.time)}</p>
                   {activity.audio_url && (
-                    <div className="sm:ml-4">
-                      <AudioPlayer audioUrl={activity.audio_url} />
+                    <div className="mt-1">
+                      <AudioPlayer 
+                        audioUrl={activity.audio_url} 
+                        size="sm"
+                        className="max-w-full"
+                      />
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+            {recent_activities.length === 0 && (
+              <div className="text-center py-8">
+                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">Tidak ada aktivitas terkini ditemukan</p>
+              </div>
+            )}
+            {total_activities_count > 5 && (
+              <div className="text-center pt-4 border-t border-gray-200">
+                <p className="text-xs text-muted-foreground">
+                  Menunjukkan 5 aktivitas terkini. 
+                  <span className="font-medium"> {total_activities_count - 5} aktivitas lagi tersedia.</span>
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -621,7 +599,7 @@ export default function ParentShow({
                           : activity.juz || 'N/A'}
                         </div>
                         <div>
-                          <span className="font-medium">Waktu:</span> {activity.time}
+                          <span className="font-medium">Waktu:</span> {formatRelativeTimeIndonesian(activity.time)}
                       </div>
                     </div>
                     {activity.notes && (

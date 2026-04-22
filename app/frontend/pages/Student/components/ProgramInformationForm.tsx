@@ -53,19 +53,19 @@ export function ProgramInformationForm({ formData, errors, handleInputChange }: 
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="date_joined">Date Joined *</Label>
+            <Label htmlFor="date_joined">Tanggal Bergabung *</Label>
             <DatePicker
               id="date_joined"
               date={selectedDateJoined}
               onDateChange={handleDateJoinedChange}
-              placeholder="Select date joined"
+              placeholder="Pilih tanggal bergabung"
               className={`cursor-pointer border-gray-200/60 ${errors.date_joined ? "border-red-500" : ""}`}
             />
             {errors.date_joined && <p className="text-sm text-red-500">{errors.date_joined}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hifz_in_juz">Current Juz Memorized</Label>
+            <Label htmlFor="hifz_in_juz">Juz yang Sedang Dihafal</Label>
             <Input
               id="hifz_in_juz"
               type="number"
@@ -75,11 +75,11 @@ export function ProgramInformationForm({ formData, errors, handleInputChange }: 
               onChange={(e) => handleInputChange("hifz_in_juz", e.target.value)}
               placeholder="0"
             />
-            <p className="text-xs text-muted-foreground">Enter number of Juz completed (0-30)</p>
+            <p className="text-xs text-muted-foreground">Masukkan jumlah Juz yang sudah selesai (0-30)</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hifz_in_page">Current Page in Juz</Label>
+            <Label htmlFor="hifz_in_page">Halaman Saat Ini dalam Juz</Label>
             <Input
               id="hifz_in_page"
               type="number"
@@ -89,7 +89,7 @@ export function ProgramInformationForm({ formData, errors, handleInputChange }: 
               onChange={(e) => handleInputChange("hifz_in_page", e.target.value)}
               placeholder="0"
             />
-            <p className="text-xs text-muted-foreground">Enter current page in ongoing Juz (0-604)</p>
+            <p className="text-xs text-muted-foreground">Masukkan halaman saat ini dalam Juz (0-604)</p>
           </div>
         </div>
       </CardContent>
