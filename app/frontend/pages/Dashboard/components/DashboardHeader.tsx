@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Users, Mic, LogOut, UserCog, Settings } from "lucide-react"
+import { Users, Mic, LogOut, UserCog, Settings, UserCircle } from "lucide-react"
 import { router, usePage } from "@inertiajs/react"
 import { PageProps } from "@/types/auth"
 
@@ -17,17 +17,17 @@ export function DashboardHeader() {
         {/* Only admin can see all students */}
         {userRole === "admin" && (
           <>
-            <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer w-full" onClick={() => router.visit("/students")}>
+          <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full" onClick={() => router.visit("/students")}>
               <Users className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Lihat Semua Siswa</span>
               <span className="sm:hidden">Siswa</span>
             </Button>
-            <Button variant="outline" className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 cursor-pointer w-full" onClick={() => router.visit("/users")}>
+            <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full" onClick={() => router.visit("/users")}>
               <UserCog className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Manajemen Pengguna</span>
               <span className="sm:hidden">Pengguna</span>
             </Button>
-            <Button variant="outline" className="border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300 cursor-pointer w-full col-span-full" onClick={() => router.visit("/settings/edit")}>
+            <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full col-span-full" onClick={() => router.visit("/settings/edit")}>
               <Settings className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Pengaturan</span>
               <span className="sm:hidden">Pengaturan</span>
@@ -36,12 +36,16 @@ export function DashboardHeader() {
         )}
         {/* Both admin and teacher can access teacher mode */}
         {(userRole === "admin" || userRole === "teacher") && (
-          <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 cursor-pointer w-full col-span-full" onClick={() => router.visit("/teachers")}>
+          <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full col-span-full" onClick={() => router.visit("/teachers")}>
             <Mic className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Mode Guru</span>
             <span className="sm:hidden">Guru</span>
           </Button>
         )}
+        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full col-span-2" onClick={() => router.visit("/profile/edit")}>
+          <UserCircle className="h-4 w-4 mr-2" />
+          Profil Saya
+        </Button>
         <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer w-full col-span-2" onClick={() => router.delete("/session")}>
           <LogOut className="h-4 w-4 mr-2" />
           Keluar
