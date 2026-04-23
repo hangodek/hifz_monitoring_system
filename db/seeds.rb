@@ -8,7 +8,7 @@
 # Never run db:seed again on production unless you want to recreate the admin.
 
 admin_username = ENV.fetch("ADMIN_USERNAME", "admin")
-admin_password = ENV.fetch("ADMIN_PASSWORD", "admin123")
+admin_password = ENV.fetch("ADMIN_PASSWORD", "admin")
 admin_name     = ENV.fetch("ADMIN_NAME", "Administrator")
 
 if User.exists?(username: admin_username)
