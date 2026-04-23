@@ -32,7 +32,7 @@ export function TeacherHeader({ mode = "index" }: TeacherHeaderProps) {
         {mode === "bulk" && (
           <Button
             variant="outline"
-            className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
+            className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer"
             onClick={() => router.visit("/teachers")}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -58,7 +58,7 @@ export function TeacherHeader({ mode = "index" }: TeacherHeaderProps) {
           </Button>
         )}
         {userRole === "admin" && (
-          <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer" onClick={() => router.visit("/dashboard")}>
+          <Button variant="outline" className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer" onClick={() => router.visit("/dashboard")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Kembali ke Dashboard</span>
             <span className="sm:hidden">Kembali</span>

@@ -203,7 +203,7 @@ export default function BulkImport() {
           </div>
           <Button 
             variant="outline" 
-            className="cursor-pointer" 
+            className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer" 
             onClick={() => router.visit('/students')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

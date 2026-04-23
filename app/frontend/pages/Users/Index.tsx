@@ -27,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Users as UsersIcon, Shield, GraduationCap, UserCircle, Loader2, UserPlus, Pencil } from "lucide-react"
+import { Users as UsersIcon, Shield, GraduationCap, UserCircle, Loader2, UserPlus, Pencil, ArrowLeft } from "lucide-react"
 import axios from "axios"
 import { router } from "@inertiajs/react"
 
@@ -232,7 +232,8 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
               <UserPlus className="h-4 w-4" />
               Buat Pengguna
             </Button>
-            <Button variant="outline" onClick={() => router.visit('/dashboard')} className="cursor-pointer">
+            <Button variant="outline" onClick={() => router.visit('/dashboard')} className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer">
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Kembali ke Dashboard
             </Button>
           </div>
