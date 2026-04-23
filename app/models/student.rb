@@ -100,7 +100,35 @@ class Student < ApplicationRecord
     end
   end
 
+  def create_parent_account!
+    parent_username = generate_parent_username
+    User.create!(
+      username: parent_username,
+      name: "Orang Tua #{name}",
+      password: parent_username,
+      password_confirmation: parent_username,
+      role: "parent",
+      student_id: id
+    )
+  end
+
   private
+
+  def generate_parent_username
+    first_name = name.to_s.split.first&.downcase&.gsub(/[^a-z0-9]/, '') || 'siswa'
+    father_first = father_name.to_s.split.first&.downcase&.gsub(/[^a-z0-9]/, '') || 'ortu'
+    
+    base_username = "#{first_name}_#{father_first}"
+    
+    username = base_username
+    counter = 1
+    while User.exists?(username: username)
+      username = "#{base_username}#{counter}"
+      counter += 1
+    end
+    
+    username
+  end
 
   def normalize_surah_name(surah_name)
     raw_key = surah_name.to_s.downcase.gsub(/[^a-z0-9]/, "")

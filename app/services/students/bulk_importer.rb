@@ -54,6 +54,7 @@ module Students
           if student.save
             import_juz_30_progressions!(student, student_params[:juz_30_statuses])
             student.recalculate_total_juz_memorized!
+            student.create_parent_account!
 
             created_students << {
               line_number: student_params[:line_number],
