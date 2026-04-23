@@ -42,15 +42,22 @@ interface User {
   created_at: string
 }
 
+interface Student {
+  id: number
+  name: string
+  class_level: string
+}
+
 interface UsersIndexProps {
   users: User[]
   available_roles: string[]
   current_filter?: string | null
+  students: Student[]
 }
 
-const emptyForm = { name: "", username: "", password: "", password_confirmation: "", role: "teacher" }
+const emptyForm = { name: "", username: "", password: "", password_confirmation: "", role: "teacher", student_id: "" }
 
-export default function UsersIndex({ users: initialUsers, available_roles, current_filter }: UsersIndexProps) {
+export default function UsersIndex({ users: initialUsers, available_roles, current_filter, students }: UsersIndexProps) {
   const [users, setUsers] = useState<User[]>(initialUsers)
   const [updatingUserId, setUpdatingUserId] = useState<number | null>(null)
   const [activeFilter, setActiveFilter] = useState<string | null>(current_filter || null)
@@ -118,6 +125,9 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
     if (createForm.password !== createForm.password_confirmation) {
       setCreateErrors(["Password dan konfirmasi password tidak cocok"]); return
     }
+    if (createForm.role === "parent" && !createForm.student_id) {
+      setCreateErrors(["Pilih siswa yang terhubung dengan akun orang tua ini"]); return
+    }
 
     setIsCreating(true)
     try {
@@ -157,7 +167,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
             <Button
               id="btn-create-user"
               onClick={() => setShowCreateModal(true)}
-              className="cursor-pointer gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              className="cursor-pointer gap-2"
             >
               <UserPlus className="h-4 w-4" />
               Buat Pengguna
@@ -375,7 +385,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
             <div className="space-y-2">
               <Label htmlFor="create-role">Role / Status</Label>
-              <Select value={createForm.role} onValueChange={(v) => setCreateForm({ ...createForm, role: v })}>
+              <Select value={createForm.role} onValueChange={(v) => setCreateForm({ ...createForm, role: v, student_id: "" })}>
                 <SelectTrigger id="create-role" className="cursor-pointer">
                   <SelectValue />
                 </SelectTrigger>
@@ -386,9 +396,38 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                   <SelectItem value="teacher" className="cursor-pointer">
                     <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4" /> Guru</div>
                   </SelectItem>
+                  <SelectItem value="parent" className="cursor-pointer">
+                    <div className="flex items-center gap-2"><UserCircle className="h-4 w-4" /> Orang Tua</div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Student picker — only shown when role is parent */}
+            {createForm.role === "parent" && (
+              <div className="space-y-2">
+                <Label htmlFor="create-student">Siswa yang Ditautkan</Label>
+                <Select
+                  value={createForm.student_id}
+                  onValueChange={(v) => setCreateForm({ ...createForm, student_id: v })}
+                >
+                  <SelectTrigger id="create-student" className="cursor-pointer">
+                    <SelectValue placeholder="Pilih siswa..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {students.map((s) => (
+                      <SelectItem key={s.id} value={String(s.id)} className="cursor-pointer">
+                        <span className="font-medium">{s.name}</span>
+                        <span className="text-muted-foreground ml-1 text-xs">({s.class_level})</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Akun orang tua ini akan dapat memantau progress hafalan siswa yang dipilih.
+                </p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="create-password">Password</Label>
@@ -421,7 +460,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
               id="btn-submit-create-user"
               onClick={handleCreateUser}
               disabled={isCreating}
-              className="cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 gap-2"
+              className="cursor-pointer gap-2"
             >
               {isCreating
                 ? <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...</>

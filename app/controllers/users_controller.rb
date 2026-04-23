@@ -26,12 +26,18 @@ class UsersController < ApplicationController
       }
     end
 
+    # Active students for parent account creation
+    students_data = Student.active.order(:name).map do |s|
+      { id: s.id, name: s.name, class_level: s.class_level }
+    end
+
     respond_to do |format|
       format.html do
         render inertia: "Users/Index", props: {
           users: users_data,
           available_roles: User.roles.keys,
-          current_filter: params[:role]
+          current_filter: params[:role],
+          students: students_data
         }
       end
     end
@@ -72,8 +78,8 @@ class UsersController < ApplicationController
           name: @user.name,
           email: @user.email_address,
           role: @user.role,
-          student_name: nil,
-          student_id: nil,
+          student_name: @user.student&.name,
+          student_id: @user.student_id,
           created_at: @user.created_at.strftime("%d/%m/%Y")
         }
       }, status: :created
@@ -92,6 +98,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:name, :username, :password, :password_confirmation, :role)
+    params.require(:user).permit(:name, :username, :password, :password_confirmation, :role, :student_id)
   end
 end

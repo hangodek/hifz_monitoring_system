@@ -127,10 +127,73 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "admin", @teacher.reload.role
   end
 
+  # ─── Create Parent User ───────────────────────────────────────────────────
+
+  test "admin can create parent user linked to a student" do
+    student = create_student!
+    sign_in_as(@admin)
+
+    assert_difference "User.count", 1 do
+      post users_path, params: {
+        user: {
+          name: "Orang Tua Baru",
+          username: "ortu_baru_#{rand(10_000)}",
+          role: "parent",
+          student_id: student.id,
+          password: "password123",
+          password_confirmation: "password123"
+        }
+      }, as: :json
+    end
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert body["success"]
+    assert_equal "parent", body["user"]["role"]
+    assert_equal student.name, body["user"]["student_name"]
+    assert_equal student.id.to_s, body["user"]["student_id"].to_s
+  end
+
+  test "create parent user fails without student_id" do
+    sign_in_as(@admin)
+
+    assert_no_difference "User.count" do
+      post users_path, params: {
+        user: {
+          name: "Orang Tua Tanpa Siswa",
+          username: "ortu_no_student_#{rand(10_000)}",
+          role: "parent",
+          password: "password123",
+          password_confirmation: "password123"
+        }
+      }, as: :json
+    end
+
+    assert_response :unprocessable_entity
+    body = JSON.parse(response.body)
+    assert_not body["success"]
+    assert body["errors"].any?
+  end
+
   private
 
   def sign_in_as(user)
     post session_path, params: { username: user.username, password: "password123" }
     follow_redirect! if response.redirect?
+  end
+
+  def create_student!
+    Student.create!(
+      name: "Siswa Users Test",
+      class_level: "7A",
+      status: "active",
+      gender: "male",
+      birth_place: "Jakarta",
+      birth_date: Date.new(2012, 1, 1),
+      father_name: "Ayah Users Test",
+      current_hifz_in_juz: "1",
+      current_hifz_in_pages: "1",
+      current_hifz_in_surah: "Al-Fatihah"
+    )
   end
 end
