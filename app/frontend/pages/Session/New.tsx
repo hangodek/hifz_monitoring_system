@@ -73,6 +73,7 @@ export default function Session() {
                     value={data.username}
                     required
                     autoFocus
+                    autoComplete="off"
                     className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
@@ -86,6 +87,8 @@ export default function Session() {
                     onChange={(e) => setData('password', e.target.value)}
                     value={data.password}
                     required
+                    autoComplete="new-password"
+                    data-lpignore="true"
                     className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
