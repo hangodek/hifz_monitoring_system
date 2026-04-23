@@ -65,6 +65,13 @@ module RoleAuthorization
     end
   end
 
+  def require_admin_or_teacher!
+    unless Current.user&.admin? || Current.user&.teacher?
+      destination = request.referrer
+      redirect_to destination, alert: "Akses ditolak. Hanya pengurus atau guru yang dapat mengakses halaman ini."
+    end
+  end
+
   def require_parent!
     unless Current.user&.parent?
       destination = request.referrer

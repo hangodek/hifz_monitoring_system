@@ -9,6 +9,8 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   # Validations
+  validates :username, presence: true, uniqueness: { case_sensitive: false }
+  validates :name, presence: true
   validates :student_id, presence: true, if: :parent?
 
   # Role check helpers

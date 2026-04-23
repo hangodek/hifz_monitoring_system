@@ -33,7 +33,7 @@ Rails.application.routes.draw do
   end
   
   # Users management (pengurus only)
-  resources :users, only: [ :index ] do
+  resources :users, only: [ :index, :create ] do
     member do
       patch :update_role
     end

@@ -59,9 +59,39 @@ class UsersController < ApplicationController
     end
   end
 
+  def create
+    @user = User.new(user_params)
+
+    if @user.save
+      render json: {
+        success: true,
+        message: "Pengguna berhasil dibuat.",
+        user: {
+          id: @user.id,
+          username: @user.username,
+          name: @user.name,
+          email: @user.email_address,
+          role: @user.role,
+          student_name: nil,
+          student_id: nil,
+          created_at: @user.created_at.strftime("%d/%m/%Y")
+        }
+      }, status: :created
+    else
+      render json: {
+        success: false,
+        errors: @user.errors.full_messages
+      }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_user
     @user = User.find(params[:id])
+  end
+
+  def user_params
+    params.require(:user).permit(:name, :username, :password, :password_confirmation, :role)
   end
 end

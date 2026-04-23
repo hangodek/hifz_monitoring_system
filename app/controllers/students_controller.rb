@@ -16,7 +16,8 @@ class StudentsController < ApplicationController
   include StudentsHelper
 
   skip_before_action :authorize_role
-  before_action :require_admin!
+  before_action :require_admin!, except: [ :show, :activities_list ]
+  before_action :require_admin_or_teacher!, only: [ :show, :activities_list ]
   
   def index
     page = current_page
