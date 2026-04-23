@@ -535,7 +535,7 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
                             <Input
                               type="number"
                               min={1}
-                              max={15}
+                              max={25}
                               value={row.fashohah}
                               onChange={(event) => updateRow(row.rowKey, "fashohah", event.target.value)}
                               placeholder="F"
@@ -545,7 +545,7 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
                             <Input
                               type="number"
                               min={1}
-                              max={15}
+                              max={25}
                               value={row.tajwid}
                               onChange={(event) => updateRow(row.rowKey, "tajwid", event.target.value)}
                               placeholder="T"

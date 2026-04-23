@@ -159,19 +159,19 @@ export function ActivityForm({
     }
 
     const kelancaran = parseInt(activityDetails.kelancaran) || 25
-    const fashohah = parseInt(activityDetails.fashohah) || 8
-    const tajwid = parseInt(activityDetails.tajwid) || 8
+    const fashohah = parseInt(activityDetails.fashohah) || 13
+    const tajwid = parseInt(activityDetails.tajwid) || 13
 
     if (kelancaran < 1 || kelancaran > 50) {
       alert('Nilai K (Kelancaran) harus di antara 1 sampai 50.');
       return;
     }
-    if (fashohah < 1 || fashohah > 15) {
-      alert('Nilai F (Fashohah) harus di antara 1 sampai 15.');
+    if (fashohah < 1 || fashohah > 25) {
+      alert('Nilai F (Fashohah) harus di antara 1 sampai 25.');
       return;
     }
-    if (tajwid < 1 || tajwid > 15) {
-      alert('Nilai T (Tajwid) harus di antara 1 sampai 15.');
+    if (tajwid < 1 || tajwid > 25) {
+      alert('Nilai T (Tajwid) harus di antara 1 sampai 25.');
       return;
     }
 
@@ -453,27 +453,27 @@ export function ActivityForm({
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="fashohah" className="text-[11px] font-medium">F (1-15)</Label>
+                      <Label htmlFor="fashohah" className="text-[11px] font-medium">F (1-25)</Label>
                       <Input
                         id="fashohah"
                         type="number"
-                        placeholder="1-15"
+                        placeholder="1-25"
                         value={activityDetails.fashohah}
-                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: normalizeScoreInput(e.target.value, 1, 15) }))}
+                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: normalizeScoreInput(e.target.value, 1, 25) }))}
                         className="border-gray-200/60 text-sm"
-                        min="1" max="15"
+                        min="1" max="25"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="tajwid" className="text-[11px] font-medium">T (1-15)</Label>
+                      <Label htmlFor="tajwid" className="text-[11px] font-medium">T (1-25)</Label>
                       <Input
                         id="tajwid"
                         type="number"
-                        placeholder="1-15"
+                        placeholder="1-25"
                         value={activityDetails.tajwid}
-                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, tajwid: normalizeScoreInput(e.target.value, 1, 15) }))}
+                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, tajwid: normalizeScoreInput(e.target.value, 1, 25) }))}
                         className="border-gray-200/60 text-sm"
-                        min="1" max="15"
+                        min="1" max="25"
                       />
                     </div>
                   </div>

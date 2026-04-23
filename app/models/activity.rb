@@ -18,8 +18,8 @@ class Activity < ApplicationRecord
   validates :surah, :ayat_from, :ayat_to, presence: true
   validates :juz, presence: true
   validates :kelancaran, inclusion: { in: 1..50 }, allow_nil: true
-  validates :fashohah, inclusion: { in: 1..15 }, allow_nil: true
-  validates :tajwid, inclusion: { in: 1..15 }, allow_nil: true
+  validates :fashohah, inclusion: { in: 1..25 }, allow_nil: true
+  validates :tajwid, inclusion: { in: 1..25 }, allow_nil: true
   validates :completion_status, presence: true
 
   before_save :set_default_scores
@@ -31,8 +31,8 @@ class Activity < ApplicationRecord
 
   def set_default_scores
     self.kelancaran ||= 25  # Default middle value (K: 1-50)
-    self.fashohah ||= 8     # Default middle value (F: 1-15)
-    self.tajwid ||= 8       # Default middle value (T: 1-15)
+    self.fashohah ||= 13     # Default middle value (F: 1-25)
+    self.tajwid ||= 13       # Default middle value (T: 1-25)
   end
 
   def sync_surah_progression_after_create
