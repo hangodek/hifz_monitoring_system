@@ -196,10 +196,10 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
                             <span className="font-medium">K (Kelancaran):</span> {activity.kelancaran || '-'}
                           </div>
                           <div>
-                            <span className="font-medium">F (Fasahah):</span> {activity.fashohah || '-'}
+                            <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
                           </div>
                           <div>
-                            <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
+                            <span className="font-medium">F (Fasahah):</span> {activity.fashohah || '-'}
                           </div>
                           <div>
                             <span className="font-medium">Juz:</span>{' '}

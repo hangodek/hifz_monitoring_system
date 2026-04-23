@@ -72,7 +72,8 @@ module Teachers
           subheader_style: subheader_style
         )
 
-        @students.each_with_index do |student, index|
+        sorted_students = @students.sort_by { |s| class_sort_key(class_label_for_export(s.class_level)) }
+        sorted_students.each_with_index do |student, index|
           latest_scores = latest_activity_scores_by_surah(student)
           row = [ index + 1, student.name, class_label_for_export(student.class_level) ]
 

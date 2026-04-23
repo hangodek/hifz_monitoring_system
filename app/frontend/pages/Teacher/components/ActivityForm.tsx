@@ -453,18 +453,6 @@ export function ActivityForm({
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="fashohah" className="text-[11px] font-medium">F (1-25)</Label>
-                      <Input
-                        id="fashohah"
-                        type="number"
-                        placeholder="1-25"
-                        value={activityDetails.fashohah}
-                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: normalizeScoreInput(e.target.value, 1, 25) }))}
-                        className="border-gray-200/60 text-sm"
-                        min="1" max="25"
-                      />
-                    </div>
-                    <div className="space-y-1">
                       <Label htmlFor="tajwid" className="text-[11px] font-medium">T (1-25)</Label>
                       <Input
                         id="tajwid"
@@ -472,6 +460,18 @@ export function ActivityForm({
                         placeholder="1-25"
                         value={activityDetails.tajwid}
                         onChange={(e) => setActivityDetails((prev) => ({ ...prev, tajwid: normalizeScoreInput(e.target.value, 1, 25) }))}
+                        className="border-gray-200/60 text-sm"
+                        min="1" max="25"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="fashohah" className="text-[11px] font-medium">F (1-25)</Label>
+                      <Input
+                        id="fashohah"
+                        type="number"
+                        placeholder="1-25"
+                        value={activityDetails.fashohah}
+                        onChange={(e) => setActivityDetails((prev) => ({ ...prev, fashohah: normalizeScoreInput(e.target.value, 1, 25) }))}
                         className="border-gray-200/60 text-sm"
                         min="1" max="25"
                       />

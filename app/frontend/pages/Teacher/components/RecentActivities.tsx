@@ -154,7 +154,7 @@ export function RecentActivities({ currentStudent, activityTypes }: RecentActivi
                     {activityDescription}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    K:{activity.kelancaran ?? "-"} F:{activity.fashohah ?? "-"} T:{activity.tajwid ?? "-"} • {formatCompletionStatus(activity.completion_status)} • {formatTimeAgo(activity.created_at)}
+                    K:{activity.kelancaran ?? "-"} T:{activity.tajwid ?? "-"} F:{activity.fashohah ?? "-"} • {formatCompletionStatus(activity.completion_status)} • {formatTimeAgo(activity.created_at)}
                   </p>
                   {activity.notes && (
                     <p className="text-xs text-muted-foreground italic line-clamp-2" title={activity.notes}>

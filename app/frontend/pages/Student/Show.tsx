@@ -807,10 +807,10 @@ export default function StudentShow({ student, recent_activities, total_activiti
                                   <span className="font-medium">K (Kelancaran):</span> {activity.kelancaran || '-'}
                                 </div>
                                 <div>
-                                  <span className="font-medium">F (Fasahah):</span> {activity.fashohah || '-'}
+                                  <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
                                 </div>
                                 <div>
-                                  <span className="font-medium">T (Tajwid):</span> {activity.tajwid || '-'}
+                                  <span className="font-medium">F (Fasahah):</span> {activity.fashohah || '-'}
                                 </div>
                                 <div>
                                   <span className="font-medium">Status:</span> {formatCompletionStatus(activity.completion_status)}
@@ -892,7 +892,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                   <div className="flex-1 space-y-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium line-clamp-2">{activity.activity}</p>
                     <p className="text-xs text-muted-foreground">
-                      K:{activity.kelancaran ?? "-"} F:{activity.fashohah ?? "-"} T:{activity.tajwid ?? "-"} • {formatCompletionStatus(activity.completion_status)}
+                      K:{activity.kelancaran ?? "-"} T:{activity.tajwid ?? "-"} F:{activity.fashohah ?? "-"} • {formatCompletionStatus(activity.completion_status)}
                     </p>
                     <p className="text-xs text-muted-foreground">{formatRelativeTimeIndonesian(activity.time)}</p>
                     {activity.audio_url && (

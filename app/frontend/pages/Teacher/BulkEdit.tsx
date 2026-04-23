@@ -479,8 +479,8 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
                       <TableHead className="min-w-56">Surah</TableHead>
                       <TableHead className="min-w-24">Ayat</TableHead>
                       <TableHead className="min-w-24">K</TableHead>
-                      <TableHead className="min-w-24">F</TableHead>
                       <TableHead className="min-w-24">T</TableHead>
+                      <TableHead className="min-w-24">F</TableHead>
                       <TableHead className="min-w-32">Catatan</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -536,9 +536,9 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
                               type="number"
                               min={1}
                               max={25}
-                              value={row.fashohah}
-                              onChange={(event) => updateRow(row.rowKey, "fashohah", event.target.value)}
-                              placeholder="F"
+                              value={row.tajwid}
+                              onChange={(event) => updateRow(row.rowKey, "tajwid", event.target.value)}
+                              placeholder="T"
                             />
                           </TableCell>
                           <TableCell className="align-top">
@@ -546,9 +546,9 @@ export default function TeacherBulkEdit({ students }: TeacherBulkEditProps) {
                               type="number"
                               min={1}
                               max={25}
-                              value={row.tajwid}
-                              onChange={(event) => updateRow(row.rowKey, "tajwid", event.target.value)}
-                              placeholder="T"
+                              value={row.fashohah}
+                              onChange={(event) => updateRow(row.rowKey, "fashohah", event.target.value)}
+                              placeholder="F"
                             />
                           </TableCell>
                           <TableCell className="align-top">
