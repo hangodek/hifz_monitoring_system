@@ -8,7 +8,6 @@ interface StudentFormData {
   name: string
   address: string
   birth_date: string
-  mother_name: string
   father_name: string
   date_joined: string
   hifz_in_juz: string

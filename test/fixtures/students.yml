@@ -11,7 +11,6 @@ one:
   birth_place: Bandung
   birth_date: 2012-08-01
   father_name: Ayah One
-  mother_name: Ibu One
   address: Jalan Satu
   student_number: S-TEST-001
 
@@ -26,6 +25,5 @@ two:
   birth_place: Cimahi
   birth_date: 2011-07-10
   father_name: Ayah Two
-  mother_name: Ibu Two
   address: Jalan Dua
   student_number: S-TEST-002

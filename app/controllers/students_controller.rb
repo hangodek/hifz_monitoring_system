@@ -427,7 +427,7 @@ class StudentsController < ApplicationController
   end
 
   def student_params
-    params.expect(student: [ :nisn, :student_number, :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :mother_name, :parent_phone ])
+    params.expect(student: [ :nisn, :student_number, :name, :current_hifz_in_juz, :current_hifz_in_pages, :current_hifz_in_surah, :avatar, :class_level, :phone, :email, :status, :gender, :birth_place, :birth_date, :address, :father_name, :parent_phone ])
   end
 
 

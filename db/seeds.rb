@@ -188,7 +188,6 @@ student_count.times do |i|
   gender = GENDERS.sample(random: RANDOM)
   full_name, first_name, last_name = random_name(gender)
   father_name = "#{MALE_FIRST_NAMES.sample(random: RANDOM)} #{last_name}"
-  mother_name = "#{FEMALE_FIRST_NAMES.sample(random: RANDOM)} #{LAST_NAMES.sample(random: RANDOM)}"
 
   profile = pick_profile(i, student_count)
   profile_counter[profile] += 1
@@ -225,7 +224,6 @@ student_count.times do |i|
     birth_date: Date.current - RANDOM.rand(11..18).years - RANDOM.rand(0..300).days,
     address: "Jalan #{LAST_NAMES.sample(random: RANDOM)} No. #{RANDOM.rand(1..200)}, #{CITIES.sample(random: RANDOM)}",
     father_name: father_name,
-    mother_name: mother_name,
     parent_phone: random_phone("08")
   )
 

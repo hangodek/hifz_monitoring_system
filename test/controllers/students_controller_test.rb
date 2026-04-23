@@ -72,7 +72,6 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
       birth_place: "Bandung",
       birth_date: Date.new(2012, 1, 1),
       father_name: "Ayah",
-      mother_name: "Ibu",
       current_hifz_in_surah: "Al-Fatihah"
     )
   end

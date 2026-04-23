@@ -7,8 +7,8 @@ interface StudentFormData {
   name: string
   address: string
   birth_date: string
-  mother_name: string
   father_name: string
+  parent_phone: string
   date_joined: string
   hifz_in_juz: string
   hifz_in_page: string
@@ -46,18 +46,6 @@ export function ParentInformationForm({ formData, errors, handleInputChange }: P
               className={errors.father_name ? "border-red-500" : ""}
             />
             {errors.father_name && <p className="text-sm text-red-500">{errors.father_name}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="mother_name">Nama Ibu *</Label>
-            <Input
-              id="mother_name"
-              value={formData.mother_name}
-              onChange={(e) => handleInputChange("mother_name", e.target.value)}
-              placeholder="Masukkan nama lengkap ibu"
-              className={errors.mother_name ? "border-red-500" : ""}
-            />
-            {errors.mother_name && <p className="text-sm text-red-500">{errors.mother_name}</p>}
           </div>
 
           <div className="space-y-2">

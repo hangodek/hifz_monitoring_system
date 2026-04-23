@@ -25,7 +25,6 @@ interface Student {
   birth_date: string
   address?: string
   father_name: string
-  mother_name: string
   parent_phone?: string
   created_at: string
   updated_at: string
@@ -60,7 +59,7 @@ export function StudentListView({ filteredStudents, getStatusBadge, handleSelect
                     <h3 className="text-sm sm:text-base font-medium truncate">{student.name}</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">{student.class_level}</p>
                     <p className="text-xs text-muted-foreground truncate hidden sm:block">
-                      {student.father_name || student.mother_name || 'Tidak ada informasi orang tua'}
+                      {student.father_name || 'Tidak ada informasi orang tua'}
                     </p>
                   </div>
                 </div>

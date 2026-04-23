@@ -24,7 +24,6 @@ interface StudentFormData {
   birth_date: string
   address: string
   father_name: string
-  mother_name: string
   parent_phone: string
 }
 
@@ -46,7 +45,6 @@ export default function CreateStudent() {
     birth_date: "",
     address: "",
     father_name: "",
-    mother_name: "",
     parent_phone: "",
   })
 
@@ -95,7 +93,6 @@ export default function CreateStudent() {
     if (!formData.birth_place.trim()) newErrors.birth_place = "Tempat lahir diperlukan"
     if (!formData.birth_date) newErrors.birth_date = "Tanggal lahir diperlukan"
     if (!formData.father_name.trim()) newErrors.father_name = "Nama ayah diperlukan"
-    if (!formData.mother_name.trim()) newErrors.mother_name = "Nama ibu diperlukan"
 
     // Optional fields validation (only validate format if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -135,7 +132,6 @@ export default function CreateStudent() {
       formDataToSend.append('student[birth_date]', formData.birth_date)
       formDataToSend.append('student[address]', formData.address)
       formDataToSend.append('student[father_name]', formData.father_name.charAt(0).toUpperCase() + formData.father_name.slice(1))
-      formDataToSend.append('student[mother_name]', formData.mother_name.charAt(0).toUpperCase() + formData.mother_name.slice(1))
       formDataToSend.append('student[parent_phone]', formData.parent_phone)
       
       // Add avatar file if selected

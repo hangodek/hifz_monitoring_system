@@ -33,7 +33,6 @@ interface PreviewStudent {
   birth_place: string
   birth_date: string
   father_name: string
-  mother_name: string
   parent_phone?: string
   address?: string
   class_level: string
@@ -392,7 +391,6 @@ export default function BulkImport() {
                         <TableCell>
                           <div className="text-sm">
                             <div>Ayah: {student.father_name}</div>
-                            <div>Ibu: {student.mother_name}</div>
                             {student.parent_phone && <div>HP: {student.parent_phone}</div>}
                           </div>
                         </TableCell>

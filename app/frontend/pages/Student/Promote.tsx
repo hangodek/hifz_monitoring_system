@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, GraduationCap, Search, Users, CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react"
+import { ArrowLeft, Search, Users, CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface Student {
@@ -45,7 +45,6 @@ interface Student {
   birth_date: string
   address?: string
   father_name: string
-  mother_name: string
   parent_phone?: string
   created_at: string
   updated_at: string
@@ -358,7 +357,7 @@ export default function PromoteStudents({ students, class_levels }: PromoteStude
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-medium truncate">{student.name}</h3>
                         <p className="text-xs text-muted-foreground">
-                          {student.father_name || student.mother_name || "Tidak ada informasi orang tua"}
+                          {student.father_name || "Tidak ada informasi orang tua"}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">

@@ -32,7 +32,6 @@ interface Student {
   birth_date: string
   address?: string
   father_name: string
-  mother_name: string
   parent_phone?: string
   created_at: string
   updated_at: string
@@ -85,8 +84,7 @@ export function StudentGridView({ filteredStudents, getStatusBadge, handleSelect
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Users className="h-3 w-3 flex-shrink-0" />
                 <span className="truncate">
-                  {student.father_name ? `${student.father_name} (Ayah)` : 
-                  student.mother_name ? `${student.mother_name} (Ibu)` : 'Tidak ada informasi orang tua'}
+                  {student.father_name ? `${student.father_name} (Ayah)` : 'Tidak ada informasi orang tua'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -112,7 +112,6 @@ module Students
         birth_place: row_hash["Tempat Lahir*"]&.to_s&.strip,
         birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"]),
         father_name: row_hash["Nama Ayah*"]&.to_s&.strip,
-        mother_name: row_hash["Nama Ibu*"]&.to_s&.strip,
         parent_phone: row_hash["No HP Orang Tua"]&.to_s&.strip,
         address: row_hash["Alamat"]&.to_s&.strip,
         class_level: (row_hash["Kelas* (7A-12D)"] || row_hash["Kelas*"])&.to_s&.strip,
@@ -134,7 +133,6 @@ module Students
       row_errors << "Tempat lahir wajib diisi" if student_data[:birth_place].blank?
       row_errors << "Tanggal lahir wajib diisi" if student_data[:birth_date].blank?
       row_errors << "Nama ayah wajib diisi" if student_data[:father_name].blank?
-      row_errors << "Nama ibu wajib diisi" if student_data[:mother_name].blank?
       row_errors << "Kelas wajib diisi" if student_data[:class_level].blank?
 
       if student_data[:class_level].present? && !valid_class_level?(student_data[:class_level])
@@ -188,7 +186,6 @@ module Students
         birth_place: student_params[:birth_place],
         birth_date: Date.parse(student_params[:birth_date]),
         father_name: student_params[:father_name],
-        mother_name: student_params[:mother_name],
         parent_phone: student_params[:parent_phone],
         address: student_params[:address],
         class_level: student_params[:class_level]&.upcase,

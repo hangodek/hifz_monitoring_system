@@ -86,7 +86,6 @@ interface Student {
   birth_date: string
   address?: string
   father_name: string
-  mother_name: string
   parent_phone?: string
 }
 

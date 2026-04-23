@@ -69,7 +69,6 @@ interface Student {
   birth_date: string
   address?: string
   father_name: string
-  mother_name: string
   parent_phone?: string
   created_at: string
   updated_at: string
@@ -388,10 +387,6 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Ayah</label>
                   <p className="text-sm sm:text-base mt-1">{student.father_name}</p>
-                </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Ibu</label>
-                  <p className="text-sm sm:text-base mt-1">{student.mother_name}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">No HP Orang Tua</label>

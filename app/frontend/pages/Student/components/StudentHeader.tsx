@@ -26,7 +26,6 @@ interface Student {
   birth_date: string
   address?: string
   father_name: string
-  mother_name: string
   parent_phone?: string
   created_at: string
   updated_at: string
