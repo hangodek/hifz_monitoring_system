@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   
   skip_before_action :authorize_role
   before_action :require_admin!
-  before_action :set_user, only: [ :update_role ]
+  before_action :set_user, only: [ :update_role, :update ]
 
   def index
     @users = User.includes(:student).order(created_at: :desc)
@@ -91,7 +91,41 @@ class UsersController < ApplicationController
     end
   end
 
-  private
+  def update
+    update_attrs = {}
+    update_attrs[:name]       = params.dig(:user, :name).presence       || @user.name
+    update_attrs[:username]   = params.dig(:user, :username).presence   || @user.username
+    update_attrs[:student_id] = params.dig(:user, :student_id)          if params.dig(:user, :student_id).present?
+
+    new_pw = params.dig(:user, :password)
+    if new_pw.present?
+      update_attrs[:password]              = new_pw
+      update_attrs[:password_confirmation] = params.dig(:user, :password_confirmation)
+    end
+
+    if @user.update(update_attrs)
+      render json: {
+        success: true,
+        message: "Pengguna berhasil diperbarui.",
+        user: {
+          id: @user.id,
+          username: @user.username,
+          name: @user.name,
+          email: @user.email_address,
+          role: @user.role,
+          student_name: @user.student&.name,
+          student_id: @user.student_id,
+          created_at: @user.created_at.strftime("%d/%m/%Y")
+        }
+      }
+    else
+      render json: {
+        success: false,
+        errors: @user.errors.full_messages
+      }, status: :unprocessable_entity
+    end
+  end
+
 
   def set_user
     @user = User.find(params[:id])

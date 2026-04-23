@@ -27,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Users as UsersIcon, Shield, GraduationCap, UserCircle, Loader2, UserPlus } from "lucide-react"
+import { Users as UsersIcon, Shield, GraduationCap, UserCircle, Loader2, UserPlus, Pencil } from "lucide-react"
 import axios from "axios"
 import { router } from "@inertiajs/react"
 
@@ -56,6 +56,7 @@ interface UsersIndexProps {
 }
 
 const emptyForm = { name: "", username: "", password: "", password_confirmation: "", role: "teacher", student_id: "" }
+const emptyEditForm = { name: "", username: "", password: "", password_confirmation: "", student_id: "" }
 
 export default function UsersIndex({ users: initialUsers, available_roles, current_filter, students }: UsersIndexProps) {
   const [users, setUsers] = useState<User[]>(initialUsers)
@@ -67,6 +68,13 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
   const [createForm, setCreateForm] = useState(emptyForm)
   const [createErrors, setCreateErrors] = useState<string[]>([])
   const [isCreating, setIsCreating] = useState(false)
+
+  // Edit user modal state
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [editForm, setEditForm] = useState(emptyEditForm)
+  const [editErrors, setEditErrors] = useState<string[]>([])
+  const [isEditing, setIsEditing] = useState(false)
 
   const handleFilter = (role: string | null) => {
     setActiveFilter(role)
@@ -153,6 +161,58 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
     setCreateErrors([])
   }
 
+  const openEditModal = (user: User) => {
+    setEditingUser(user)
+    setEditForm({ name: user.name, username: user.username, password: "", password_confirmation: "", student_id: user.student_id ?? "" })
+    setEditErrors([])
+    setShowEditModal(true)
+  }
+
+  const closeEditModal = () => {
+    setShowEditModal(false)
+    setEditingUser(null)
+    setEditForm(emptyEditForm)
+    setEditErrors([])
+  }
+
+  const handleEditUser = async () => {
+    setEditErrors([])
+    if (!editForm.name.trim())     { setEditErrors(["Nama tidak boleh kosong"]); return }
+    if (!editForm.username.trim()) { setEditErrors(["Username tidak boleh kosong"]); return }
+    if (editForm.password && editForm.password !== editForm.password_confirmation) {
+      setEditErrors(["Password baru dan konfirmasi tidak cocok"]); return
+    }
+    if (editForm.password && editForm.password.length < 6) {
+      setEditErrors(["Password minimal 6 karakter"]); return
+    }
+
+    setIsEditing(true)
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+      const payload: Record<string, string> = {
+        name: editForm.name,
+        username: editForm.username,
+      }
+      if (editForm.password) {
+        payload.password = editForm.password
+        payload.password_confirmation = editForm.password_confirmation
+      }
+      if (editingUser?.role === "parent") payload.student_id = editForm.student_id
+
+      const response = await axios.patch(`/users/${editingUser!.id}`, { user: payload }, {
+        headers: { 'X-CSRF-Token': csrfToken }
+      })
+      if (response.data.success) {
+        setUsers(users.map(u => u.id === editingUser!.id ? { ...u, ...response.data.user } : u))
+        closeEditModal()
+      }
+    } catch (error: any) {
+      setEditErrors(error.response?.data?.errors || ["Gagal memperbarui pengguna"])
+    } finally {
+      setIsEditing(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50/50">
       <div className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -208,45 +268,43 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="border-0 shadow-md bg-gradient-to-br from-red-50 to-red-100/50">
+          <Card className="border shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-red-900">Pengurus</CardTitle>
-              <Shield className="h-5 w-5 text-red-600" />
+              <CardTitle className="text-sm font-medium">Pengurus</CardTitle>
+              <Shield className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{users.filter(u => u.role === "admin").length}</div>
-              <p className="text-xs text-red-700/70">Administrator sistem</p>
+              <div className="text-2xl font-bold">{users.filter(u => u.role === "admin").length}</div>
+              <p className="text-xs text-muted-foreground">Administrator sistem</p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md bg-gradient-to-br from-blue-50 to-blue-100/50">
+          <Card className="border shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-900">Guru</CardTitle>
-              <GraduationCap className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-sm font-medium">Guru</CardTitle>
+              <GraduationCap className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{users.filter(u => u.role === "teacher").length}</div>
-              <p className="text-xs text-blue-700/70">Tenaga pengajar</p>
+              <div className="text-2xl font-bold">{users.filter(u => u.role === "teacher").length}</div>
+              <p className="text-xs text-muted-foreground">Tenaga pengajar</p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md bg-gradient-to-br from-green-50 to-green-100/50">
+          <Card className="border shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-900">Orang Tua</CardTitle>
-              <UserCircle className="h-5 w-5 text-green-600" />
+              <CardTitle className="text-sm font-medium">Orang Tua</CardTitle>
+              <UserCircle className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{users.filter(u => u.role === "parent").length}</div>
-              <p className="text-xs text-green-700/70">Orang tua siswa</p>
+              <div className="text-2xl font-bold">{users.filter(u => u.role === "parent").length}</div>
+              <p className="text-xs text-muted-foreground">Orang tua siswa</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Users Table */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                <UsersIcon className="h-5 w-5 text-indigo-600" />
-              </div>
+              <UsersIcon className="h-5 w-5" />
               Daftar Pengguna
             </CardTitle>
             <CardDescription>Jumlah {users.length} pengguna dalam sistem</CardDescription>
@@ -280,7 +338,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="font-medium text-blue-600">@{user.username}</span>
+                            <span className="font-medium">@{user.username}</span>
                             <span className="text-xs text-muted-foreground">ID: {user.id}</span>
                           </div>
                         </TableCell>
@@ -304,32 +362,43 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                         </TableCell>
                         <TableCell><span className="text-sm">{user.created_at}</span></TableCell>
                         <TableCell className="text-right">
-                          <Select
-                            value={user.role}
-                            onValueChange={(value) => handleRoleChange(user.id, value)}
-                            disabled={updatingUserId === user.id}
-                          >
-                            <SelectTrigger className="w-[160px] cursor-pointer">
-                              {updatingUserId === user.id ? (
-                                <div className="flex items-center gap-2">
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                  <span>Memperbarui...</span>
-                                </div>
-                              ) : (
-                                <SelectValue placeholder="Pilih role" />
-                              )}
-                            </SelectTrigger>
-                            <SelectContent>
-                              {available_roles.map((role) => (
-                                <SelectItem key={role} value={role} className="cursor-pointer">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="cursor-pointer h-8 w-8 p-0"
+                              onClick={() => openEditModal(user)}
+                              title="Edit pengguna"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Select
+                              value={user.role}
+                              onValueChange={(value) => handleRoleChange(user.id, value)}
+                              disabled={updatingUserId === user.id}
+                            >
+                              <SelectTrigger className="w-[140px] cursor-pointer">
+                                {updatingUserId === user.id ? (
                                   <div className="flex items-center gap-2">
-                                    {getRoleIcon(role)}
-                                    {getRoleLabel(role)}
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <span>Memperbarui...</span>
                                   </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                                ) : (
+                                  <SelectValue placeholder="Pilih role" />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent>
+                                {available_roles.map((role) => (
+                                  <SelectItem key={role} value={role} className="cursor-pointer">
+                                    <div className="flex items-center gap-2">
+                                      {getRoleIcon(role)}
+                                      {getRoleLabel(role)}
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -346,7 +415,7 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-indigo-600" />
+              <UserPlus className="h-5 w-5" />
               Buat Pengguna Baru
             </DialogTitle>
             <DialogDescription>
@@ -356,9 +425,9 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
           <div className="space-y-4 py-2">
             {createErrors.length > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3 space-y-1">
+              <div className="border border-destructive/30 bg-destructive/5 rounded-md p-3 space-y-1">
                 {createErrors.map((err, i) => (
-                  <p key={i} className="text-sm text-red-700">• {err}</p>
+                  <p key={i} className="text-sm text-destructive">• {err}</p>
                 ))}
               </div>
             )}
@@ -465,6 +534,108 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
               {isCreating
                 ? <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...</>
                 : <><UserPlus className="h-4 w-4" /> Buat Pengguna</>
+              }
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* ─── Edit User Modal ─────────────────────────────────────────── */}
+      <Dialog open={showEditModal} onOpenChange={(open) => { if (!open) closeEditModal() }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5" />
+              Edit Pengguna
+            </DialogTitle>
+            <DialogDescription>
+              Ubah nama, username, atau password untuk <strong>{editingUser?.name}</strong>.
+              Kosongkan kolom password jika tidak ingin mengubahnya.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {editErrors.length > 0 && (
+              <div className="border border-destructive/30 bg-destructive/5 rounded-md p-3 space-y-1">
+                {editErrors.map((err, i) => (
+                  <p key={i} className="text-sm text-destructive">• {err}</p>
+                ))}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nama Lengkap</Label>
+              <Input
+                id="edit-name"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-username">Username</Label>
+              <Input
+                id="edit-username"
+                value={editForm.username}
+                onChange={(e) => setEditForm({ ...editForm, username: e.target.value.toLowerCase().replace(/\s+/g, '_') })}
+              />
+            </div>
+
+            {/* Student picker — only for parent role */}
+            {editingUser?.role === "parent" && (
+              <div className="space-y-2">
+                <Label htmlFor="edit-student">Siswa yang Ditautkan</Label>
+                <Select
+                  value={editForm.student_id}
+                  onValueChange={(v) => setEditForm({ ...editForm, student_id: v })}
+                >
+                  <SelectTrigger id="edit-student" className="cursor-pointer">
+                    <SelectValue placeholder="Pilih siswa..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {students.map((s) => (
+                      <SelectItem key={s.id} value={String(s.id)} className="cursor-pointer">
+                        <span className="font-medium">{s.name}</span>
+                        <span className="text-muted-foreground ml-1 text-xs">({s.class_level})</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-password">Password Baru <span className="text-muted-foreground text-xs">(kosongkan jika tidak diubah)</span></Label>
+              <Input
+                id="edit-password"
+                type="password"
+                placeholder="••••••••"
+                value={editForm.password}
+                onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+              />
+            </div>
+
+            {editForm.password && (
+              <div className="space-y-2">
+                <Label htmlFor="edit-password-confirm">Konfirmasi Password Baru</Label>
+                <Input
+                  id="edit-password-confirm"
+                  type="password"
+                  placeholder="Ulangi password baru"
+                  value={editForm.password_confirmation}
+                  onChange={(e) => setEditForm({ ...editForm, password_confirmation: e.target.value })}
+                />
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={closeEditModal} className="cursor-pointer" disabled={isEditing}>
+              Batal
+            </Button>
+            <Button onClick={handleEditUser} disabled={isEditing} className="cursor-pointer gap-2">
+              {isEditing
+                ? <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...</>
+                : <><Pencil className="h-4 w-4" /> Simpan Perubahan</>
               }
             </Button>
           </DialogFooter>

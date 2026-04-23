@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Download, LogOut, Plus, Users, UserCircle } from "lucide-react"
+import { ArrowLeft, Download, LogOut, Plus, Users } from "lucide-react"
 import { router, usePage } from "@inertiajs/react"
 import { PageProps } from "@/types/auth"
 
@@ -64,10 +64,6 @@ export function TeacherHeader({ mode = "index" }: TeacherHeaderProps) {
             <span className="sm:hidden">Kembali</span>
           </Button>
         )}
-        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer" onClick={() => router.visit("/profile/edit")}>
-          <UserCircle className="h-4 w-4 mr-2" />
-          Profil Saya
-        </Button>
         {userRole === "teacher" && (
           <Button variant="outline" className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer" onClick={() => router.delete("/session")}>
             <LogOut className="h-4 w-4 mr-2" />

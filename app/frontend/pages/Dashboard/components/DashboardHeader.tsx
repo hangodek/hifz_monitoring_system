@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Users, Mic, LogOut, UserCog, Settings, UserCircle } from "lucide-react"
+import { Users, Mic, LogOut, UserCog, Settings } from "lucide-react"
 import { router, usePage } from "@inertiajs/react"
 import { PageProps } from "@/types/auth"
 
@@ -42,10 +42,6 @@ export function DashboardHeader() {
             <span className="sm:hidden">Guru</span>
           </Button>
         )}
-        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full col-span-2" onClick={() => router.visit("/profile/edit")}>
-          <UserCircle className="h-4 w-4 mr-2" />
-          Profil Saya
-        </Button>
         <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer w-full col-span-2" onClick={() => router.delete("/session")}>
           <LogOut className="h-4 w-4 mr-2" />
           Keluar

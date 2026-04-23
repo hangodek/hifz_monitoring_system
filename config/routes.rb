@@ -33,7 +33,7 @@ Rails.application.routes.draw do
   end
   
   # Users management (pengurus only)
-  resources :users, only: [ :index, :create ] do
+  resources :users, only: [ :index, :create, :update ] do
     member do
       patch :update_role
     end
@@ -42,8 +42,6 @@ Rails.application.routes.draw do
   # App Settings (admin only)
   resource :settings, only: [ :edit, :update ]
 
-  # Profile - accessible by all logged-in users
-  resource :profile, only: [ :edit, :update ], controller: 'profile'
   
   # Parent dashboard - orang tua can only view their child's progress
   resource :parent, only: [ :show ], controller: 'parents' do
