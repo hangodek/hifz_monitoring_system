@@ -11,9 +11,6 @@ interface StudentFormData {
   nisn: string
   student_number: string
   name: string
-  current_hifz_in_juz: string
-  current_hifz_in_pages: string
-  current_hifz_in_surah: string
   avatar: File | null
   class_level: string
   phone: string
@@ -27,14 +24,13 @@ interface StudentFormData {
   parent_phone: string
 }
 
+type FormErrors = Partial<Omit<StudentFormData, 'avatar'> & { avatar: string }>
+
 export default function CreateStudent() {
   const [formData, setFormData] = useState<StudentFormData>({
     nisn: "",
     student_number: "",
     name: "",
-    current_hifz_in_juz: "0",
-    current_hifz_in_pages: "0",
-    current_hifz_in_surah: "",
     avatar: null,
     class_level: "",
     phone: "",
@@ -48,16 +44,16 @@ export default function CreateStudent() {
     parent_phone: "",
   })
 
-  const [errors, setErrors] = useState<Partial<StudentFormData>>({})
+  const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleInputChange = (field: keyof StudentFormData, value: string) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
     // Clear error when user starts typing
-    if (errors[field]) {
+    if ((errors as Record<string, string | undefined>)[field]) {
       setErrors(prev => ({
         ...prev,
         [field]: undefined
@@ -80,13 +76,11 @@ export default function CreateStudent() {
   }
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<StudentFormData> = {}
+    const newErrors: FormErrors = {}
 
     // Required fields (null: false in schema)
     if (!formData.student_number.trim()) newErrors.student_number = "No Induk diperlukan"
     if (!formData.name.trim()) newErrors.name = "Nama siswa diperlukan"
-    if (!formData.current_hifz_in_juz.trim()) newErrors.current_hifz_in_juz = "Juz saat ini diperlukan"
-    if (!formData.current_hifz_in_pages.trim()) newErrors.current_hifz_in_pages = "Halaman saat ini diperlukan"
     if (!formData.class_level.trim()) newErrors.class_level = "Kelas diperlukan"
     if (!formData.status.trim()) newErrors.status = "Status diperlukan"
     if (!formData.gender.trim()) newErrors.gender = "Jenis kelamin diperlukan"
@@ -120,9 +114,6 @@ export default function CreateStudent() {
       formDataToSend.append('student[nisn]', formData.nisn)
       formDataToSend.append('student[student_number]', formData.student_number)
       formDataToSend.append('student[name]', formData.name.charAt(0).toUpperCase() + formData.name.slice(1))
-      formDataToSend.append('student[current_hifz_in_juz]', formData.current_hifz_in_juz)
-      formDataToSend.append('student[current_hifz_in_pages]', formData.current_hifz_in_pages)
-      formDataToSend.append('student[current_hifz_in_surah]', formData.current_hifz_in_surah)
       formDataToSend.append('student[class_level]', formData.class_level)
       formDataToSend.append('student[phone]', formData.phone)
       formDataToSend.append('student[email]', formData.email)

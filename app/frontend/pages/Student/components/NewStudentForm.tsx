@@ -7,30 +7,13 @@ import { DatePicker } from "@/components/ui/date-picker"
 import { User, Upload } from "lucide-react"
 import { useState } from "react"
 
-interface StudentFormData {
-  nisn: string
-  student_number: string
-  name: string
-  current_hifz_in_juz: string
-  current_hifz_in_pages: string
-  current_hifz_in_surah: string
-  avatar: File | null
-  class_level: string
-  phone: string
-  email: string
-  status: string
-  gender: string
-  birth_place: string
-  birth_date: string
-  address: string
-  father_name: string
-  parent_phone: string
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFormData = Record<string, any>
 
 interface NewStudentFormProps {
-  formData: StudentFormData
-  errors: Partial<StudentFormData>
-  handleInputChange: (field: keyof StudentFormData, value: string) => void
+  formData: AnyFormData
+  errors: AnyFormData
+  handleInputChange: (field: string, value: string) => void
   handleFileChange: (file: File | null) => void
   isEdit?: boolean
   existingAvatar?: string
@@ -101,28 +84,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
   const statuses = ["active", "inactive", "graduated"]
   const genders = ["male", "female"]
   
-  // Surah list for the dropdown
-  const surahList = [
-    "Al-Fatihah", "Al-Baqarah", "Ali Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", 
-    "Al-A'raf", "Al-Anfal", "At-Taubah", "Yunus", "Hud", "Yusuf", "Ar-Ra'd", 
-    "Ibrahim", "Al-Hijr", "An-Nahl", "Al-Isra'", "Al-Kahf", "Maryam", "Ta Ha", 
-    "Al-Anbiya", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan", "Asy-Syu'ara'", 
-    "An-Naml", "Al-Qasas", "Al-'Ankabut", "Ar-Rum", "Luqman", "As-Sajdah", 
-    "Al-Ahzab", "Saba'", "Fatir", "Ya Sin", "As-Saffat", "Sad", "Az-Zumar", 
-    "Ghafir", "Fussilat", "Asy-Syura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jasiyah", 
-    "Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Az-Zariyat", 
-    "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid", 
-    "Al-Mujadilah", "Al-Hasyr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", 
-    "Al-Munafiqun", "At-Tagabun", "At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", 
-    "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddassir", 
-    "Al-Qiyamah", "Al-Insan", "Al-Mursalat", "An-Naba'", "An-Nazi'at", "Abasa", 
-    "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Insyiqaq", "Al-Buruj", 
-    "At-Tariq", "Al-A'la", "Al-Gasyiyah", "Al-Fajr", "Al-Balad", "Asy-Syams", 
-    "Al-Lail", "Ad-Duha", "Al-Insyirah", "At-Tin", "Al-'Alaq", "Al-Qadr", 
-    "Al-Bayyinah", "Az-Zalzalah", "Al-'Adiyat", "Al-Qari'ah", "At-Takasur", 
-    "Al-'Asr", "Al-Humazah", "Al-Fil", "Quraisy", "Al-Ma'un", "Al-Kautsar", 
-    "Al-Kafirun", "An-Nasr", "Al-Lahab", "Al-Ikhlas", "Al-Falaq", "An-Nas"
-  ]
+
 
   return (
     <div className="space-y-6">
@@ -374,53 +336,6 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_juz">Juz Saat Ini Dihafal *</Label>
-              <Input
-                id="current_hifz_in_juz"
-                type="number"
-                min="1"
-                max="30"
-                value={formData.current_hifz_in_juz}
-                onChange={(e) => handleInputChange("current_hifz_in_juz", e.target.value)}
-                placeholder="1"
-              />
-              <p className="text-xs text-muted-foreground">Masukkan jumlah Juz yang telah diselesaikan (0-30)</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_pages">Halaman Saat Ini *</Label>
-              <Input
-                id="current_hifz_in_pages"
-                type="number"
-                min="1"
-                max="20"
-                value={formData.current_hifz_in_pages}
-                onChange={(e) => handleInputChange("current_hifz_in_pages", e.target.value)}
-                placeholder="1"
-              />
-              <p className="text-xs text-muted-foreground">Masukkan halaman saat ini dalam Juz yang sedang dihafal (1 - 20)</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="current_hifz_in_surah">Surah Saat Ini</Label>
-              <Select
-                value={formData.current_hifz_in_surah || ""}
-                onValueChange={(value) => handleInputChange("current_hifz_in_surah", value)}
-              >
-                <SelectTrigger className="cursor-pointer">
-                  <SelectValue placeholder="Pilih surah saat ini" />
-                </SelectTrigger>
-                <SelectContent>
-                  {surahList.map((surah, index) => (
-                    <SelectItem key={index + 1} value={surah} className="cursor-pointer">
-                      {index + 1}. {surah}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">Pilih surah yang sedang dihafal</p>
-            </div>
           </div>
         </CardContent>
       </Card>
