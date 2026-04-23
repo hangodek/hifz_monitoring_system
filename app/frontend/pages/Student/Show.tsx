@@ -44,7 +44,7 @@ import {
   Edit,
   Loader2,
 } from "lucide-react"
-import { router } from "@inertiajs/react"
+import { router, usePage } from "@inertiajs/react"
 import { AudioPlayer } from "@/components/AudioPlayer"
 import axios from "axios"
 
@@ -286,6 +286,9 @@ export default function StudentShow({ student, recent_activities, total_activiti
     )
   }
 
+  const { auth } = usePage<{ auth?: { user?: { role?: string } } }>().props
+  const userRole = auth?.user?.role
+
   return (
     <div className="min-h-screen bg-gray-50/50">
       <div className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -296,24 +299,38 @@ export default function StudentShow({ student, recent_activities, total_activiti
             <p className="text-sm sm:text-base text-muted-foreground">Kemajuan hafalan dan detail aktivitas siswa</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 sm:gap-0">
-            <Button
-              variant="default"
-              className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-              onClick={() => router.visit(`/students/${student.id}/edit`)}
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Edit Siswa</span>
-              <span className="sm:hidden">Edit</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer"
-              onClick={() => router.visit('/students')}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Kembali ke Daftar Siswa</span>
-              <span className="sm:hidden">Kembali</span>
-            </Button>
+            {userRole === "admin" ? (
+              <>
+                <Button
+                  variant="default"
+                  className="cursor-pointer"
+                  onClick={() => router.visit(`/students/${student.id}/edit`)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Edit Siswa</span>
+                  <span className="sm:hidden">Edit</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer"
+                  onClick={() => router.visit('/students')}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Kembali ke Daftar Siswa</span>
+                  <span className="sm:hidden">Kembali</span>
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer"
+                onClick={() => router.visit('/teachers')}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Kembali ke Mode Guru</span>
+                <span className="sm:hidden">Kembali</span>
+              </Button>
+            )}
           </div>
         </div>
 
