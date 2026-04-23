@@ -81,7 +81,7 @@ export function StudentListView({ filteredStudents, getStatusBadge, handleSelect
                   </div>
                   <div className="flex items-center space-x-2">
                     {getStatusBadge(student.status)}
-                    <Button size="sm" variant="outline" className="border-gray-200/60 cursor-pointer p-1 sm:p-2" onClick={() => handleSelectStudent(student.id)}>
+                    <Button size="sm" variant="outline" className="cursor-pointer p-1 sm:p-2" onClick={() => handleSelectStudent(student.id)}>
                       <User className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </div>

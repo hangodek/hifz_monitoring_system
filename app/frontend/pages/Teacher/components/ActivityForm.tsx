@@ -304,7 +304,7 @@ export function ActivityForm({
         <div className="space-y-2">
           <Label>Jenis Aktivitas</Label>
           <Select value={activityType} onValueChange={setActivityType}>
-            <SelectTrigger className="border-indigo-200 hover:border-indigo-300 cursor-pointer">
+            <SelectTrigger className="cursor-pointer">
               <SelectValue placeholder="Pilih jenis aktivitas..." />
             </SelectTrigger>
             <SelectContent className="border-gray-200/60">
@@ -332,7 +332,7 @@ export function ActivityForm({
               }))
             }}
           >
-            <SelectTrigger className="border-gray-200/60 cursor-pointer">
+            <SelectTrigger className="cursor-pointer">
               <SelectValue placeholder="Pilih juz..." />
             </SelectTrigger>
             <SelectContent className="border-gray-200/60 max-h-[280px]">
@@ -360,7 +360,7 @@ export function ActivityForm({
                     setActivityDetails((prev) => ({ ...prev, surah: value, completionStatus: nextStatus }))
                   }}
                 >
-                  <SelectTrigger className="border-gray-200/60 cursor-pointer">
+                  <SelectTrigger className="cursor-pointer">
                     <SelectValue placeholder="Pilih surah..." />
                   </SelectTrigger>
                   <SelectContent className="border-gray-200/60">

@@ -477,7 +477,7 @@ export default function ParentShow({
               </div>
               <Button
                 variant="outline"
-                className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 w-full sm:w-auto cursor-pointer"
+                className="hover:bg-accent hover:text-accent-foreground w-full sm:w-auto cursor-pointer"
                 onClick={handleViewAllActivities}
                 disabled={isLoadingActivities}
               >

@@ -42,7 +42,7 @@ export function DashboardHeader() {
             <span className="sm:hidden">Guru</span>
           </Button>
         )}
-        <Button variant="outline" className="border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 cursor-pointer w-full col-span-2" onClick={() => router.delete("/session")}>
+        <Button variant="outline" className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer w-full col-span-2" onClick={() => router.delete("/session")}>
           <LogOut className="h-4 w-4 mr-2" />
           Keluar
         </Button>

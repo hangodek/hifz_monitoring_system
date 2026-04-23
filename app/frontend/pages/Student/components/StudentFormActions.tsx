@@ -13,7 +13,7 @@ export function StudentFormActions({ isSubmitting }: StudentFormActionsProps) {
         type="button"
         variant="outline"
         onClick={() => router.visit("/students")}
-        className="sm:w-auto border-gray-200/60 cursor-pointer"
+        className="sm:w-auto cursor-pointer"
       >
         Cancel
       </Button>

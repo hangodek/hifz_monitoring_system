@@ -307,7 +307,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
             </Button>
             <Button
               variant="outline"
-              className="border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
+              className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer"
               onClick={() => router.visit('/students')}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -761,7 +761,7 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 {total_activities_count > 5 && (
                   <Dialog open={isOpen} onOpenChange={handleOpenChange}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="cursor-pointer border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+                      <Button variant="outline" size="sm" className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
                         Lihat Semua ({total_activities_count})
                       </Button>
                     </DialogTrigger>

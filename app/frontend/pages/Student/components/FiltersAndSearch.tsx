@@ -52,7 +52,7 @@ export function FiltersAndSearch({
             </div>
             <div className="flex flex-wrap justify-center items-center gap-2 sm:flex sm:gap-4">
               <Select value={classFilter} onValueChange={setClassFilter}>
-                <SelectTrigger className="border-cyan-200 hover:border-cyan-300 cursor-pointer">
+                <SelectTrigger className="cursor-pointer">
                   <SelectValue placeholder="Semua Kelas" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
@@ -90,7 +90,7 @@ export function FiltersAndSearch({
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="border-cyan-200 hover:border-cyan-300 cursor-pointer">
+                <SelectTrigger className="cursor-pointer">
                   <SelectValue placeholder="Semua Status" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">
@@ -101,7 +101,7 @@ export function FiltersAndSearch({
                 </SelectContent>
               </Select>
               <Select value={juzFilter} onValueChange={setJuzFilter}>
-                <SelectTrigger className="border-cyan-200 hover:border-cyan-300 cursor-pointer">
+                <SelectTrigger className="cursor-pointer">
                   <SelectValue placeholder="Semua Juz" />
                 </SelectTrigger>
                 <SelectContent className="border-gray-200/60">

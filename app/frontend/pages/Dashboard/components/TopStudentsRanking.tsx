@@ -63,7 +63,7 @@ export function TopStudentsRanking({ students }: TopStudentsRankingProps) {
               </div>
               <Progress value={student.progress} className="h-1.5 sm:h-2 bg-amber-100" />
             </div>
-            <Button variant="ghost" size="sm" className="border border-amber-200 hover:bg-amber-50 hover:text-amber-700 cursor-pointer h-8 w-8 p-0 flex-shrink-0" onClick={() => router.visit(`/students/${student.id}`)}>
+            <Button variant="ghost" size="sm" className="border hover:bg-accent hover:text-accent-foreground cursor-pointer h-8 w-8 p-0 flex-shrink-0" onClick={() => router.visit(`/students/${student.id}`)}>
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>

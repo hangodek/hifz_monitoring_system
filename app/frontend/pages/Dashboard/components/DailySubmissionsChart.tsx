@@ -62,7 +62,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 hover:text-orange-700 cursor-pointer w-full md:w-auto">
+              <Button variant="outline" size="sm" className="hover:bg-accent hover:text-accent-foreground cursor-pointer w-full md:w-auto">
                 <CalendarIcon className="h-4 w-4 mr-2" />
                 <span className="text-xs sm:text-sm">
                   {format(dateRange.from, "dd MMM", { locale: id })} -{" "}
@@ -97,7 +97,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-orange-200 hover:bg-orange-50 cursor-pointer text-xs"
+                    className="hover:bg-accent cursor-pointer text-xs"
                     onClick={() =>
                       handleDateRangeChange({
                         from: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
@@ -110,7 +110,7 @@ export function DailySubmissionsChart({ data }: DailySubmissionsChartProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-orange-200 hover:bg-orange-50 cursor-pointer text-xs"
+                    className="hover:bg-accent cursor-pointer text-xs"
                     onClick={() =>
                       handleDateRangeChange({
                         from: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),

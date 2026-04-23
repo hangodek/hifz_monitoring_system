@@ -146,7 +146,7 @@ export function RecentActivities({ activities, totalActivitiesCount }: RecentAct
           {totalActivitiesCount > 5 && (
             <Dialog open={isOpen} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="cursor-pointer border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+                <Button variant="outline" size="sm" className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
                   Lihat Semua ({totalActivitiesCount})
                 </Button>
               </DialogTrigger>

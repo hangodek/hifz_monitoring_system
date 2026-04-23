@@ -51,8 +51,6 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
     }
   }
 
-
-
   const handleExportExcel = async () => {
     try {
       setIsExporting(true)
@@ -72,47 +70,35 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
         <p className="text-sm sm:text-base text-muted-foreground">Kelola dan pantau data siswa hafalan Al-Quran</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 cursor-pointer md:w-full" onClick={() => router.visit("/teachers")}>
+        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer md:w-full" onClick={() => router.visit("/teachers")}>
           <Mic className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Mode Guru</span>
           <span className="sm:hidden">Guru</span>
         </Button>
-        <Button
-          variant="outline" 
-          className="border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300 cursor-pointer md:w-full"
-          onClick={() => router.visit("/students/new")}
-        >
+        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer md:w-full" onClick={() => router.visit("/students/new")}>
           <Plus className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Tambah Siswa</span>
           <span className="sm:hidden">Tambah</span>
         </Button>
-        <Button
-          variant="outline"
-          className="border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700 hover:border-cyan-300 cursor-pointer md:w-full"
-          onClick={() => router.visit("/students/bulk_import")}
-        >
+        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer md:w-full" onClick={() => router.visit("/students/bulk_import")}>
           <Upload className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Import Massal</span>
           <span className="sm:hidden">Import</span>
         </Button>
-        <Button
-          variant="outline"
-          className="border-orange-200 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 cursor-pointer md:w-full"
-          onClick={() => router.visit("/students/promote")}
-        >
+        <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer md:w-full" onClick={() => router.visit("/students/promote")}>
           <GraduationCap className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Naik Kelas</span>
           <span className="sm:hidden">Naik Kelas</span>
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 cursor-pointer md:w-full" disabled={isExporting}>
+            <Button variant="outline" className="hover:bg-accent hover:text-accent-foreground cursor-pointer md:w-full" disabled={isExporting}>
               <Download className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">{isExporting ? 'Mengekspor...' : 'Ekspor Data'}</span>
               <span className="sm:hidden">{isExporting ? '...' : 'Ekspor'}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 border-gray-200/60">
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer" disabled={isExporting}>
               <FileText className="h-4 w-4 mr-2" />
               Ekspor sebagai PDF
@@ -123,7 +109,11 @@ export function StudentHeader({ students = [], filteredStudents }: StudentHeader
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="outline" className="border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 cursor-pointer md:w-full" onClick={() => router.visit("/dashboard")}>
+        <Button
+          variant="outline"
+          className="border-destructive/30 hover:bg-destructive/5 hover:text-destructive cursor-pointer md:w-full"
+          onClick={() => router.visit("/dashboard")}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Kembali ke Dashboard</span>
           <span className="sm:hidden">Kembali</span>

@@ -247,17 +247,17 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
                 <span className="hidden sm:inline">Semua ({initialUsers.length})</span>
                 <span className="sm:hidden">Semua</span>
               </Button>
-              <Button variant={activeFilter === "admin" ? "default" : "outline"} onClick={() => handleFilter("admin")} className={activeFilter === "admin" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-red-200 hover:bg-red-50 hover:text-red-700"}>
+              <Button variant={activeFilter === "admin" ? "default" : "outline"} onClick={() => handleFilter("admin")} className={activeFilter === "admin" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto hover:bg-accent hover:text-accent-foreground"}>
                 <Shield className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Pengurus ({initialUsers.filter(u => u.role === "admin").length})</span>
                 <span className="sm:hidden">Pengurus</span>
               </Button>
-              <Button variant={activeFilter === "teacher" ? "default" : "outline"} onClick={() => handleFilter("teacher")} className={activeFilter === "teacher" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-blue-200 hover:bg-blue-50 hover:text-blue-700"}>
+              <Button variant={activeFilter === "teacher" ? "default" : "outline"} onClick={() => handleFilter("teacher")} className={activeFilter === "teacher" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto hover:bg-accent hover:text-accent-foreground"}>
                 <GraduationCap className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Guru ({initialUsers.filter(u => u.role === "teacher").length})</span>
                 <span className="sm:hidden">Guru</span>
               </Button>
-              <Button variant={activeFilter === "parent" ? "default" : "outline"} onClick={() => handleFilter("parent")} className={activeFilter === "parent" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto border-green-200 hover:bg-green-50 hover:text-green-700"}>
+              <Button variant={activeFilter === "parent" ? "default" : "outline"} onClick={() => handleFilter("parent")} className={activeFilter === "parent" ? "cursor-pointer w-full sm:w-auto" : "cursor-pointer w-full sm:w-auto hover:bg-accent hover:text-accent-foreground"}>
                 <UserCircle className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Orang Tua ({initialUsers.filter(u => u.role === "parent").length})</span>
                 <span className="sm:hidden">Orang Tua</span>
