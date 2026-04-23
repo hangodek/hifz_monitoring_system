@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { User, KeyRound, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react"
 
 interface CurrentUser {
@@ -203,7 +202,7 @@ export default function ProfileEdit({ current_user }: ProfileEditProps) {
                 autoComplete="current-password"
               />
             </div>
-            <Separator />
+            <hr className="border-border" />
             <div className="grid gap-1.5">
               <Label htmlFor="new_password">Password Baru</Label>
               <Input
