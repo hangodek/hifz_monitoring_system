@@ -268,34 +268,49 @@ export default function UsersIndex({ users: initialUsers, available_roles, curre
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="border shadow-sm">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-red-50 to-red-100/50 hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pengurus</CardTitle>
-              <Shield className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-red-900">Pengurus</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                <Shield className="h-5 w-5 text-red-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{users.filter(u => u.role === "admin").length}</div>
-              <p className="text-xs text-muted-foreground">Administrator sistem</p>
+              <div className="text-2xl font-bold text-red-600">
+                {users.filter(u => u.role === "admin").length}
+                <span className="text-lg font-normal text-red-500"> Akun</span>
+              </div>
+              <p className="text-xs text-red-700/70 mt-1">Administrator sistem</p>
             </CardContent>
           </Card>
-          <Card className="border shadow-sm">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100/50 hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Guru</CardTitle>
-              <GraduationCap className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-blue-900">Guru</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <GraduationCap className="h-5 w-5 text-blue-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{users.filter(u => u.role === "teacher").length}</div>
-              <p className="text-xs text-muted-foreground">Tenaga pengajar</p>
+              <div className="text-2xl font-bold text-blue-600">
+                {users.filter(u => u.role === "teacher").length}
+                <span className="text-lg font-normal text-blue-500"> Akun</span>
+              </div>
+              <p className="text-xs text-blue-700/70 mt-1">Tenaga pengajar</p>
             </CardContent>
           </Card>
-          <Card className="border shadow-sm">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100/50 hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Orang Tua</CardTitle>
-              <UserCircle className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-green-900">Orang Tua</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                <UserCircle className="h-5 w-5 text-green-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{users.filter(u => u.role === "parent").length}</div>
-              <p className="text-xs text-muted-foreground">Orang tua siswa</p>
+              <div className="text-2xl font-bold text-green-600">
+                {users.filter(u => u.role === "parent").length}
+                <span className="text-lg font-normal text-green-500"> Akun</span>
+              </div>
+              <p className="text-xs text-green-700/70 mt-1">Orang tua siswa</p>
             </CardContent>
           </Card>
         </div>
