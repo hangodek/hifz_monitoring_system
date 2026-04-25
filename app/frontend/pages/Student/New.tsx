@@ -78,15 +78,10 @@ export default function CreateStudent() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
-    // Required fields (null: false in schema)
-    if (!formData.student_number.trim()) newErrors.student_number = "No Induk diperlukan"
+    // Required fields — only name, class_level, status
     if (!formData.name.trim()) newErrors.name = "Nama siswa diperlukan"
     if (!formData.class_level.trim()) newErrors.class_level = "Kelas diperlukan"
     if (!formData.status.trim()) newErrors.status = "Status diperlukan"
-    if (!formData.gender.trim()) newErrors.gender = "Jenis kelamin diperlukan"
-    if (!formData.birth_place.trim()) newErrors.birth_place = "Tempat lahir diperlukan"
-    if (!formData.birth_date) newErrors.birth_date = "Tanggal lahir diperlukan"
-    if (!formData.father_name.trim()) newErrors.father_name = "Nama ayah diperlukan"
 
     // Optional fields validation (only validate format if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {

@@ -27,19 +27,16 @@ import {
 interface PreviewStudent {
   line_number: number
   nisn?: string
-  student_number: string
+  student_number?: string
   name: string
-  gender: string
-  birth_place: string
-  birth_date: string
-  father_name: string
+  gender?: string
+  birth_place?: string
+  birth_date?: string
+  father_name?: string
   parent_phone?: string
   address?: string
   class_level: string
   status: string
-  current_hifz_in_juz: string
-  current_hifz_in_pages: string
-  current_hifz_in_surah: string
   juz_30_statuses?: Record<string, string>
   errors?: string[]
   valid: boolean
@@ -52,7 +49,7 @@ interface PreviewData {
   invalid: number
 }
 
-const formatGenderLabel = (gender: string) => {
+const formatGenderLabel = (gender?: string) => {
   if (gender === "male") return "Laki-laki"
   if (gender === "female") return "Perempuan"
   return gender || "-"
@@ -345,9 +342,9 @@ export default function BulkImport() {
                       <TableHead>NISN</TableHead>
                       <TableHead>No Induk</TableHead>
                       <TableHead>Nama</TableHead>
-                      <TableHead>Juz 30 (Tuntas/Belum)</TableHead>
+                      <TableHead>Juz 30</TableHead>
                       <TableHead>Gender</TableHead>
-                      <TableHead>Tempat, Tanggal Lahir</TableHead>
+                      <TableHead>Tempat, Tgl Lahir</TableHead>
                       <TableHead>Kelas</TableHead>
                       <TableHead>Orang Tua</TableHead>
                       <TableHead>Error</TableHead>
@@ -355,17 +352,10 @@ export default function BulkImport() {
                   </TableHeader>
                   <TableBody>
                     {previewData.data.map((student, index) => (
-                      <TableRow 
+                      <TableRow
                         key={index}
                         className={student.valid ? '' : 'bg-red-50'}
                       >
-                        {(() => {
-                          const statuses = Object.values(student.juz_30_statuses || {})
-                          const tuntasCount = statuses.filter((status) => status === 'tuntas').length
-                          const belumTuntasCount = statuses.filter((status) => status === 'belum_tuntas').length
-
-                          return (
-                            <>
                         <TableCell>{student.line_number}</TableCell>
                         <TableCell>
                           {student.valid ? (
@@ -375,22 +365,30 @@ export default function BulkImport() {
                           )}
                         </TableCell>
                         <TableCell>{student.nisn || '-'}</TableCell>
-                        <TableCell className="font-medium">{student.student_number}</TableCell>
+                        <TableCell className="font-medium">{student.student_number || '-'}</TableCell>
                         <TableCell className="font-medium">{student.name}</TableCell>
                         <TableCell>
-                          <div className="text-sm">
-                            <div><span className="font-medium">T:</span> {tuntasCount}</div>
-                            <div><span className="font-medium">B:</span> {belumTuntasCount}</div>
-                          </div>
+                          {(() => {
+                            const statuses = Object.values(student.juz_30_statuses || {})
+                            const tuntas = statuses.filter(s => s === 'tuntas').length
+                            const total = statuses.length
+                            if (total === 0) return <span className="text-muted-foreground text-xs">-</span>
+                            return (
+                              <span className="text-xs">
+                                <span className="text-green-600 font-medium">{tuntas}</span>
+                                <span className="text-muted-foreground">/{total} tuntas</span>
+                              </span>
+                            )
+                          })()}
                         </TableCell>
                         <TableCell>{formatGenderLabel(student.gender)}</TableCell>
                         <TableCell>
-                          {student.birth_place}, {student.birth_date}
+                          {[student.birth_place, student.birth_date].filter(Boolean).join(', ') || '-'}
                         </TableCell>
                         <TableCell>{student.class_level}</TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            <div>Ayah: {student.father_name}</div>
+                            {student.father_name && <div>Ayah: {student.father_name}</div>}
                             {student.parent_phone && <div>HP: {student.parent_phone}</div>}
                           </div>
                         </TableCell>
@@ -403,9 +401,6 @@ export default function BulkImport() {
                             </ul>
                           )}
                         </TableCell>
-                            </>
-                          )
-                        })()}
                       </TableRow>
                     ))}
                   </TableBody>

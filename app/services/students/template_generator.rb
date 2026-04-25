@@ -25,19 +25,16 @@ module Students
         # Header row - Urutan: NISN, No Induk, Nama, Gender, dst
         base_headers = [
           "NISN",
-          "No Induk*",
+          "No Induk",
           "Nama Lengkap*",
-          "Gender* (Laki-laki/Perempuan)",
-          "Tempat Lahir*",
-          "Tanggal Lahir* (YYYY-MM-DD)",
-          "Nama Ayah*",
-          "Nama Ibu*",
+          "Gender (Laki-laki/Perempuan)",
+          "Tempat Lahir",
+          "Tanggal Lahir (YYYY-MM-DD)",
+          "Nama Ayah",
           "No HP Orang Tua",
           "Alamat",
           "Kelas* (7A-12D)",
-          "Status* (Aktif/Tidak Aktif)",
-          "Juz Hafalan Saat Ini* (1-30)",
-          "Surah Hafalan Saat Ini*"
+          "Status* (Aktif/Tidak Aktif)"
         ]
 
         juz_30_headers = @juz_30_surahs.map { |surah| juz_30_column_name(surah) }
@@ -45,11 +42,11 @@ module Students
         
         # Example rows (5 siswa) with different Juz 30 patterns.
         base_examples = [
-          ["320120010001", "S-2026-001", "Ahmad Fauzan", "Laki-laki", "Bandung", "2012-02-10", "Budi Fauzan", "Siti Aminah", "081210000001", "Jl. Cendana 1", "7A", "Aktif", "30", "An-Naba'"],
-          ["320120010002", "S-2026-002", "Naila Putri", "Perempuan", "Bekasi", "2011-09-21", "Rizal Putra", "Nur Aisyah", "081210000002", "Jl. Melati 5", "7B", "Aktif", "30", "An-Nazi'at"],
-          ["320120010003", "S-2026-003", "Rafi Maulana", "Laki-laki", "Depok", "2012-05-14", "Deni Maulana", "Fitri Handayani", "081210000003", "Jl. Kenanga 3", "8A", "Aktif", "30", "Abasa"],
-          ["320120010004", "S-2026-004", "Alya Rahma", "Perempuan", "Bogor", "2011-12-01", "Irfan Rahma", "Dewi Lestari", "081210000004", "Jl. Anggrek 7", "8B", "Aktif", "30", "At-Takwir"],
-          ["320120010005", "S-2026-005", "Farhan Akbar", "Laki-laki", "Jakarta", "2012-07-30", "Hendra Akbar", "Lina Marlina", "081210000005", "Jl. Mawar 9", "9A", "Aktif", "30", "Al-Infitar"]
+          ["320120010001", "S-2026-001", "Ahmad Fauzan",   "Laki-laki",  "Bandung", "2012-02-10", "Budi Fauzan",   "081210000001", "Jl. Cendana 1",  "7A",  "Aktif"],
+          ["320120010002", "S-2026-002", "Naila Putri",    "Perempuan",  "Bekasi",  "2011-09-21", "Rizal Putra",   "081210000002", "Jl. Melati 5",   "7B",  "Aktif"],
+          ["320120010003", "S-2026-003", "Rafi Maulana",   "Laki-laki",  "Depok",   "2012-05-14", "Deni Maulana",  "081210000003", "Jl. Kenanga 3",  "8A",  "Aktif"],
+          ["320120010004", "S-2026-004", "Alya Rahma",     "Perempuan",  "Bogor",   "2011-12-01", "Irfan Rahma",   "081210000004", "Jl. Anggrek 7",  "8B",  "Aktif"],
+          ["320120010005", "S-2026-005", "Farhan Akbar",   "Laki-laki",  "Jakarta", "2012-07-30", "Hendra Akbar",  "081210000005", "Jl. Mawar 9",    "9A",  "Aktif"]
         ]
 
         status_patterns = [
@@ -69,7 +66,7 @@ module Students
         end
         
         # Set column widths for better readability
-        base_widths = [15, 12, 20, 22, 15, 18, 20, 20, 17, 30, 10, 16, 25, 25]
+        base_widths = [15, 12, 20, 22, 15, 18, 20, 17, 30, 10, 16]
         juz_30_widths = Array.new(@juz_30_surahs.size, 22)
         sheet.column_widths(*(base_widths + juz_30_widths))
       end

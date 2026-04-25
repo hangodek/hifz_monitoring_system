@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_23_071910) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_25_152118) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -112,11 +112,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_23_071910) do
     t.string "phone"
     t.string "email"
     t.string "status", null: false
-    t.string "gender", null: false
-    t.string "birth_place", null: false
-    t.date "birth_date", null: false
+    t.string "gender"
+    t.string "birth_place"
+    t.date "birth_date"
     t.text "address"
-    t.string "father_name", null: false
+    t.string "father_name"
     t.string "parent_phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

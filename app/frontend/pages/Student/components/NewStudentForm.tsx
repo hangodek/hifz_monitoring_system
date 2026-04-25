@@ -153,7 +153,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="student_number">No Induk *</Label>
+              <Label htmlFor="student_number">No Induk</Label>
               <Input
                 id="student_number"
                 value={formData.student_number}
@@ -177,7 +177,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Jenis Kelamin *</Label>
+              <Label htmlFor="gender">Jenis Kelamin</Label>
               <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
                 <SelectTrigger className={`cursor-pointer border-gray-300/60 ${errors.gender ? "border-red-500" : ""}`}>
                   <SelectValue placeholder="Pilih jenis kelamin" />
@@ -194,7 +194,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_place">Tempat Lahir *</Label>
+              <Label htmlFor="birth_place">Tempat Lahir</Label>
               <Input
                 id="birth_place"
                 value={formData.birth_place}
@@ -206,7 +206,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Tanggal Lahir *</Label>
+              <Label htmlFor="birth_date">Tanggal Lahir</Label>
               <DatePicker
                 id="birth_date"
                 date={selectedBirthDate}
@@ -274,7 +274,7 @@ export function NewStudentForm({ formData, errors, handleInputChange, handleFile
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="father_name">Nama Ayah *</Label>
+              <Label htmlFor="father_name">Nama Ayah</Label>
               <Input
                 id="father_name"
                 value={formData.father_name}

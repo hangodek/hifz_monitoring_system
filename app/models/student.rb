@@ -11,6 +11,7 @@ class Student < ApplicationRecord
     "alinshiqaq" => "alinsyiqaq",
     "alghashiyah" => "algasyiyah",
     "ashshams" => "asysyams",
+    "asysyam" => "asysyams",
     "allayl" => "allail",
     "ashsharh" => "alinsyirah",
     "aladiyat" => "aladiyat",

@@ -107,19 +107,19 @@ module Students
       {
         line_number: line_number,
         nisn: row_hash["NISN"]&.to_s&.strip,
-        student_number: row_hash["No Induk*"]&.to_s&.strip,
+        student_number: (row_hash["No Induk*"] || row_hash["No Induk"])&.to_s&.strip,
         name: row_hash["Nama Lengkap*"]&.to_s&.strip,
-        gender: normalize_import_gender(row_hash["Gender* (Laki-laki/Perempuan)"] || row_hash["Gender* (male/female atau laki-laki/perempuan)"]),
-        birth_place: row_hash["Tempat Lahir*"]&.to_s&.strip,
-        birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"]),
-        father_name: row_hash["Nama Ayah*"]&.to_s&.strip,
+        gender: normalize_import_gender(row_hash["Gender (Laki-laki/Perempuan)"] || row_hash["Gender* (Laki-laki/Perempuan)"] || row_hash["Gender* (male/female atau laki-laki/perempuan)"]),
+        birth_place: (row_hash["Tempat Lahir*"] || row_hash["Tempat Lahir"])&.to_s&.strip,
+        birth_date: parse_date_from_excel(row_hash["Tanggal Lahir* (YYYY-MM-DD)"] || row_hash["Tanggal Lahir (YYYY-MM-DD)"]),
+        father_name: (row_hash["Nama Ayah*"] || row_hash["Nama Ayah"])&.to_s&.strip,
         parent_phone: row_hash["No HP Orang Tua"]&.to_s&.strip,
         address: row_hash["Alamat"]&.to_s&.strip,
         class_level: (row_hash["Kelas* (7A-12D)"] || row_hash["Kelas*"])&.to_s&.strip,
         status: normalize_import_status(row_hash["Status* (Aktif/Tidak Aktif)"] || row_hash["Status* (active/inactive)"]),
-        current_hifz_in_juz: row_hash["Juz Hafalan Saat Ini* (1-30)"]&.to_s&.strip,
+        current_hifz_in_juz: "1",
         current_hifz_in_pages: DEFAULT_HIFZ_PAGE,
-        current_hifz_in_surah: row_hash["Surah Hafalan Saat Ini*"]&.to_s&.strip,
+        current_hifz_in_surah: "Al-Fatihah",
         juz_30_statuses: {}
       }
     end
@@ -127,13 +127,10 @@ module Students
     def validate_preview_row!(student_data, row_hash)
       row_errors = []
 
-      row_errors << "No Induk wajib diisi" if student_data[:student_number].blank?
       row_errors << "Nama lengkap wajib diisi" if student_data[:name].blank?
-      row_errors << "Gender wajib diisi (Laki-laki/Perempuan)" if student_data[:gender].blank?
-      row_errors << "Gender harus Laki-laki atau Perempuan" unless ["male", "female"].include?(student_data[:gender])
-      row_errors << "Tempat lahir wajib diisi" if student_data[:birth_place].blank?
-      row_errors << "Tanggal lahir wajib diisi" if student_data[:birth_date].blank?
-      row_errors << "Nama ayah wajib diisi" if student_data[:father_name].blank?
+      if student_data[:gender].present? && !["male", "female"].include?(student_data[:gender])
+        row_errors << "Gender harus Laki-laki atau Perempuan"
+      end
       row_errors << "Kelas wajib diisi" if student_data[:class_level].blank?
 
       if student_data[:class_level].present? && !valid_class_level?(student_data[:class_level])
@@ -142,23 +139,17 @@ module Students
 
       row_errors << "Status wajib diisi (Aktif/Tidak Aktif)" if student_data[:status].blank?
       row_errors << "Status harus Aktif atau Tidak Aktif" unless ["active", "inactive"].include?(student_data[:status])
-      row_errors << "Juz hafalan wajib diisi" if student_data[:current_hifz_in_juz].blank?
-      row_errors << "Surah hafalan wajib diisi" if student_data[:current_hifz_in_surah].blank?
 
-      if student_data[:current_hifz_in_juz].present?
-        juz_value = student_data[:current_hifz_in_juz].to_i
-        row_errors << "Juz hafalan harus di antara 1 sampai 30" unless juz_value.between?(1, 30)
-      end
 
+
+      dummy_student = Student.new
       @juz_30_surahs.each do |surah|
-        header = juz_30_column_name(surah)
-        raw_status = row_hash[header]
-        normalized_status = normalize_import_completion_status(raw_status)
+        raw_status = find_surah_status_in_row(row_hash, surah, dummy_student)
 
-        if raw_status.blank?
-          row_errors << "Status #{surah} (Juz 30) wajib diisi: tuntas atau belum_tuntas"
-          next
-        end
+        # Kolom Juz 30 opsional — skip jika kosong
+        next if raw_status.blank?
+
+        normalized_status = normalize_import_completion_status(raw_status)
 
         if normalized_status.blank?
           row_errors << "Status #{surah} (Juz 30) harus 'tuntas' atau 'belum_tuntas'"
@@ -178,6 +169,27 @@ module Students
       student_data[:valid] = row_errors.empty?
     end
 
+    def find_surah_status_in_row(row_hash, expected_surah, dummy_student)
+      header = juz_30_column_name(expected_surah)
+      return row_hash[header] if row_hash.key?(header)
+
+      normalized_expected = dummy_student.send(:normalize_surah_name, expected_surah)
+
+      row_hash.each do |key, value|
+        key_str = key.to_s
+        if key_str.start_with?("Juz 30")
+          match = key_str.match(/Juz 30 - (.*?)\s*\(/)
+          if match
+            extracted_surah = match[1].strip
+            if dummy_student.send(:normalize_surah_name, extracted_surah) == normalized_expected
+              return value
+            end
+          end
+        end
+      end
+      nil
+    end
+
     def build_student(student_params)
       Student.new(
         nisn: student_params[:nisn],
@@ -185,15 +197,15 @@ module Students
         name: student_params[:name],
         gender: normalize_import_gender(student_params[:gender]),
         birth_place: student_params[:birth_place],
-        birth_date: Date.parse(student_params[:birth_date]),
+        birth_date: student_params[:birth_date].present? ? Date.parse(student_params[:birth_date]) : nil,
         father_name: student_params[:father_name],
         parent_phone: student_params[:parent_phone],
         address: student_params[:address],
         class_level: student_params[:class_level]&.upcase,
         status: normalize_import_status(student_params[:status]),
-        current_hifz_in_juz: student_params[:current_hifz_in_juz],
+        current_hifz_in_juz: "1",
         current_hifz_in_pages: DEFAULT_HIFZ_PAGE,
-        current_hifz_in_surah: student_params[:current_hifz_in_surah]
+        current_hifz_in_surah: "Al-Fatihah"
       )
     end
 
