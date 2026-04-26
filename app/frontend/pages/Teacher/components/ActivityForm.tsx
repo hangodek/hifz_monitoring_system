@@ -356,7 +356,7 @@ export function ActivityForm({
                 <Select
                   value={activityDetails.surah}
                   onValueChange={(value) => {
-                    const nextStatus = completedSurahs.has(value) ? "tuntas" : "belum_tuntas"
+                    const nextStatus = completedSurahs.has(normalizeSurahName(value)) ? "tuntas" : "belum_tuntas"
                     setActivityDetails((prev) => ({ ...prev, surah: value, completionStatus: nextStatus }))
                   }}
                 >
@@ -365,7 +365,7 @@ export function ActivityForm({
                   </SelectTrigger>
                   <SelectContent className="border-gray-200/60">
                     {filteredSurahList.map((surah, index) => {
-                      const isCompleted = completedSurahs.has(surah)
+                      const isCompleted = completedSurahs.has(normalizeSurahName(surah))
                       return (
                         <SelectItem key={`${selectedJuz}-${surah}`} value={surah} className="cursor-pointer">
                           <div className="flex items-center gap-2">
