@@ -116,10 +116,11 @@ class Student < ApplicationRecord
   private
 
   def generate_parent_username
-    first_name = name.to_s.split.first&.downcase&.gsub(/[^a-z0-9]/, '') || 'siswa'
-    father_first = father_name.to_s.split.first&.downcase&.gsub(/[^a-z0-9]/, '') || 'ortu'
+    # Ubah "M. Farhan Pulungan" menjadi "m_farhan_pulungan"
+    clean_name = name.to_s.downcase.gsub(/[^a-z0-9\s]/, '').strip.gsub(/\s+/, '_')
+    clean_name = 'siswa' if clean_name.blank?
     
-    base_username = "#{first_name}_#{father_first}"
+    base_username = "wali_#{clean_name}"
     
     username = base_username
     counter = 1
