@@ -40,6 +40,12 @@ class Activity < ApplicationRecord
     return if juz.blank? || surah.blank?
 
     StudentSurahProgression.sync_from_activities!(student: student, juz: juz, surah: surah)
+    
+    # Update the student's current hifz pointer
+    student.update_columns(
+      current_hifz_in_surah: surah,
+      current_hifz_in_juz: juz.to_s
+    )
   end
 
   def sync_surah_progression_after_update
