@@ -375,43 +375,43 @@ export default function StudentShow({ student, recent_activities, total_activiti
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">No Induk</label>
-                  <p className="text-sm sm:text-base mt-1">{student.student_number}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.student_number || '-'}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Penuh</label>
-                  <p className="text-sm sm:text-base mt-1">{student.name}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.name || '-'}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Jenis Kelamin</label>
-                  <p className="text-sm sm:text-base mt-1">{student.gender === 'male' ? 'Laki-laki' : 'Perempuan'}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.gender === 'male' ? 'Laki-laki' : student.gender === 'female' ? 'Perempuan' : '-'}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Tempat, Tanggal Lahir</label>
                   <p className="text-sm sm:text-base mt-1">
-                    {student.birth_place}, {student.birth_date}
+                    {[student.birth_place, student.birth_date].filter(Boolean).join(', ') || '-'}
                   </p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Kelas</label>
-                  <p className="text-sm sm:text-base mt-1">{student.class_level}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.class_level || '-'}</p>
                 </div>
               </div>
               <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Alamat</label>
-                  <p className="text-sm sm:text-base mt-1">{student.address || 'Tidak diberikan'}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.address || '-'}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Nama Ayah</label>
-                  <p className="text-sm sm:text-base mt-1">{student.father_name}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.father_name || '-'}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">No HP Orang Tua</label>
-                  <p className="text-sm sm:text-base mt-1">{student.parent_phone || 'Tidak diberikan'}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.parent_phone || '-'}</p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-medium text-muted-foreground">Email</label>
-                  <p className="text-sm sm:text-base mt-1">{student.email || 'Tidak diberikan'}</p>
+                  <p className="text-sm sm:text-base mt-1">{student.email || '-'}</p>
                 </div>
               </div>
             </div>
